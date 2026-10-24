@@ -25,3 +25,6 @@ Thumbs.db
 # Editor settings
 .vscode/
 .idea/
+
+# Scripts & temporary utilities
+setup-trello.js
