@@ -442,61 +442,61 @@ CREATE TRIGGER trg_service_versions_update_immutable BEFORE UPDATE ON service_ve
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'service_versions records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_service_versions_delete_immutable BEFORE DELETE ON service_versions
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'service_versions records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_order_approvals_update_immutable BEFORE UPDATE ON order_approvals
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'order_approvals records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_order_approvals_delete_immutable BEFORE DELETE ON order_approvals
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'order_approvals records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_invoices_update_immutable BEFORE UPDATE ON invoices
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'invoices records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_invoices_delete_immutable BEFORE DELETE ON invoices
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'invoices records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_cash_payments_update_immutable BEFORE UPDATE ON cash_payments
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'cash_payments records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_cash_payments_delete_immutable BEFORE DELETE ON cash_payments
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'cash_payments records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_order_history_update_immutable BEFORE UPDATE ON order_history
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'order_history records are immutable; append new records instead';
-END$
+END$$
 
 CREATE TRIGGER trg_order_history_delete_immutable BEFORE DELETE ON order_history
 FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'order_history records are immutable; append new records instead';
-END$
+END$$
 
 DELIMITER ;
 
