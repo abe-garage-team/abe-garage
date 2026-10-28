@@ -2,6 +2,7 @@
   "name": "abe-garage",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "workspaces": [
     "backend",
     "frontend"
@@ -17,11 +18,19 @@
     "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace backend",
     "check:structure": "node scripts/verify-project.cjs",
-    "test": "npm test --workspace backend",
-    "check": "npm run check:structure && npm test && npm run build",
+    "generate:openapi": "node scripts/generate-openapi.cjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm test --workspace backend && npm test --workspace frontend",
+    "check": "npm run check:structure && npm run lint && npm run format:check && npm test && npm run build",
+    "db:migrate": "npm run db:migrate --workspace backend",
     "seed:admin": "npm run seed:admin --workspace backend"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "eslint": "^9.19.0",
+    "prettier": "^3.4.2"
   }
 }

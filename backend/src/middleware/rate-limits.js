@@ -6,13 +6,11 @@ const make = (windowMs, limit) =>
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     handler: (req, res) =>
-      res
-        .status(429)
-        .json({
-          status: 'error',
-          message: 'Too many requests. Please try again later.',
-          data: null,
-        }),
+      res.status(429).json({
+        status: 'error',
+        message: 'Too many requests. Please try again later.',
+        data: null,
+      }),
   });
 export const authLimiter = make(15 * 60 * 1000, 30);
 export const resetLimiter = make(15 * 60 * 1000, 10);

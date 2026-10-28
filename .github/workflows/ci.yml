@@ -1,16 +1,56 @@
-name: Project checks
+name: CI & Quality Checks
 on:
   pull_request:
   push:
     branches: [main, dev]
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: abe_garage_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: abe_garage_test
+      JWT_SECRET: ci-super-secret-test-key-32-chars-long!
+      JWT_ISSUER: abe-garage-test
+      JWT_AUDIENCE: abe-garage-clients
+      INSTALL_ENABLED: true
+      INSTALL_SECRET: ci-setup-secret-test-key-32-chars!
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run check
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify project structure
+        run: npm run check:structure
+
+      - name: Initialize test database schema
+        run: mysql -h 127.0.0.1 -P 3306 -u root -proot abe_garage_test < backend/db/schema.sql
+
+      - name: Run database migrations
+        run: npm run db:migrate
+
+      - name: Run backend and frontend tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build

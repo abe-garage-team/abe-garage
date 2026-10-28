@@ -33,6 +33,35 @@ Each pull request should:
 
 Reviewers should check correctness, readability, security, and compatibility with existing code.
 
+## Code Quality & Linting
+
+Before opening a pull request, ensure all linting and format checks pass:
+
+- Run `npm run lint` to check for syntax and JavaScript errors.
+- Run `npm run format:check` (or `npm run format` to automatically format files with Prettier).
+- Run `npm run check:structure` to ensure routes, endpoints, and file dependencies are intact.
+- Run `npm test` to run all backend and frontend unit/integration test suites.
+
+## Database Migrations
+
+Never modify `schema.sql` directly after the baseline has been initialized.
+
+- Add new schema changes as numbered SQL files in `backend/db/migrations/` (e.g. `002_add_column.sql`).
+- Apply migrations by running `npm run db:migrate`.
+- Migration state is automatically tracked in the `schema_migrations` table.
+
+## API Contracts & Single Source of Truth
+
+The authoritative machine-readable contract for all endpoints is [`docs/api/openapi.json`](docs/api/openapi.json).
+
+- To regenerate OpenAPI documentation from contracts, run `npm run generate:openapi`.
+
+## Frontend Architecture & API Ownership
+
+- **UI Pages & Components**: Live in `frontend/src/features/<domain>/`.
+- **API Services**: All HTTP communication lives in `frontend/src/services/<domain>.service.js`, utilizing `core/api-client.js`.
+- Do not make raw `fetch()` calls directly inside React components.
+
 ## Security
 
 - Keep secrets in environment variables.

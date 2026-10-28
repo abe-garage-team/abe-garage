@@ -2,11 +2,7 @@
   "project": "Abe Garage",
   "base_path": "/api",
   "generated_on": "2026-10-25",
-  "response_envelope": [
-    "status",
-    "message",
-    "data"
-  ],
+  "response_envelope": ["status", "message", "data"],
   "endpoints": [
     {
       "task_id": "BE-004",

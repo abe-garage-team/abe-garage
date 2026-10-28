@@ -1,0 +1,2840 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Abe Garage API",
+    "version": "1.0.0",
+    "description": "Authoritative machine-readable OpenAPI specification for the Abe Garage platform"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-004 - POST /api/auth/login",
+        "description": "Owned by Member 1. Priority: Must. Access: Public.",
+        "responses": {
+          "200": {
+            "description": "Staff login successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Staff login successful",
+                  "data": {
+                    "access_token": "<application-jwt>",
+                    "token_type": "Bearer",
+                    "expires_in": 3600,
+                    "employee": {
+                      "employee_id": 2,
+                      "first_name": "Abebe",
+                      "last_name": "Kebede",
+                      "email": "abebe@abegarage.com",
+                      "phone": "0911234567",
+                      "role_id": 2,
+                      "role_name": "Manager",
+                      "active": true,
+                      "created_at": "2026-10-25T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "manager@abegarage.com",
+                "password": "StrongPassword123!"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-005 - POST /api/auth/forgot-password",
+        "description": "Owned by Member 1. Priority: Must (agreed addition). Access: Public.",
+        "responses": {
+          "200": {
+            "description": "If an eligible account exists, a password reset link will be sent.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "If an eligible account exists, a password reset link will be sent.",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "abebe@abegarage.com"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-006 - POST /api/auth/reset-password",
+        "description": "Owned by Member 1. Priority: Must (agreed addition). Access: Public.",
+        "responses": {
+          "200": {
+            "description": "Password reset successfully. Please log in.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Password reset successfully. Please log in.",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "token": "<64-character-hex-reset-token>",
+                "new_password": "NewStrongPassword123!"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-007 - PATCH /api/auth/password",
+        "description": "Owned by Member 1. Priority: Should. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "Password changed successfully. Please log in again.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Password changed successfully. Please log in again.",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "current_password": "StrongPassword123!",
+                "new_password": "AnotherStrongPassword123!"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-008 - GET /api/profile",
+        "description": "Owned by Member 1. Priority: Must (agreed addition). Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "Get own staff profile successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Get own staff profile successful",
+                  "data": {
+                    "employee_id": 5,
+                    "first_name": "Abebe",
+                    "last_name": "Kebede",
+                    "email": "abebe@abegarage.com",
+                    "phone": "0911234567",
+                    "role_id": 1,
+                    "role_name": "Technician",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/employees": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-009 - POST /api/employees",
+        "description": "Owned by Member 1. Priority: Must. Access: Admin.",
+        "responses": {
+          "201": {
+            "description": "Create employee successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Create employee successful",
+                  "data": {
+                    "employee_id": 5,
+                    "first_name": "Abebe",
+                    "last_name": "Kebede",
+                    "email": "abebe@abegarage.com",
+                    "phone": "0911234567",
+                    "role_id": 1,
+                    "role_name": "Technician",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "first_name": "Abebe",
+                "last_name": "Kebede",
+                "email": "abebe@abegarage.com",
+                "phone": "0911234567",
+                "password": "StrongPassword123!",
+                "role_id": 1,
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-010 - GET /api/employees",
+        "description": "Owned by Member 1. Priority: Must. Access: Admin; Manager limited to active technicians.",
+        "responses": {
+          "200": {
+            "description": "List and search employees successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List and search employees successful",
+                  "data": {
+                    "employees": [
+                      {
+                        "employee_id": 5,
+                        "first_name": "Abebe",
+                        "last_name": "Kebede",
+                        "email": "abebe@abegarage.com",
+                        "phone": "0911234567",
+                        "role_id": 1,
+                        "role_name": "Technician",
+                        "active": true,
+                        "created_at": "2026-10-25T12:00:00Z"
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/employees/:employee_id": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-011 - GET /api/employees/:employee_id",
+        "description": "Owned by Member 1. Priority: Must. Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "View employee successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "View employee successful",
+                  "data": {
+                    "employee_id": 5,
+                    "first_name": "Abebe",
+                    "last_name": "Kebede",
+                    "email": "abebe@abegarage.com",
+                    "phone": "0911234567",
+                    "role_id": 1,
+                    "role_name": "Technician",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-012 - PATCH /api/employees/:employee_id",
+        "description": "Owned by Member 1. Priority: Must. Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "Edit or deactivate employee successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Edit or deactivate employee successful",
+                  "data": {
+                    "employee_id": 5,
+                    "first_name": "Abebe",
+                    "last_name": "Kebede",
+                    "email": "abebe@abegarage.com",
+                    "phone": "0911000000",
+                    "role_id": 2,
+                    "role_name": "Manager",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "phone": "0911000000",
+                "role_id": 2,
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-013 - GET /api/roles",
+        "description": "Owned by Member 1. Priority: Must (supporting endpoint). Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "List fixed staff roles successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List fixed staff roles successful",
+                  "data": {
+                    "roles": [
+                      {
+                        "role_id": 1,
+                        "role_name": "Technician"
+                      },
+                      {
+                        "role_id": 2,
+                        "role_name": "Manager"
+                      },
+                      {
+                        "role_id": 3,
+                        "role_name": "Admin"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-014 - GET /api/settings",
+        "description": "Owned by Member 1. Priority: Must (supporting endpoint). Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "Read garage settings successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read garage settings successful",
+                  "data": {
+                    "settings_id": 1,
+                    "name": "Abe Garage",
+                    "address": "Addis Ababa",
+                    "phone": "0111234567",
+                    "email": "contact@abegarage.com",
+                    "vat_rate": "15.00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-015 - PATCH /api/settings",
+        "description": "Owned by Member 1. Priority: Must (supporting endpoint). Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "Update garage settings successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Update garage settings successful",
+                  "data": {
+                    "settings_id": 1,
+                    "name": "Abe Garage",
+                    "address": "Addis Ababa",
+                    "phone": "0111234567",
+                    "email": "contact@abegarage.com",
+                    "vat_rate": "15.00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Abe Garage",
+                "phone": "0111234567",
+                "vat_rate": "15.00"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/customers": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-016 - POST /api/customers",
+        "description": "Owned by Member 2. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "201": {
+            "description": "Register customer successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Register customer successful",
+                  "data": {
+                    "customer_id": 12,
+                    "first_name": "Sara",
+                    "last_name": "Tesfaye",
+                    "email": "sara@example.com",
+                    "phone": "0912345678",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "first_name": "Sara",
+                "last_name": "Tesfaye",
+                "email": "sara@example.com",
+                "phone": "0912345678",
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-017 - GET /api/customers",
+        "description": "Owned by Member 2. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "List and search customers successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List and search customers successful",
+                  "data": {
+                    "customers": [
+                      {
+                        "customer_id": 12,
+                        "first_name": "Sara",
+                        "last_name": "Tesfaye",
+                        "email": "sara@example.com",
+                        "phone": "0912345678",
+                        "active": true,
+                        "created_at": "2026-10-25T12:00:00Z"
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/customers/:customer_id": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-018 - GET /api/customers/:customer_id",
+        "description": "Owned by Member 2. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "View customer profile and financial summary successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "View customer profile and financial summary successful",
+                  "data": {
+                    "customer_id": 12,
+                    "first_name": "Sara",
+                    "last_name": "Tesfaye",
+                    "email": "sara@example.com",
+                    "phone": "0912345678",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z",
+                    "vehicles": [
+                      {
+                        "vehicle_id": 8,
+                        "customer_id": 12,
+                        "year": 2020,
+                        "make": "Toyota",
+                        "model": "Corolla",
+                        "type": "Sedan",
+                        "mileage": 65000,
+                        "plate": "AA-12345",
+                        "vin": "JTDBR32E720123456",
+                        "color": "White"
+                      }
+                    ],
+                    "recent_orders": [
+                      {
+                        "order_id": 24,
+                        "customer_id": 12,
+                        "customer_name": "Sara Tesfaye",
+                        "vehicle_id": 8,
+                        "plate": "AA-12345",
+                        "status": 1,
+                        "status_name": "Awaiting approval",
+                        "subtotal": "230.00",
+                        "vat_rate": "15.00",
+                        "vat_amount": "34.50",
+                        "total": "264.50",
+                        "currency": "ETB",
+                        "paid": false,
+                        "created_at": "2026-10-25T12:00:00Z",
+                        "estimated_ready_date": "2026-10-27T09:00:00Z",
+                        "completed_at": null
+                      }
+                    ],
+                    "order_count": 1,
+                    "unpaid_total": "264.50",
+                    "currency": "ETB"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-019 - PATCH /api/customers/:customer_id",
+        "description": "Owned by Member 2. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Edit or deactivate customer successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Edit or deactivate customer successful",
+                  "data": {
+                    "customer_id": 12,
+                    "first_name": "Sara",
+                    "last_name": "Tesfaye",
+                    "email": "sara@example.com",
+                    "phone": "0912000000",
+                    "active": true,
+                    "created_at": "2026-10-25T12:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "phone": "0912000000",
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/vehicles": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-020 - POST /api/vehicles",
+        "description": "Owned by Member 2. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "201": {
+            "description": "Add vehicle to customer successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Add vehicle to customer successful",
+                  "data": {
+                    "vehicle_id": 8,
+                    "customer_id": 12,
+                    "year": 2020,
+                    "make": "Toyota",
+                    "model": "Corolla",
+                    "type": "Sedan",
+                    "mileage": 65000,
+                    "plate": "AA-12345",
+                    "vin": "JTDBR32E720123456",
+                    "color": "White"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "customer_id": 12,
+                "year": 2020,
+                "make": "Toyota",
+                "model": "Corolla",
+                "type": "Sedan",
+                "mileage": 65000,
+                "plate": "AA-12345",
+                "vin": "JTDBR32E720123456",
+                "color": "White"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/customers/:customer_id/vehicles": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-021 - GET /api/customers/:customer_id/vehicles",
+        "description": "Owned by Member 2. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "List a customer’s vehicles successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List a customer’s vehicles successful",
+                  "data": {
+                    "customer_id": 12,
+                    "vehicles": [
+                      {
+                        "vehicle_id": 8,
+                        "customer_id": 12,
+                        "year": 2020,
+                        "make": "Toyota",
+                        "model": "Corolla",
+                        "type": "Sedan",
+                        "mileage": 65000,
+                        "plate": "AA-12345",
+                        "vin": "JTDBR32E720123456",
+                        "color": "White"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/vehicles/:vehicle_id": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-022 - GET /api/vehicles/:vehicle_id",
+        "description": "Owned by Member 2. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "View vehicle successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "View vehicle successful",
+                  "data": {
+                    "vehicle_id": 8,
+                    "customer_id": 12,
+                    "year": 2020,
+                    "make": "Toyota",
+                    "model": "Corolla",
+                    "type": "Sedan",
+                    "mileage": 65000,
+                    "plate": "AA-12345",
+                    "vin": "JTDBR32E720123456",
+                    "color": "White"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-023 - PATCH /api/vehicles/:vehicle_id",
+        "description": "Owned by Member 2. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Edit vehicle details successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Edit vehicle details successful",
+                  "data": {
+                    "vehicle_id": 8,
+                    "customer_id": 12,
+                    "year": 2020,
+                    "make": "Toyota",
+                    "model": "Corolla",
+                    "type": "Sedan",
+                    "mileage": 66500,
+                    "plate": "AA-12345",
+                    "vin": "JTDBR32E720123456",
+                    "color": "Silver"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "mileage": 66500,
+                "color": "Silver"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/vehicles/:vehicle_id/orders": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-024 - GET /api/vehicles/:vehicle_id/orders",
+        "description": "Owned by Member 2. Priority: Should. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "View vehicle service history successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "View vehicle service history successful",
+                  "data": {
+                    "orders": [
+                      {
+                        "order_id": 24,
+                        "customer_id": 12,
+                        "customer_name": "Sara Tesfaye",
+                        "vehicle_id": 8,
+                        "plate": "AA-12345",
+                        "status": 1,
+                        "status_name": "Awaiting approval",
+                        "subtotal": "230.00",
+                        "vat_rate": "15.00",
+                        "vat_amount": "34.50",
+                        "total": "264.50",
+                        "currency": "ETB",
+                        "paid": false,
+                        "created_at": "2026-10-25T12:00:00Z",
+                        "estimated_ready_date": "2026-10-27T09:00:00Z",
+                        "completed_at": null,
+                        "jobs": [
+                          {
+                            "service_name": "Oil change",
+                            "line_price": "50.00"
+                          },
+                          {
+                            "service_name": "Brake service",
+                            "line_price": "180.00"
+                          }
+                        ]
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/services": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-025 - POST /api/services",
+        "description": "Owned by Member 2. Priority: Must. Access: Admin.",
+        "responses": {
+          "201": {
+            "description": "Create repair service successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Create repair service successful",
+                  "data": {
+                    "service_id": 3,
+                    "name": "Oil change",
+                    "description": "Replace engine oil and filter",
+                    "price": "50.00",
+                    "labor_hours": "0.50",
+                    "active": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Oil change",
+                "description": "Replace engine oil and filter",
+                "price": "50.00",
+                "labor_hours": "0.50",
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-026 - GET /api/services",
+        "description": "Owned by Member 2. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "List staff service catalogue successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List staff service catalogue successful",
+                  "data": {
+                    "services": [
+                      {
+                        "service_id": 3,
+                        "name": "Oil change",
+                        "description": "Replace engine oil and filter",
+                        "price": "50.00",
+                        "labor_hours": "0.50",
+                        "active": true
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/services/:service_id": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-027 - PATCH /api/services/:service_id",
+        "description": "Owned by Member 2. Priority: Must. Access: Admin.",
+        "responses": {
+          "200": {
+            "description": "Edit or deactivate service successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Edit or deactivate service successful",
+                  "data": {
+                    "service_id": 3,
+                    "name": "Oil change",
+                    "description": "Replace engine oil and filter",
+                    "price": "55.00",
+                    "labor_hours": "0.50",
+                    "active": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "price": "55.00",
+                "active": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/public/services": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-028 - GET /api/public/services",
+        "description": "Owned by Member 2. Priority: Should (scope overlap resolved for release). Access: Public.",
+        "responses": {
+          "200": {
+            "description": "Read public services and prices successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read public services and prices successful",
+                  "data": {
+                    "services": [
+                      {
+                        "service_id": 3,
+                        "name": "Oil change",
+                        "description": "Replace engine oil and filter",
+                        "price": "50.00",
+                        "labor_hours": "0.50",
+                        "price_includes_vat": false,
+                        "currency": "ETB"
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-029 - POST /api/orders",
+        "description": "Owned by Member 3. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "201": {
+            "description": "Create repair order and estimate successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Create repair order and estimate successful",
+                  "data": {
+                    "order_id": 24,
+                    "customer_id": 12,
+                    "customer_name": "Sara Tesfaye",
+                    "vehicle_id": 8,
+                    "plate": "AA-12345",
+                    "status": 1,
+                    "status_name": "Awaiting approval",
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "paid": false,
+                    "created_at": "2026-10-25T12:00:00Z",
+                    "estimated_ready_date": "2026-10-27T09:00:00Z",
+                    "completed_at": null,
+                    "created_by": 2,
+                    "order_hash": "7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "tracking_url": "https://garage.example/order-status/7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "customer": {
+                      "customer_id": 12,
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678",
+                      "active": true,
+                      "created_at": "2026-10-25T12:00:00Z"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "order_id": 24,
+                        "service_id": 3,
+                        "service_name": "Oil change",
+                        "service_description": "Replace engine oil and filter",
+                        "labor_hours": "0.50",
+                        "line_price": "50.00",
+                        "technician_id": null,
+                        "technician_name": null,
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      },
+                      {
+                        "line_id": 42,
+                        "order_id": 24,
+                        "service_id": 4,
+                        "service_name": "Brake service",
+                        "service_description": "Inspect and service brakes",
+                        "labor_hours": "2.00",
+                        "line_price": "180.00",
+                        "technician_id": null,
+                        "technician_name": null,
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      }
+                    ],
+                    "approved_by": null,
+                    "approved_at": null,
+                    "approval_method": null,
+                    "paid_at": null,
+                    "paid_received_by": null,
+                    "notes_for_customer": "Please call before collection.",
+                    "internal_notes": "Check previous repair record.",
+                    "history": [
+                      {
+                        "history_id": 91,
+                        "order_id": 24,
+                        "employee_id": 2,
+                        "employee_name": "Hana Bekele",
+                        "action": "order_created",
+                        "created_at": "2026-10-25T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "customer_id": 12,
+                "vehicle_id": 8,
+                "lines": [
+                  {
+                    "service_id": 3
+                  },
+                  {
+                    "service_id": 4
+                  }
+                ],
+                "estimated_ready_date": "2026-10-27T09:00:00Z",
+                "notes_for_customer": "Please call before collection.",
+                "internal_notes": "Check previous repair record."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-030 - GET /api/orders",
+        "description": "Owned by Member 3. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "List and filter orders successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List and filter orders successful",
+                  "data": {
+                    "orders": [
+                      {
+                        "order_id": 24,
+                        "customer_id": 12,
+                        "customer_name": "Sara Tesfaye",
+                        "vehicle_id": 8,
+                        "plate": "AA-12345",
+                        "status": 1,
+                        "status_name": "Awaiting approval",
+                        "subtotal": "230.00",
+                        "vat_rate": "15.00",
+                        "vat_amount": "34.50",
+                        "total": "264.50",
+                        "currency": "ETB",
+                        "paid": false,
+                        "created_at": "2026-10-25T12:00:00Z",
+                        "estimated_ready_date": "2026-10-27T09:00:00Z",
+                        "completed_at": null
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-031 - GET /api/orders/:order_id",
+        "description": "Owned by Member 3. Priority: Must. Access: Any active staff.",
+        "responses": {
+          "200": {
+            "description": "View repair order detail successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "View repair order detail successful",
+                  "data": {
+                    "order_id": 24,
+                    "customer_id": 12,
+                    "customer_name": "Sara Tesfaye",
+                    "vehicle_id": 8,
+                    "plate": "AA-12345",
+                    "status": 1,
+                    "status_name": "Awaiting approval",
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "paid": false,
+                    "created_at": "2026-10-25T12:00:00Z",
+                    "estimated_ready_date": "2026-10-27T09:00:00Z",
+                    "completed_at": null,
+                    "created_by": 2,
+                    "order_hash": "7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "tracking_url": "https://garage.example/order-status/7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "customer": {
+                      "customer_id": 12,
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678",
+                      "active": true,
+                      "created_at": "2026-10-25T12:00:00Z"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "order_id": 24,
+                        "service_id": 3,
+                        "service_name": "Oil change",
+                        "service_description": "Replace engine oil and filter",
+                        "labor_hours": "0.50",
+                        "line_price": "50.00",
+                        "technician_id": 5,
+                        "technician_name": "Abebe Kebede",
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      },
+                      {
+                        "line_id": 42,
+                        "order_id": 24,
+                        "service_id": 4,
+                        "service_name": "Brake service",
+                        "service_description": "Inspect and service brakes",
+                        "labor_hours": "2.00",
+                        "line_price": "180.00",
+                        "technician_id": null,
+                        "technician_name": null,
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      }
+                    ],
+                    "approved_by": null,
+                    "approved_at": null,
+                    "approval_method": null,
+                    "paid_at": null,
+                    "paid_received_by": null,
+                    "notes_for_customer": "Please call before collection.",
+                    "internal_notes": "Check previous repair record.",
+                    "history": [
+                      {
+                        "history_id": 91,
+                        "order_id": 24,
+                        "employee_id": 2,
+                        "employee_name": "Hana Bekele",
+                        "action": "order_created",
+                        "created_at": "2026-10-25T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-032 - PATCH /api/orders/:order_id",
+        "description": "Owned by Member 3. Priority: Must; custom prices Should. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Edit estimate or order notes successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Edit estimate or order notes successful",
+                  "data": {
+                    "order_id": 24,
+                    "customer_id": 12,
+                    "customer_name": "Sara Tesfaye",
+                    "vehicle_id": 8,
+                    "plate": "AA-12345",
+                    "status": 1,
+                    "status_name": "Awaiting approval",
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "paid": false,
+                    "created_at": "2026-10-25T12:00:00Z",
+                    "estimated_ready_date": "2026-10-27T10:00:00Z",
+                    "completed_at": null,
+                    "created_by": 2,
+                    "order_hash": "7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "tracking_url": "https://garage.example/order-status/7da3e09c8bb1fa52d17e25ccafd8ec144c9bf744f806d48160a1e0b2ba7f35ca2",
+                    "customer": {
+                      "customer_id": 12,
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678",
+                      "active": true,
+                      "created_at": "2026-10-25T12:00:00Z"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "order_id": 24,
+                        "service_id": 3,
+                        "service_name": "Oil change",
+                        "service_description": "Replace engine oil and filter",
+                        "labor_hours": "0.50",
+                        "line_price": "50.00",
+                        "technician_id": 5,
+                        "technician_name": "Abebe Kebede",
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      },
+                      {
+                        "line_id": 42,
+                        "order_id": 24,
+                        "service_id": 4,
+                        "service_name": "Brake service",
+                        "service_description": "Inspect and service brakes",
+                        "labor_hours": "2.00",
+                        "line_price": "180.00",
+                        "technician_id": null,
+                        "technician_name": null,
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null
+                      }
+                    ],
+                    "approved_by": null,
+                    "approved_at": null,
+                    "approval_method": null,
+                    "paid_at": null,
+                    "paid_received_by": null,
+                    "notes_for_customer": "Ready tomorrow.",
+                    "internal_notes": "Check previous repair record.",
+                    "history": [
+                      {
+                        "history_id": 91,
+                        "order_id": 24,
+                        "employee_id": 2,
+                        "employee_name": "Hana Bekele",
+                        "action": "order_created",
+                        "created_at": "2026-10-25T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "lines": [
+                  {
+                    "service_id": 3,
+                    "line_price": "50.00"
+                  },
+                  {
+                    "service_id": 4,
+                    "line_price": "180.00"
+                  }
+                ],
+                "estimated_ready_date": "2026-10-27T10:00:00Z",
+                "notes_for_customer": "Ready tomorrow."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/approval": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-033 - PATCH /api/orders/:order_id/approval",
+        "description": "Owned by Member 3. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Record estimate approval or decline successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Record estimate approval or decline successful",
+                  "data": {
+                    "order_id": 24,
+                    "status": 2,
+                    "status_name": "Approved",
+                    "approved_by": 2,
+                    "approved_at": "2026-10-25T12:00:00Z",
+                    "approval_method": "phone"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "decision": "approved",
+                "approval_method": "phone"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/lines": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-034 - POST /api/orders/:order_id/lines",
+        "description": "Owned by Member 3. Priority: Should. Access: Manager or Admin.",
+        "responses": {
+          "201": {
+            "description": "Add extra work and request reapproval successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Add extra work and request reapproval successful",
+                  "data": {
+                    "order_id": 24,
+                    "status": 1,
+                    "status_name": "Awaiting approval",
+                    "added_line": {
+                      "line_id": 43,
+                      "order_id": 24,
+                      "service_id": 7,
+                      "service_name": "Wheel alignment",
+                      "service_description": "Align wheels",
+                      "labor_hours": "0.50",
+                      "line_price": "90.00",
+                      "technician_id": null,
+                      "technician_name": null,
+                      "line_status": 0,
+                      "started_at": null,
+                      "done_at": null,
+                      "technician_note": null
+                    },
+                    "subtotal": "320.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "48.00",
+                    "total": "368.00",
+                    "currency": "ETB"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "service_id": 7,
+                "line_price": "90.00"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/order-lines/:line_id/technician": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-035 - PATCH /api/order-lines/:line_id/technician",
+        "description": "Owned by Member 2. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Assign technician to job line successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Assign technician to job line successful",
+                  "data": {
+                    "line_id": 41,
+                    "order_id": 24,
+                    "technician_id": 5,
+                    "technician_name": "Abebe Kebede"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "technician_id": 5
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/my-jobs": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-036 - GET /api/my-jobs",
+        "description": "Owned by Member 2. Priority: Must. Access: Technician only.",
+        "responses": {
+          "200": {
+            "description": "List my technician jobs successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "List my technician jobs successful",
+                  "data": {
+                    "jobs": [
+                      {
+                        "line_id": 41,
+                        "order_id": 24,
+                        "service_id": 3,
+                        "service_name": "Oil change",
+                        "service_description": "Replace engine oil and filter",
+                        "labor_hours": "0.50",
+                        "line_price": "50.00",
+                        "technician_id": 5,
+                        "technician_name": "Abebe Kebede",
+                        "line_status": 0,
+                        "started_at": null,
+                        "done_at": null,
+                        "technician_note": null,
+                        "order_status": 2,
+                        "customer_name": "Sara Tesfaye",
+                        "vehicle": {
+                          "make": "Toyota",
+                          "model": "Corolla",
+                          "plate": "AA-12345"
+                        },
+                        "estimated_ready_date": "2026-10-27T09:00:00Z"
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 10,
+                      "total": 1,
+                      "total_pages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/order-lines/:line_id/status": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-037 - PATCH /api/order-lines/:line_id/status",
+        "description": "Owned by Member 2. Priority: Must. Access: Assigned Technician; Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Start or finish technician job successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Start or finish technician job successful",
+                  "data": {
+                    "line_id": 41,
+                    "line_status": 1,
+                    "started_at": "2026-10-25T12:00:00Z",
+                    "done_at": null,
+                    "order_id": 24,
+                    "order_status": 3,
+                    "order_status_name": "In progress"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "line_status": 1
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/order-lines/:line_id/note": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-038 - PATCH /api/order-lines/:line_id/note",
+        "description": "Owned by Member 2. Priority: Should. Access: Assigned Technician; Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Add or edit technician work note successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Add or edit technician work note successful",
+                  "data": {
+                    "line_id": 41,
+                    "technician_note": "Inspected pads; replaced worn components."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "technician_note": "Inspected pads; replaced worn components."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/estimate": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-039 - GET /api/orders/:order_id/estimate",
+        "description": "Owned by Member 3. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Read printable estimate data successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read printable estimate data successful",
+                  "data": {
+                    "order_id": 24,
+                    "document_type": "estimate",
+                    "estimate_number": "EST-24",
+                    "issued_at": "2026-10-25T12:00:00Z",
+                    "garage": {
+                      "settings_id": 1,
+                      "name": "Abe Garage",
+                      "address": "Addis Ababa",
+                      "phone": "0111234567",
+                      "email": "contact@abegarage.com",
+                      "vat_rate": "15.00"
+                    },
+                    "customer": {
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "service_name": "Oil change",
+                        "description": "Replace engine oil and filter",
+                        "line_price": "50.00"
+                      },
+                      {
+                        "line_id": 42,
+                        "service_name": "Brake service",
+                        "description": "Inspect and service brakes",
+                        "line_price": "180.00"
+                      }
+                    ],
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "status": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/invoice": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-040 - POST /api/orders/:order_id/invoice",
+        "description": "Owned by Member 4. Priority: Must (supporting endpoint). Access: Manager or Admin.",
+        "responses": {
+          "201": {
+            "description": "Issue immutable invoice successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Issue immutable invoice successful",
+                  "data": {
+                    "order_id": 24,
+                    "document_type": "invoice",
+                    "issued_at": "2026-10-25T12:00:00Z",
+                    "garage": {
+                      "settings_id": 1,
+                      "name": "Abe Garage",
+                      "address": "Addis Ababa",
+                      "phone": "0111234567",
+                      "email": "contact@abegarage.com",
+                      "vat_rate": "15.00"
+                    },
+                    "customer": {
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "service_name": "Oil change",
+                        "description": "Replace engine oil and filter",
+                        "line_price": "50.00"
+                      },
+                      {
+                        "line_id": 42,
+                        "service_name": "Brake service",
+                        "description": "Inspect and service brakes",
+                        "line_price": "180.00"
+                      }
+                    ],
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "status": 4,
+                    "invoice_number": "INV-000024",
+                    "paid": false,
+                    "paid_at": null,
+                    "paid_received_by": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-041 - GET /api/orders/:order_id/invoice",
+        "description": "Owned by Member 4. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Read issued invoice successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read issued invoice successful",
+                  "data": {
+                    "order_id": 24,
+                    "document_type": "invoice",
+                    "issued_at": "2026-10-25T12:00:00Z",
+                    "garage": {
+                      "settings_id": 1,
+                      "name": "Abe Garage",
+                      "address": "Addis Ababa",
+                      "phone": "0111234567",
+                      "email": "contact@abegarage.com",
+                      "vat_rate": "15.00"
+                    },
+                    "customer": {
+                      "first_name": "Sara",
+                      "last_name": "Tesfaye",
+                      "email": "sara@example.com",
+                      "phone": "0912345678"
+                    },
+                    "vehicle": {
+                      "vehicle_id": 8,
+                      "customer_id": 12,
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "type": "Sedan",
+                      "mileage": 65000,
+                      "plate": "AA-12345",
+                      "vin": "JTDBR32E720123456",
+                      "color": "White"
+                    },
+                    "lines": [
+                      {
+                        "line_id": 41,
+                        "service_name": "Oil change",
+                        "description": "Replace engine oil and filter",
+                        "line_price": "50.00"
+                      },
+                      {
+                        "line_id": 42,
+                        "service_name": "Brake service",
+                        "description": "Inspect and service brakes",
+                        "line_price": "180.00"
+                      }
+                    ],
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "status": 4,
+                    "invoice_number": "INV-000024",
+                    "paid": false,
+                    "paid_at": null,
+                    "paid_received_by": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/payment": {
+      "patch": {
+        "tags": ["BE"],
+        "summary": "BE-042 - PATCH /api/orders/:order_id/payment",
+        "description": "Owned by Member 4. Priority: Must. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Record cash payment successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Record cash payment successful",
+                  "data": {
+                    "order_id": 24,
+                    "invoice_number": "INV-000024",
+                    "paid": true,
+                    "paid_at": "2026-10-25T12:00:00Z",
+                    "paid_received_by": 2,
+                    "total": "264.50",
+                    "currency": "ETB"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "paid": true
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/public/orders/:order_hash": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-044 - GET /api/public/orders/:order_hash",
+        "description": "Owned by Member 4. Priority: Must. Access: Public with valid unguessable order hash.",
+        "responses": {
+          "200": {
+            "description": "Read private-link customer order status successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read private-link customer order status successful",
+                  "data": {
+                    "order_id": 24,
+                    "vehicle": {
+                      "year": 2020,
+                      "make": "Toyota",
+                      "model": "Corolla",
+                      "color": "White",
+                      "plate": "AA-12345"
+                    },
+                    "status": 3,
+                    "status_name": "In progress",
+                    "estimated_ready_date": "2026-10-27T09:00:00Z",
+                    "notes_for_customer": "Please call before collection.",
+                    "jobs": [
+                      {
+                        "service_name": "Oil change",
+                        "line_status": 1
+                      },
+                      {
+                        "service_name": "Brake service",
+                        "line_status": 0
+                      }
+                    ],
+                    "subtotal": "230.00",
+                    "vat_rate": "15.00",
+                    "vat_amount": "34.50",
+                    "total": "264.50",
+                    "currency": "ETB",
+                    "paid": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/orders/:order_id/resend-email": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-045 - POST /api/orders/:order_id/resend-email",
+        "description": "Owned by Member 4. Priority: Should. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Resend order tracking email successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Resend order tracking email successful",
+                  "data": {
+                    "order_id": 24,
+                    "email_status": "sent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/dashboard": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-046 - GET /api/dashboard",
+        "description": "Owned by Member 4. Priority: Must; money totals Should. Access: Manager or Admin.",
+        "responses": {
+          "200": {
+            "description": "Read operational dashboard successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Read operational dashboard successful",
+                  "data": {
+                    "timezone": "Africa/Addis_Ababa",
+                    "as_of": "2026-10-25T12:00:00Z",
+                    "counters": {
+                      "awaiting_approval": 3,
+                      "in_progress": 4,
+                      "completed_today": 2,
+                      "unpaid": 5
+                    },
+                    "money": {
+                      "currency": "ETB",
+                      "week_start": "2026-10-18T21:00:00Z",
+                      "month_start": "2026-09-30T21:00:00Z",
+                      "paid_this_week": "264.50",
+                      "paid_this_month": "1058.00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/install": {
+      "post": {
+        "tags": ["BE"],
+        "summary": "BE-047 - POST /api/install",
+        "description": "Owned by Member 1. Priority: Must; repeat safety Should. Access: Deployment operator with setup secret; unavailable after setup.",
+        "responses": {
+          "201": {
+            "description": "Initialize and lock installation successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Initialize and lock installation successful",
+                  "data": {
+                    "installed": true,
+                    "roles_created": 3,
+                    "admin_created": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        },
+        "security": [
+          {
+            "SetupKey": []
+          }
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["BE"],
+        "summary": "BE-048 - GET /api/health",
+        "description": "Owned by Member 1. Priority: Must (operational). Access: Public.",
+        "responses": {
+          "200": {
+            "description": "Check API readiness successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "message": "Check API readiness successful",
+                  "data": {
+                    "service": "abe-garage-api",
+                    "ready": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed / Invalid input"
+          },
+          "401": {
+            "description": "Missing, invalid, expired or revoked access token"
+          },
+          "403": {
+            "description": "Inactive account or insufficient role"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "SetupKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Setup-Key"
+      }
+    }
+  }
+}

@@ -10,15 +10,15 @@ This is a proposed design update, not an executed migration. The supplied ER dia
 
 ## Additional fields needed to meet old-order and invoice requirements
 
-| Table | Proposed fields | Purpose |
-|---|---|---|
-| orders | currency CHAR(3) NOT NULL | Snapshot single configured currency |
-| orders | invoice_number VARCHAR(32) NULL UNIQUE | Stable issued invoice identifier |
-| orders | invoice_issued_at DATETIME NULL | Persist issue time; GET never creates it |
-| orders | invoice_snapshot JSON NULL | Freeze garage/customer/vehicle/line details and totals at issue time |
-| order_lines | service_name VARCHAR(150) NOT NULL | Keep historic job name after catalogue edit |
-| order_lines | service_description TEXT NOT NULL | Preserve historic description |
-| order_lines | labor_hours DECIMAL(8,2) NOT NULL | Preserve agreed labor estimate |
+| Table       | Proposed fields                        | Purpose                                                              |
+| ----------- | -------------------------------------- | -------------------------------------------------------------------- |
+| orders      | currency CHAR(3) NOT NULL              | Snapshot single configured currency                                  |
+| orders      | invoice_number VARCHAR(32) NULL UNIQUE | Stable issued invoice identifier                                     |
+| orders      | invoice_issued_at DATETIME NULL        | Persist issue time; GET never creates it                             |
+| orders      | invoice_snapshot JSON NULL             | Freeze garage/customer/vehicle/line details and totals at issue time |
+| order_lines | service_name VARCHAR(150) NOT NULL     | Keep historic job name after catalogue edit                          |
+| order_lines | service_description TEXT NOT NULL      | Preserve historic description                                        |
+| order_lines | labor_hours DECIMAL(8,2) NOT NULL      | Preserve agreed labor estimate                                       |
 
 orders.vat_rate is already in supplied diagram; retain it as snapshot. Do not read current settings when calculating old estimates. paid/paid_at/paid_received_by stay on orders outside invoice_snapshot so payment can update without modifying invoice content.
 

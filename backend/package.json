@@ -7,6 +7,7 @@
     "dev": "node --watch index.js",
     "start": "node index.js",
     "db:check": "node scripts/check-db.js",
+    "db:migrate": "node scripts/migrate.js",
     "seed:admin": "node scripts/seed-admin.js",
     "seed:development": "node scripts/seed-development.js",
     "test": "node --test"

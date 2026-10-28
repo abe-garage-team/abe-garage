@@ -40,4 +40,3 @@ All team members are expected to follow the shared contribution guidelines in [C
 ## Project Status
 
 **In development.**
-

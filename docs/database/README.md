@@ -11,15 +11,15 @@ The operational records are designed to third normal form under the business ass
 
 ## Changes from the earlier design
 
-| Earlier design | Normalized replacement |
-|---|---|
-| orders.customer_id duplicates the vehicle owner | Obtain it through orders.vehicle_id -> vehicles.customer_id |
-| Names, descriptions and hours copied onto every job line | Immutable service_versions; each job references exactly one version |
-| Repeated approver fields on orders | Append-only order_approvals records, including reapprovals |
-| Invoice columns/JSON attached to orders | Separate invoices with atomic historical document fields |
-| paid flag, paid_at and collector on orders | One cash_payments row per settled invoice; absence means unpaid |
-| Stored subtotal, VAT amount and total | Calculate consistently in v_order_financials; one subtotal-level VAT rounding |
-| Repeated invoice line records or frozen JSON lines | Read the immutable order lines and immutable service version referenced by that invoice's order |
+| Earlier design                                           | Normalized replacement                                                                          |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| orders.customer_id duplicates the vehicle owner          | Obtain it through orders.vehicle_id -> vehicles.customer_id                                     |
+| Names, descriptions and hours copied onto every job line | Immutable service_versions; each job references exactly one version                             |
+| Repeated approver fields on orders                       | Append-only order_approvals records, including reapprovals                                      |
+| Invoice columns/JSON attached to orders                  | Separate invoices with atomic historical document fields                                        |
+| paid flag, paid_at and collector on orders               | One cash_payments row per settled invoice; absence means unpaid                                 |
+| Stored subtotal, VAT amount and total                    | Calculate consistently in v_order_financials; one subtotal-level VAT rounding                   |
+| Repeated invoice line records or frozen JSON lines       | Read the immutable order lines and immutable service version referenced by that invoice's order |
 
 The agreed_price on a job line can differ from a catalogue version's default_price. These are different facts, so agreed_price is not redundant even when the initial values happen to match.
 
@@ -40,13 +40,13 @@ Invoice garage/customer/vehicle fields are historical issue-time values. For exa
 
 ## Read-only views
 
-| View | Purpose |
-|---|---|
-| v_current_services | Current service name, price and labor hours from latest revision |
-| v_order_financials | Subtotal, VAT amount and total; never join history into the sum |
-| v_orders | Customer ID, totals, paid metadata and latest approval decision for API mapping |
+| View                 | Purpose                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| v_current_services   | Current service name, price and labor hours from latest revision                         |
+| v_order_financials   | Subtotal, VAT amount and total; never join history into the sum                          |
+| v_orders             | Customer ID, totals, paid metadata and latest approval decision for API mapping          |
 | v_invoice_financials | Historical invoice header with calculated immutable billing total and live paid metadata |
-| v_invoice_lines | Issued invoice's frozen line descriptions, hours and agreed prices |
+| v_invoice_lines      | Issued invoice's frozen line descriptions, hours and agreed prices                       |
 
 These views are internal read models, not automatic public API responses. In particular, v_orders includes internal notes and the private order hash. Public tracking must use an explicit safe projection.
 

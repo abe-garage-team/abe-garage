@@ -12,52 +12,52 @@ This package defines the backend implementation work for your four-person garage
 
 ## API index
 
-| Method | Endpoint | Access | Owner | Task |
-|---|---|---|---|---|
-| POST | `/api/auth/login` | Public | M1 | [BE-004 Staff login](auth/be-004-login.md) |
-| POST | `/api/auth/forgot-password` | Public | M1 | [BE-005 Request password reset](auth/be-005-forgot-password.md) |
-| POST | `/api/auth/reset-password` | Public | M1 | [BE-006 Reset forgotten password](auth/be-006-reset-password.md) |
-| PATCH | `/api/auth/password` | Any active staff | M1 | [BE-007 Change own password](auth/be-007-change-password.md) |
-| GET | `/api/profile` | Any active staff | M1 | [BE-008 Get own staff profile](auth/be-008-get-profile.md) |
-| POST | `/api/employees` | Admin | M1 | [BE-009 Create employee](employees/be-009-create-employee.md) |
-| GET | `/api/employees` | Admin; Manager limited to active technicians | M1 | [BE-010 List and search employees](employees/be-010-list-employees.md) |
-| GET | `/api/employees/:employee_id` | Admin | M1 | [BE-011 View employee](employees/be-011-get-employee.md) |
-| PATCH | `/api/employees/:employee_id` | Admin | M1 | [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md) |
-| GET | `/api/roles` | Admin | M1 | [BE-013 List fixed staff roles](settings/be-013-list-roles.md) |
-| GET | `/api/settings` | Admin | M1 | [BE-014 Read garage settings](settings/be-014-get-settings.md) |
-| PATCH | `/api/settings` | Admin | M1 | [BE-015 Update garage settings](settings/be-015-update-settings.md) |
-| POST | `/api/customers` | Manager or Admin | M2 | [BE-016 Register customer](customers/be-016-create-customer.md) |
-| GET | `/api/customers` | Any active staff | M2 | [BE-017 List and search customers](customers/be-017-list-customers.md) |
-| GET | `/api/customers/:customer_id` | Any active staff | M2 | [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md) |
-| PATCH | `/api/customers/:customer_id` | Manager or Admin | M2 | [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md) |
-| POST | `/api/vehicles` | Manager or Admin | M2 | [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md) |
-| GET | `/api/customers/:customer_id/vehicles` | Any active staff | M2 | [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md) |
-| GET | `/api/vehicles/:vehicle_id` | Any active staff | M2 | [BE-022 View vehicle](vehicles/be-022-get-vehicle.md) |
-| PATCH | `/api/vehicles/:vehicle_id` | Manager or Admin | M2 | [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md) |
-| GET | `/api/vehicles/:vehicle_id/orders` | Any active staff | M2 | [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md) |
-| POST | `/api/services` | Admin | M2 | [BE-025 Create repair service](services/be-025-create-service.md) |
-| GET | `/api/services` | Any active staff | M2 | [BE-026 List staff service catalogue](services/be-026-list-services.md) |
-| PATCH | `/api/services/:service_id` | Admin | M2 | [BE-027 Edit or deactivate service](services/be-027-update-service.md) |
-| GET | `/api/public/services` | Public | M2 | [BE-028 Read public services and prices](services/be-028-public-services.md) |
-| POST | `/api/orders` | Manager or Admin | M3 | [BE-029 Create repair order and estimate](orders/be-029-create-order.md) |
-| GET | `/api/orders` | Any active staff | M3 | [BE-030 List and filter orders](orders/be-030-list-orders.md) |
-| GET | `/api/orders/:order_id` | Any active staff | M3 | [BE-031 View repair order detail](orders/be-031-get-order.md) |
-| PATCH | `/api/orders/:order_id` | Manager or Admin | M3 | [BE-032 Edit estimate or order notes](orders/be-032-update-order.md) |
-| PATCH | `/api/orders/:order_id/approval` | Manager or Admin | M3 | [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md) |
-| POST | `/api/orders/:order_id/lines` | Manager or Admin | M3 | [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md) |
-| PATCH | `/api/order-lines/:line_id/technician` | Manager or Admin | M2 | [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md) |
-| GET | `/api/my-jobs` | Technician only | M2 | [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md) |
-| PATCH | `/api/order-lines/:line_id/status` | Assigned Technician; Manager or Admin | M2 | [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md) |
-| PATCH | `/api/order-lines/:line_id/note` | Assigned Technician; Manager or Admin | M2 | [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md) |
-| GET | `/api/orders/:order_id/estimate` | Manager or Admin | M3 | [BE-039 Read printable estimate data](orders/be-039-get-estimate.md) |
-| POST | `/api/orders/:order_id/invoice` | Manager or Admin | M4 | [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md) |
-| GET | `/api/orders/:order_id/invoice` | Manager or Admin | M4 | [BE-041 Read issued invoice](billing/be-041-get-invoice.md) |
-| PATCH | `/api/orders/:order_id/payment` | Manager or Admin | M4 | [BE-042 Record cash payment](billing/be-042-record-cash-payment.md) |
-| GET | `/api/public/orders/:order_hash` | Public with valid unguessable order hash | M4 | [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md) |
-| POST | `/api/orders/:order_id/resend-email` | Manager or Admin | M4 | [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md) |
-| GET | `/api/dashboard` | Manager or Admin | M4 | [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md) |
-| POST | `/api/install` | Deployment operator with setup secret; unavailable after setup | M1 | [BE-047 Initialize and lock installation](setup/be-047-install.md) |
-| GET | `/api/health` | Public | M1 | [BE-048 Check API readiness](setup/be-048-health.md) |
+| Method | Endpoint                               | Access                                                         | Owner | Task                                                                                     |
+| ------ | -------------------------------------- | -------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------- |
+| POST   | `/api/auth/login`                      | Public                                                         | M1    | [BE-004 Staff login](auth/be-004-login.md)                                               |
+| POST   | `/api/auth/forgot-password`            | Public                                                         | M1    | [BE-005 Request password reset](auth/be-005-forgot-password.md)                          |
+| POST   | `/api/auth/reset-password`             | Public                                                         | M1    | [BE-006 Reset forgotten password](auth/be-006-reset-password.md)                         |
+| PATCH  | `/api/auth/password`                   | Any active staff                                               | M1    | [BE-007 Change own password](auth/be-007-change-password.md)                             |
+| GET    | `/api/profile`                         | Any active staff                                               | M1    | [BE-008 Get own staff profile](auth/be-008-get-profile.md)                               |
+| POST   | `/api/employees`                       | Admin                                                          | M1    | [BE-009 Create employee](employees/be-009-create-employee.md)                            |
+| GET    | `/api/employees`                       | Admin; Manager limited to active technicians                   | M1    | [BE-010 List and search employees](employees/be-010-list-employees.md)                   |
+| GET    | `/api/employees/:employee_id`          | Admin                                                          | M1    | [BE-011 View employee](employees/be-011-get-employee.md)                                 |
+| PATCH  | `/api/employees/:employee_id`          | Admin                                                          | M1    | [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md)                |
+| GET    | `/api/roles`                           | Admin                                                          | M1    | [BE-013 List fixed staff roles](settings/be-013-list-roles.md)                           |
+| GET    | `/api/settings`                        | Admin                                                          | M1    | [BE-014 Read garage settings](settings/be-014-get-settings.md)                           |
+| PATCH  | `/api/settings`                        | Admin                                                          | M1    | [BE-015 Update garage settings](settings/be-015-update-settings.md)                      |
+| POST   | `/api/customers`                       | Manager or Admin                                               | M2    | [BE-016 Register customer](customers/be-016-create-customer.md)                          |
+| GET    | `/api/customers`                       | Any active staff                                               | M2    | [BE-017 List and search customers](customers/be-017-list-customers.md)                   |
+| GET    | `/api/customers/:customer_id`          | Any active staff                                               | M2    | [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md)   |
+| PATCH  | `/api/customers/:customer_id`          | Manager or Admin                                               | M2    | [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md)                |
+| POST   | `/api/vehicles`                        | Manager or Admin                                               | M2    | [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md)                      |
+| GET    | `/api/customers/:customer_id/vehicles` | Any active staff                                               | M2    | [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md)           |
+| GET    | `/api/vehicles/:vehicle_id`            | Any active staff                                               | M2    | [BE-022 View vehicle](vehicles/be-022-get-vehicle.md)                                    |
+| PATCH  | `/api/vehicles/:vehicle_id`            | Manager or Admin                                               | M2    | [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md)                         |
+| GET    | `/api/vehicles/:vehicle_id/orders`     | Any active staff                                               | M2    | [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md)                |
+| POST   | `/api/services`                        | Admin                                                          | M2    | [BE-025 Create repair service](services/be-025-create-service.md)                        |
+| GET    | `/api/services`                        | Any active staff                                               | M2    | [BE-026 List staff service catalogue](services/be-026-list-services.md)                  |
+| PATCH  | `/api/services/:service_id`            | Admin                                                          | M2    | [BE-027 Edit or deactivate service](services/be-027-update-service.md)                   |
+| GET    | `/api/public/services`                 | Public                                                         | M2    | [BE-028 Read public services and prices](services/be-028-public-services.md)             |
+| POST   | `/api/orders`                          | Manager or Admin                                               | M3    | [BE-029 Create repair order and estimate](orders/be-029-create-order.md)                 |
+| GET    | `/api/orders`                          | Any active staff                                               | M3    | [BE-030 List and filter orders](orders/be-030-list-orders.md)                            |
+| GET    | `/api/orders/:order_id`                | Any active staff                                               | M3    | [BE-031 View repair order detail](orders/be-031-get-order.md)                            |
+| PATCH  | `/api/orders/:order_id`                | Manager or Admin                                               | M3    | [BE-032 Edit estimate or order notes](orders/be-032-update-order.md)                     |
+| PATCH  | `/api/orders/:order_id/approval`       | Manager or Admin                                               | M3    | [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md)           |
+| POST   | `/api/orders/:order_id/lines`          | Manager or Admin                                               | M3    | [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md)           |
+| PATCH  | `/api/order-lines/:line_id/technician` | Manager or Admin                                               | M2    | [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md)      |
+| GET    | `/api/my-jobs`                         | Technician only                                                | M2    | [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md)                      |
+| PATCH  | `/api/order-lines/:line_id/status`     | Assigned Technician; Manager or Admin                          | M2    | [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md)     |
+| PATCH  | `/api/order-lines/:line_id/note`       | Assigned Technician; Manager or Admin                          | M2    | [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md)            |
+| GET    | `/api/orders/:order_id/estimate`       | Manager or Admin                                               | M3    | [BE-039 Read printable estimate data](orders/be-039-get-estimate.md)                     |
+| POST   | `/api/orders/:order_id/invoice`        | Manager or Admin                                               | M4    | [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md)                        |
+| GET    | `/api/orders/:order_id/invoice`        | Manager or Admin                                               | M4    | [BE-041 Read issued invoice](billing/be-041-get-invoice.md)                              |
+| PATCH  | `/api/orders/:order_id/payment`        | Manager or Admin                                               | M4    | [BE-042 Record cash payment](billing/be-042-record-cash-payment.md)                      |
+| GET    | `/api/public/orders/:order_hash`       | Public with valid unguessable order hash                       | M4    | [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md) |
+| POST   | `/api/orders/:order_id/resend-email`   | Manager or Admin                                               | M4    | [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md)             |
+| GET    | `/api/dashboard`                       | Manager or Admin                                               | M4    | [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md)                   |
+| POST   | `/api/install`                         | Deployment operator with setup secret; unavailable after setup | M1    | [BE-047 Initialize and lock installation](setup/be-047-install.md)                       |
+| GET    | `/api/health`                          | Public                                                         | M1    | [BE-048 Check API readiness](setup/be-048-health.md)                                     |
 
 ## Supporting files
 
@@ -73,9 +73,6 @@ This package defines the backend implementation work for your four-person garage
 - Technical references are linked in CONVENTIONS.md.
 
 [Required fields,optional inputs and response variants](VALIDATION.md) complete the endpoint examples.
-
-
-
 
 ---
 
@@ -139,7 +136,6 @@ The attachment supplies the task-document structure, not additional garage requi
 
 See [request field rules and response variants](VALIDATION.md) for required/optional/null fields,role projections and alternate success states. Order history may include details JSON for safe audit metadata.
 
-
 ---
 
 <!-- Source: VALIDATION.md -->
@@ -148,31 +144,31 @@ See [request field rules and response variants](VALIDATION.md) for required/opti
 
 All request examples are concrete examples,not JSON Schema. This table defines presence rules. Unknown fields are rejected. A required field cannot be null; omitted optional fields use the stated default. PATCH accepts only listed mutable fields,at least one. IDs are positive integers and decimal strings accept exactly the precision/range in CONVENTIONS.
 
-| Endpoint/task | Required input | Optional input/default |
-|---|---|---|
-| BE-004 login | email,password | None |
-| BE-005 forgot password | email | None |
-| BE-006 reset password | token,new_password | None |
-| BE-007 change password | current_password,new_password | None |
-| BE-009 employee create | first_name,last_name,email,phone,password,role_id | active=true |
-| BE-012 employee patch | At least one permitted field | first_name,last_name,email,phone,role_id,active;omission preserves current value |
-| BE-015 settings patch | At least one permitted field | name,address,phone,email,vat_rate |
-| BE-016 customer create | first_name,last_name,email,phone | active=true |
-| BE-019 customer patch | At least one permitted field | first_name,last_name,email,phone,active |
-| BE-020 vehicle create | customer_id,year,make,model,type,mileage,plate,color | vin=null |
-| BE-023 vehicle patch | At least one permitted field | year,make,model,type,mileage,plate,vin,color;vin may be null |
-| BE-025 service create | name,description,price,labor_hours | active=true |
-| BE-027 service patch | At least one permitted field | name,description,price,labor_hours,active |
-| BE-029 order create | customer_id,vehicle_id,lines (1..100),estimated_ready_date | notes_for_customer=null,internal_notes=null;line_price optional per line if custom pricing implemented |
-| BE-032 order patch | At least one permitted field | lines,estimated_ready_date,notes_for_customer,internal_notes;notes may be null;state restrictions apply |
-| BE-033 approval | decision,approval_method | decision approved or declined;method phone or in_person |
-| BE-034 extra job | service_id | line_price=current service price |
-| BE-035 assign | technician_id | None;unassign unsupported |
-| BE-037 job progress | line_status | Only1(start) or2(done);0 is not a new transition target |
-| BE-038 work note | technician_note | null clears note;otherwise max2000 chars |
-| BE-042 payment | paid=true | No client amount,date,collector or method |
-| BE-040 invoice issue / BE-045 resend / BE-047 install | No JSON body | Reject unexpected input;install seed from env |
-| Every GET | No JSON body | Only endpoint-documented query parameters |
+| Endpoint/task                                         | Required input                                             | Optional input/default                                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| BE-004 login                                          | email,password                                             | None                                                                                                    |
+| BE-005 forgot password                                | email                                                      | None                                                                                                    |
+| BE-006 reset password                                 | token,new_password                                         | None                                                                                                    |
+| BE-007 change password                                | current_password,new_password                              | None                                                                                                    |
+| BE-009 employee create                                | first_name,last_name,email,phone,password,role_id          | active=true                                                                                             |
+| BE-012 employee patch                                 | At least one permitted field                               | first_name,last_name,email,phone,role_id,active;omission preserves current value                        |
+| BE-015 settings patch                                 | At least one permitted field                               | name,address,phone,email,vat_rate                                                                       |
+| BE-016 customer create                                | first_name,last_name,email,phone                           | active=true                                                                                             |
+| BE-019 customer patch                                 | At least one permitted field                               | first_name,last_name,email,phone,active                                                                 |
+| BE-020 vehicle create                                 | customer_id,year,make,model,type,mileage,plate,color       | vin=null                                                                                                |
+| BE-023 vehicle patch                                  | At least one permitted field                               | year,make,model,type,mileage,plate,vin,color;vin may be null                                            |
+| BE-025 service create                                 | name,description,price,labor_hours                         | active=true                                                                                             |
+| BE-027 service patch                                  | At least one permitted field                               | name,description,price,labor_hours,active                                                               |
+| BE-029 order create                                   | customer_id,vehicle_id,lines (1..100),estimated_ready_date | notes_for_customer=null,internal_notes=null;line_price optional per line if custom pricing implemented  |
+| BE-032 order patch                                    | At least one permitted field                               | lines,estimated_ready_date,notes_for_customer,internal_notes;notes may be null;state restrictions apply |
+| BE-033 approval                                       | decision,approval_method                                   | decision approved or declined;method phone or in_person                                                 |
+| BE-034 extra job                                      | service_id                                                 | line_price=current service price                                                                        |
+| BE-035 assign                                         | technician_id                                              | None;unassign unsupported                                                                               |
+| BE-037 job progress                                   | line_status                                                | Only1(start) or2(done);0 is not a new transition target                                                 |
+| BE-038 work note                                      | technician_note                                            | null clears note;otherwise max2000 chars                                                                |
+| BE-042 payment                                        | paid=true                                                  | No client amount,date,collector or method                                                               |
+| BE-040 invoice issue / BE-045 resend / BE-047 install | No JSON body                                               | Reject unexpected input;install seed from env                                                           |
+| Every GET                                             | No JSON body                                               | Only endpoint-documented query parameters                                                               |
 
 ## Role projections and state variants
 
@@ -192,7 +188,6 @@ All request examples are concrete examples,not JSON Schema. This table defines p
 
 Member3 provides shared helpers calculateOrderTotals(lockedOrder,lines),deriveOrderStatus(lines),assertOrderMutationAllowed(order,operation),and appendOrderHistory(connection,event). Member2 uses them for technician mutations. Member4 uses totals/snapshots without rewriting calculation rules. Function names are proposed interfaces to agree on Day1;use explicit connection argument for transaction-aware calls.
 
-
 ---
 
 <!-- Source: DATABASE-CHANGES.md -->
@@ -209,15 +204,15 @@ This is a proposed design update, not an executed migration. The supplied ER dia
 
 ## Additional fields needed to meet old-order and invoice requirements
 
-| Table | Proposed fields | Purpose |
-|---|---|---|
-| orders | currency CHAR(3) NOT NULL | Snapshot single configured currency |
-| orders | invoice_number VARCHAR(32) NULL UNIQUE | Stable issued invoice identifier |
-| orders | invoice_issued_at DATETIME NULL | Persist issue time; GET never creates it |
-| orders | invoice_snapshot JSON NULL | Freeze garage/customer/vehicle/line details and totals at issue time |
-| order_lines | service_name VARCHAR(150) NOT NULL | Keep historic job name after catalogue edit |
-| order_lines | service_description TEXT NOT NULL | Preserve historic description |
-| order_lines | labor_hours DECIMAL(8,2) NOT NULL | Preserve agreed labor estimate |
+| Table       | Proposed fields                        | Purpose                                                              |
+| ----------- | -------------------------------------- | -------------------------------------------------------------------- |
+| orders      | currency CHAR(3) NOT NULL              | Snapshot single configured currency                                  |
+| orders      | invoice_number VARCHAR(32) NULL UNIQUE | Stable issued invoice identifier                                     |
+| orders      | invoice_issued_at DATETIME NULL        | Persist issue time; GET never creates it                             |
+| orders      | invoice_snapshot JSON NULL             | Freeze garage/customer/vehicle/line details and totals at issue time |
+| order_lines | service_name VARCHAR(150) NOT NULL     | Keep historic job name after catalogue edit                          |
+| order_lines | service_description TEXT NOT NULL      | Preserve historic description                                        |
+| order_lines | labor_hours DECIMAL(8,2) NOT NULL      | Preserve agreed labor estimate                                       |
 
 orders.vat_rate is already in supplied diagram; retain it as snapshot. Do not read current settings when calculating old estimates. paid/paid_at/paid_received_by stay on orders outside invoice_snapshot so payment can update without modifying invoice content.
 
@@ -237,7 +232,6 @@ No invoice table is needed for this one-invoice-per-order scope. Corrections,cre
 
 Add order_history.details JSON NULL alongside action. Keep action as a fixed event key;details stores safe before/after values,approval decision/method and line references. Prior approvals must remain understandable after reapproval clears current order approval fields. Do not place secrets or full raw tokens in details. Return safe details on staff order history responses;public tracking excludes history entirely.
 
-
 ---
 
 <!-- Source: TASK-CLASSIFICATION.md -->
@@ -246,67 +240,67 @@ Add order_history.details JSON NULL alongside action. Keep action as a fixed eve
 
 One backend; module ownership separates work. API count does not equal effort. Member3 has the most complex business rules; Member2 takes technician job endpoints,Member4 owns mail and integration tests,Member1 supplies foundation early. This distribution reduces blocking but is not a claim of exactly equal workload.
 
-| Member | Ownership | Coordination |
-|---|---|---|
-| 1 | Foundation,auth,employees,roles,settings,installation,health,deployment | Schema and shared middleware owner |
-| 2 | Customers,vehicles,service catalogue,technician assignment/jobs/progress | Use Member3’s shared order status/locking/money contract |
-| 3 | Order creation,detail,filters,estimate edits,approval,extra work,estimate data | Own order-domain business rules; support Member2 integration |
-| 4 | Notification adapter,invoice,payment,public tracking,dashboard,acceptance collection | Offer fake mail and fixture orders immediately |
+| Member | Ownership                                                                            | Coordination                                                 |
+| ------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1      | Foundation,auth,employees,roles,settings,installation,health,deployment              | Schema and shared middleware owner                           |
+| 2      | Customers,vehicles,service catalogue,technician assignment/jobs/progress             | Use Member3’s shared order status/locking/money contract     |
+| 3      | Order creation,detail,filters,estimate edits,approval,extra work,estimate data       | Own order-domain business rules; support Member2 integration |
+| 4      | Notification adapter,invoice,payment,public tracking,dashboard,acceptance collection | Offer fake mail and fixture orders immediately               |
 
 ## Complete task board
 
-| Task | Owner | Priority | Endpoint or scope | Dependencies |
-|---|---|---|---|---|
-| [BE-001 Project structure and local runtime](foundation/be-001-project-foundation.md) | M1 | Must | Shared infrastructure | — |
-| [BE-002 Database migrations and deterministic seed data](foundation/be-002-database-and-seeds.md) | M1 | Must | Shared infrastructure | BE-001 |
-| [BE-003 Shared authentication, authorization, validation and error middleware](foundation/be-003-auth-validation-errors.md) | M1 | Must | Shared infrastructure | BE-001, BE-002 |
-| [BE-004 Staff login](auth/be-004-login.md) | M1 | Must | `POST /api/auth/login` | BE-001, BE-002, BE-003 |
-| [BE-005 Request password reset](auth/be-005-forgot-password.md) | M1 | Must (agreed addition) | `POST /api/auth/forgot-password` | BE-003, BE-043 |
-| [BE-006 Reset forgotten password](auth/be-006-reset-password.md) | M1 | Must (agreed addition) | `POST /api/auth/reset-password` | BE-005 |
-| [BE-007 Change own password](auth/be-007-change-password.md) | M1 | Should | `PATCH /api/auth/password` | BE-003, BE-004 |
-| [BE-008 Get own staff profile](auth/be-008-get-profile.md) | M1 | Must (agreed addition) | `GET /api/profile` | BE-003 |
-| [BE-009 Create employee](employees/be-009-create-employee.md) | M1 | Must | `POST /api/employees` | BE-003 |
-| [BE-010 List and search employees](employees/be-010-list-employees.md) | M1 | Must | `GET /api/employees` | BE-003 |
-| [BE-011 View employee](employees/be-011-get-employee.md) | M1 | Must | `GET /api/employees/:employee_id` | BE-003 |
-| [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md) | M1 | Must | `PATCH /api/employees/:employee_id` | BE-009 |
-| [BE-013 List fixed staff roles](settings/be-013-list-roles.md) | M1 | Must (supporting endpoint) | `GET /api/roles` | BE-003 |
-| [BE-014 Read garage settings](settings/be-014-get-settings.md) | M1 | Must (supporting endpoint) | `GET /api/settings` | BE-003 |
-| [BE-015 Update garage settings](settings/be-015-update-settings.md) | M1 | Must (supporting endpoint) | `PATCH /api/settings` | BE-014 |
-| [BE-016 Register customer](customers/be-016-create-customer.md) | M2 | Must | `POST /api/customers` | BE-003 |
-| [BE-017 List and search customers](customers/be-017-list-customers.md) | M2 | Must | `GET /api/customers` | BE-003 |
-| [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md) | M2 | Must | `GET /api/customers/:customer_id` | BE-016, BE-003 |
-| [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md) | M2 | Must | `PATCH /api/customers/:customer_id` | BE-016 |
-| [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md) | M2 | Must | `POST /api/vehicles` | BE-016 |
-| [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md) | M2 | Must | `GET /api/customers/:customer_id/vehicles` | BE-020 |
-| [BE-022 View vehicle](vehicles/be-022-get-vehicle.md) | M2 | Must | `GET /api/vehicles/:vehicle_id` | BE-020 |
-| [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md) | M2 | Must | `PATCH /api/vehicles/:vehicle_id` | BE-020 |
-| [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md) | M2 | Should | `GET /api/vehicles/:vehicle_id/orders` | BE-022 |
-| [BE-025 Create repair service](services/be-025-create-service.md) | M2 | Must | `POST /api/services` | BE-003 |
-| [BE-026 List staff service catalogue](services/be-026-list-services.md) | M2 | Must | `GET /api/services` | BE-003 |
-| [BE-027 Edit or deactivate service](services/be-027-update-service.md) | M2 | Must | `PATCH /api/services/:service_id` | BE-025 |
-| [BE-028 Read public services and prices](services/be-028-public-services.md) | M2 | Should (scope overlap resolved for release) | `GET /api/public/services` | BE-025 |
-| [BE-029 Create repair order and estimate](orders/be-029-create-order.md) | M3 | Must | `POST /api/orders` | BE-003, BE-016, BE-020, BE-025, BE-043 |
-| [BE-030 List and filter orders](orders/be-030-list-orders.md) | M3 | Must | `GET /api/orders` | BE-003 |
-| [BE-031 View repair order detail](orders/be-031-get-order.md) | M3 | Must | `GET /api/orders/:order_id` | BE-003 |
-| [BE-032 Edit estimate or order notes](orders/be-032-update-order.md) | M3 | Must; custom prices Should | `PATCH /api/orders/:order_id` | BE-029 |
-| [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md) | M3 | Must | `PATCH /api/orders/:order_id/approval` | BE-029 |
-| [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md) | M3 | Should | `POST /api/orders/:order_id/lines` | BE-032, BE-033 |
-| [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md) | M2 | Must | `PATCH /api/order-lines/:line_id/technician` | BE-003, BE-029 |
-| [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md) | M2 | Must | `GET /api/my-jobs` | BE-035 |
-| [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md) | M2 | Must | `PATCH /api/order-lines/:line_id/status` | BE-035, BE-033, BE-043 |
-| [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md) | M2 | Should | `PATCH /api/order-lines/:line_id/note` | BE-035 |
-| [BE-039 Read printable estimate data](orders/be-039-get-estimate.md) | M3 | Must | `GET /api/orders/:order_id/estimate` | BE-031 |
-| [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md) | M4 | Must (supporting endpoint) | `POST /api/orders/:order_id/invoice` | BE-037, BE-039 |
-| [BE-041 Read issued invoice](billing/be-041-get-invoice.md) | M4 | Must | `GET /api/orders/:order_id/invoice` | BE-040 |
-| [BE-042 Record cash payment](billing/be-042-record-cash-payment.md) | M4 | Must | `PATCH /api/orders/:order_id/payment` | BE-040 |
-| [BE-043 Shared email adapter and automatic order notifications](foundation/be-043-notification-adapter.md) | M4 | Must | Shared infrastructure | BE-001, BE-002 |
-| [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md) | M4 | Must | `GET /api/public/orders/:order_hash` | BE-003 |
-| [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md) | M4 | Should | `POST /api/orders/:order_id/resend-email` | BE-043, BE-029 |
-| [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md) | M4 | Must; money totals Should | `GET /api/dashboard` | BE-003, BE-042 |
-| [BE-047 Initialize and lock installation](setup/be-047-install.md) | M1 | Must; repeat safety Should | `POST /api/install` | BE-001, BE-002 |
-| [BE-048 Check API readiness](setup/be-048-health.md) | M1 | Must (operational) | `GET /api/health` | BE-001 |
-| [BE-049 Shared backend integration and acceptance tests](foundation/be-049-backend-acceptance-tests.md) | M4 | Must | Shared infrastructure | BE-003 |
-| [BE-050 Backend deployment and handover](foundation/be-050-backend-deployment.md) | M1 | Must | Shared infrastructure | BE-047, BE-048, BE-049 |
+| Task                                                                                                                        | Owner | Priority                                    | Endpoint or scope                            | Dependencies                           |
+| --------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------- | -------------------------------------------- | -------------------------------------- |
+| [BE-001 Project structure and local runtime](foundation/be-001-project-foundation.md)                                       | M1    | Must                                        | Shared infrastructure                        | —                                      |
+| [BE-002 Database migrations and deterministic seed data](foundation/be-002-database-and-seeds.md)                           | M1    | Must                                        | Shared infrastructure                        | BE-001                                 |
+| [BE-003 Shared authentication, authorization, validation and error middleware](foundation/be-003-auth-validation-errors.md) | M1    | Must                                        | Shared infrastructure                        | BE-001, BE-002                         |
+| [BE-004 Staff login](auth/be-004-login.md)                                                                                  | M1    | Must                                        | `POST /api/auth/login`                       | BE-001, BE-002, BE-003                 |
+| [BE-005 Request password reset](auth/be-005-forgot-password.md)                                                             | M1    | Must (agreed addition)                      | `POST /api/auth/forgot-password`             | BE-003, BE-043                         |
+| [BE-006 Reset forgotten password](auth/be-006-reset-password.md)                                                            | M1    | Must (agreed addition)                      | `POST /api/auth/reset-password`              | BE-005                                 |
+| [BE-007 Change own password](auth/be-007-change-password.md)                                                                | M1    | Should                                      | `PATCH /api/auth/password`                   | BE-003, BE-004                         |
+| [BE-008 Get own staff profile](auth/be-008-get-profile.md)                                                                  | M1    | Must (agreed addition)                      | `GET /api/profile`                           | BE-003                                 |
+| [BE-009 Create employee](employees/be-009-create-employee.md)                                                               | M1    | Must                                        | `POST /api/employees`                        | BE-003                                 |
+| [BE-010 List and search employees](employees/be-010-list-employees.md)                                                      | M1    | Must                                        | `GET /api/employees`                         | BE-003                                 |
+| [BE-011 View employee](employees/be-011-get-employee.md)                                                                    | M1    | Must                                        | `GET /api/employees/:employee_id`            | BE-003                                 |
+| [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md)                                                   | M1    | Must                                        | `PATCH /api/employees/:employee_id`          | BE-009                                 |
+| [BE-013 List fixed staff roles](settings/be-013-list-roles.md)                                                              | M1    | Must (supporting endpoint)                  | `GET /api/roles`                             | BE-003                                 |
+| [BE-014 Read garage settings](settings/be-014-get-settings.md)                                                              | M1    | Must (supporting endpoint)                  | `GET /api/settings`                          | BE-003                                 |
+| [BE-015 Update garage settings](settings/be-015-update-settings.md)                                                         | M1    | Must (supporting endpoint)                  | `PATCH /api/settings`                        | BE-014                                 |
+| [BE-016 Register customer](customers/be-016-create-customer.md)                                                             | M2    | Must                                        | `POST /api/customers`                        | BE-003                                 |
+| [BE-017 List and search customers](customers/be-017-list-customers.md)                                                      | M2    | Must                                        | `GET /api/customers`                         | BE-003                                 |
+| [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md)                                      | M2    | Must                                        | `GET /api/customers/:customer_id`            | BE-016, BE-003                         |
+| [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md)                                                   | M2    | Must                                        | `PATCH /api/customers/:customer_id`          | BE-016                                 |
+| [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md)                                                         | M2    | Must                                        | `POST /api/vehicles`                         | BE-016                                 |
+| [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md)                                              | M2    | Must                                        | `GET /api/customers/:customer_id/vehicles`   | BE-020                                 |
+| [BE-022 View vehicle](vehicles/be-022-get-vehicle.md)                                                                       | M2    | Must                                        | `GET /api/vehicles/:vehicle_id`              | BE-020                                 |
+| [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md)                                                            | M2    | Must                                        | `PATCH /api/vehicles/:vehicle_id`            | BE-020                                 |
+| [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md)                                                   | M2    | Should                                      | `GET /api/vehicles/:vehicle_id/orders`       | BE-022                                 |
+| [BE-025 Create repair service](services/be-025-create-service.md)                                                           | M2    | Must                                        | `POST /api/services`                         | BE-003                                 |
+| [BE-026 List staff service catalogue](services/be-026-list-services.md)                                                     | M2    | Must                                        | `GET /api/services`                          | BE-003                                 |
+| [BE-027 Edit or deactivate service](services/be-027-update-service.md)                                                      | M2    | Must                                        | `PATCH /api/services/:service_id`            | BE-025                                 |
+| [BE-028 Read public services and prices](services/be-028-public-services.md)                                                | M2    | Should (scope overlap resolved for release) | `GET /api/public/services`                   | BE-025                                 |
+| [BE-029 Create repair order and estimate](orders/be-029-create-order.md)                                                    | M3    | Must                                        | `POST /api/orders`                           | BE-003, BE-016, BE-020, BE-025, BE-043 |
+| [BE-030 List and filter orders](orders/be-030-list-orders.md)                                                               | M3    | Must                                        | `GET /api/orders`                            | BE-003                                 |
+| [BE-031 View repair order detail](orders/be-031-get-order.md)                                                               | M3    | Must                                        | `GET /api/orders/:order_id`                  | BE-003                                 |
+| [BE-032 Edit estimate or order notes](orders/be-032-update-order.md)                                                        | M3    | Must; custom prices Should                  | `PATCH /api/orders/:order_id`                | BE-029                                 |
+| [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md)                                              | M3    | Must                                        | `PATCH /api/orders/:order_id/approval`       | BE-029                                 |
+| [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md)                                              | M3    | Should                                      | `POST /api/orders/:order_id/lines`           | BE-032, BE-033                         |
+| [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md)                                         | M2    | Must                                        | `PATCH /api/order-lines/:line_id/technician` | BE-003, BE-029                         |
+| [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md)                                                         | M2    | Must                                        | `GET /api/my-jobs`                           | BE-035                                 |
+| [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md)                                        | M2    | Must                                        | `PATCH /api/order-lines/:line_id/status`     | BE-035, BE-033, BE-043                 |
+| [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md)                                               | M2    | Should                                      | `PATCH /api/order-lines/:line_id/note`       | BE-035                                 |
+| [BE-039 Read printable estimate data](orders/be-039-get-estimate.md)                                                        | M3    | Must                                        | `GET /api/orders/:order_id/estimate`         | BE-031                                 |
+| [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md)                                                           | M4    | Must (supporting endpoint)                  | `POST /api/orders/:order_id/invoice`         | BE-037, BE-039                         |
+| [BE-041 Read issued invoice](billing/be-041-get-invoice.md)                                                                 | M4    | Must                                        | `GET /api/orders/:order_id/invoice`          | BE-040                                 |
+| [BE-042 Record cash payment](billing/be-042-record-cash-payment.md)                                                         | M4    | Must                                        | `PATCH /api/orders/:order_id/payment`        | BE-040                                 |
+| [BE-043 Shared email adapter and automatic order notifications](foundation/be-043-notification-adapter.md)                  | M4    | Must                                        | Shared infrastructure                        | BE-001, BE-002                         |
+| [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md)                                    | M4    | Must                                        | `GET /api/public/orders/:order_hash`         | BE-003                                 |
+| [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md)                                                | M4    | Should                                      | `POST /api/orders/:order_id/resend-email`    | BE-043, BE-029                         |
+| [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md)                                                      | M4    | Must; money totals Should                   | `GET /api/dashboard`                         | BE-003, BE-042                         |
+| [BE-047 Initialize and lock installation](setup/be-047-install.md)                                                          | M1    | Must; repeat safety Should                  | `POST /api/install`                          | BE-001, BE-002                         |
+| [BE-048 Check API readiness](setup/be-048-health.md)                                                                        | M1    | Must (operational)                          | `GET /api/health`                            | BE-001                                 |
+| [BE-049 Shared backend integration and acceptance tests](foundation/be-049-backend-acceptance-tests.md)                     | M4    | Must                                        | Shared infrastructure                        | BE-003                                 |
+| [BE-050 Backend deployment and handover](foundation/be-050-backend-deployment.md)                                           | M1    | Must                                        | Shared infrastructure                        | BE-047, BE-048, BE-049                 |
 
 ## Start without waiting
 
@@ -327,32 +321,31 @@ One backend; module ownership separates work. API count does not equal effort. M
 
 Should features may be dropped only explicitly and consistently across API/screens. Password reset is a Must addition requested in conversation. Public live prices are treated as a release Should feature with an explicit scope check because they appear in scope but carry Should IDs in requirements.
 
-
 ---
 
 <!-- Source: REQUIREMENTS-MAP.md -->
 
 # Backend requirements coverage
 
-| Requirement area | Tasks | Notes |
-|---|---|---|
-| FR-INS | BE-002,BE-047 | POST installer; locked/idempotent underlying setup |
-| FR-AUTH | BE-003 through008 | Logout is frontend; no /me or Google |
-| FR-EMP | BE-009 through013 | Admin management; Manager technician lookup |
-| FR-CUS | BE-016 through019,BE-030 | Profile summary plus paginated order history |
-| FR-VEH | BE-020 through024 | Read/update/owned vehicles/history |
-| FR-SRV | BE-025 through028 | Catalogue and public list |
-| FR-ORD | BE-029 through032,BE-034 | Four UI steps culminate in one atomic create |
-| FR-EST | BE-033,BE-034,BE-039 | Recorded approval,decline,extra-work reapproval,print data |
-| FR-TEC | BE-035 through038 | Assignment,own jobs,progress,notes |
-| FR-INV | BE-040 through042,BE-030 | Invoice issue/read,payment,unpaid filters |
-| FR-TRK | BE-029,BE-037,BE-043 through045 | Hash,tracking,automatic emails,resend |
-| FR-WEB | BE-028,BE-044 | Public pages/404/code box are frontend; no unused backend pages APIs |
-| FR-DSH | BE-003,BE-046 | Menus are frontend,server roles and counters backend |
-| NFR-01 through09 | BE-001/002/003,CONVENTIONS,BE-049 | Security,transactions,serialization,1000-row performance |
-| NFR-10 through12 | Frontend phase; BE-039/041 data supports printing | Field error shapes defined backend |
-| NFR-13 through15 | BE-049 and all task PR checklists | Shared Postman,every endpoint tested,module layer convention |
-| Password-reset addition | BE-005/006/007,DATABASE-CHANGES | Single-use15min tokens,token_version revocation |
+| Requirement area        | Tasks                                             | Notes                                                                |
+| ----------------------- | ------------------------------------------------- | -------------------------------------------------------------------- |
+| FR-INS                  | BE-002,BE-047                                     | POST installer; locked/idempotent underlying setup                   |
+| FR-AUTH                 | BE-003 through008                                 | Logout is frontend; no /me or Google                                 |
+| FR-EMP                  | BE-009 through013                                 | Admin management; Manager technician lookup                          |
+| FR-CUS                  | BE-016 through019,BE-030                          | Profile summary plus paginated order history                         |
+| FR-VEH                  | BE-020 through024                                 | Read/update/owned vehicles/history                                   |
+| FR-SRV                  | BE-025 through028                                 | Catalogue and public list                                            |
+| FR-ORD                  | BE-029 through032,BE-034                          | Four UI steps culminate in one atomic create                         |
+| FR-EST                  | BE-033,BE-034,BE-039                              | Recorded approval,decline,extra-work reapproval,print data           |
+| FR-TEC                  | BE-035 through038                                 | Assignment,own jobs,progress,notes                                   |
+| FR-INV                  | BE-040 through042,BE-030                          | Invoice issue/read,payment,unpaid filters                            |
+| FR-TRK                  | BE-029,BE-037,BE-043 through045                   | Hash,tracking,automatic emails,resend                                |
+| FR-WEB                  | BE-028,BE-044                                     | Public pages/404/code box are frontend; no unused backend pages APIs |
+| FR-DSH                  | BE-003,BE-046                                     | Menus are frontend,server roles and counters backend                 |
+| NFR-01 through09        | BE-001/002/003,CONVENTIONS,BE-049                 | Security,transactions,serialization,1000-row performance             |
+| NFR-10 through12        | Frontend phase; BE-039/041 data supports printing | Field error shapes defined backend                                   |
+| NFR-13 through15        | BE-049 and all task PR checklists                 | Shared Postman,every endpoint tested,module layer convention         |
+| Password-reset addition | BE-005/006/007,DATABASE-CHANGES                   | Single-use15min tokens,token_version revocation                      |
 
 ## Intentional differences from source examples
 
@@ -364,7 +357,6 @@ Should features may be dropped only explicitly and consistently across API/scree
 - Member2 owns technician endpoints to rebalance Member3 workload. No microservices or separate deployments.
 - Reapproval decline with already performed work is409 rather than closing performed work; expanded cancellation/credit handling deferred.
 - Monetary example230.00 +15% uses ETB as a proposed single launch currency,not a currency conversion from source’s dollar example. Team confirms currency before launch.
-
 
 ---
 
@@ -408,7 +400,6 @@ flowchart LR
     B --> C["Verify in isolated environment"]
     C --> D["Review and integrate"]
 ```
-
 
 ---
 
@@ -454,7 +445,6 @@ flowchart LR
     C --> D["Review and integrate"]
 ```
 
-
 ---
 
 <!-- Source: foundation/be-003-auth-validation-errors.md -->
@@ -499,7 +489,6 @@ flowchart LR
     B --> C["Verify in isolated environment"]
     C --> D["Review and integrate"]
 ```
-
 
 ---
 
@@ -638,7 +627,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: auth/be-005-forgot-password.md -->
@@ -757,7 +745,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -879,7 +866,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: auth/be-007-change-password.md -->
@@ -998,7 +984,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -1120,7 +1105,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -1254,7 +1238,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -1404,7 +1387,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: employees/be-011-get-employee.md -->
@@ -1527,7 +1509,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -1665,7 +1646,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: settings/be-013-list-roles.md -->
@@ -1790,7 +1770,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: settings/be-014-get-settings.md -->
@@ -1908,7 +1887,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -2033,7 +2011,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -2163,7 +2140,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -2305,7 +2281,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -2467,7 +2442,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: customers/be-019-update-customer.md -->
@@ -2596,7 +2570,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -2738,7 +2711,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: vehicles/be-021-list-customer-vehicles.md -->
@@ -2868,7 +2840,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: vehicles/be-022-get-vehicle.md -->
@@ -2991,7 +2962,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -3126,7 +3096,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -3289,7 +3258,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: services/be-025-create-service.md -->
@@ -3416,7 +3384,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -3558,7 +3525,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: services/be-027-update-service.md -->
@@ -3685,7 +3651,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -3826,7 +3791,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -4054,7 +4018,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: orders/be-030-list-orders.md -->
@@ -4206,7 +4169,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -4411,7 +4373,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -4639,7 +4600,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: orders/be-033-record-approval.md -->
@@ -4772,7 +4732,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -4922,7 +4881,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: technician-jobs/be-035-assign-technician.md -->
@@ -5050,7 +5008,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -5207,7 +5164,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: technician-jobs/be-037-update-job-status.md -->
@@ -5343,7 +5299,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: technician-jobs/be-038-job-note.md -->
@@ -5468,7 +5423,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -5635,7 +5589,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -5810,7 +5763,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: billing/be-041-get-invoice.md -->
@@ -5979,7 +5931,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: billing/be-042-record-cash-payment.md -->
@@ -6109,7 +6060,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: foundation/be-043-notification-adapter.md -->
@@ -6153,7 +6103,6 @@ flowchart LR
     B --> C["Verify in isolated environment"]
     C --> D["Review and integrate"]
 ```
-
 
 ---
 
@@ -6299,7 +6248,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: tracking/be-045-resend-status-email.md -->
@@ -6421,7 +6369,6 @@ flowchart TD
     C -. Failure .-> F
     D -. Failure .-> F
 ```
-
 
 ---
 
@@ -6551,7 +6498,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: setup/be-047-install.md -->
@@ -6671,7 +6617,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: setup/be-048-health.md -->
@@ -6785,7 +6730,6 @@ flowchart TD
     D -. Failure .-> F
 ```
 
-
 ---
 
 <!-- Source: foundation/be-049-backend-acceptance-tests.md -->
@@ -6830,7 +6774,6 @@ flowchart LR
     B --> C["Verify in isolated environment"]
     C --> D["Review and integrate"]
 ```
-
 
 ---
 

@@ -2,67 +2,67 @@
 
 One backend; module ownership separates work. API count does not equal effort. Member3 has the most complex business rules; Member2 takes technician job endpoints,Member4 owns mail and integration tests,Member1 supplies foundation early. This distribution reduces blocking but is not a claim of exactly equal workload.
 
-| Member | Ownership | Coordination |
-|---|---|---|
-| 1 | Foundation,auth,employees,roles,settings,installation,health,deployment | Schema and shared middleware owner |
-| 2 | Customers,vehicles,service catalogue,technician assignment/jobs/progress | Use Member3’s shared order status/locking/money contract |
-| 3 | Order creation,detail,filters,estimate edits,approval,extra work,estimate data | Own order-domain business rules; support Member2 integration |
-| 4 | Notification adapter,invoice,payment,public tracking,dashboard,acceptance collection | Offer fake mail and fixture orders immediately |
+| Member | Ownership                                                                            | Coordination                                                 |
+| ------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1      | Foundation,auth,employees,roles,settings,installation,health,deployment              | Schema and shared middleware owner                           |
+| 2      | Customers,vehicles,service catalogue,technician assignment/jobs/progress             | Use Member3’s shared order status/locking/money contract     |
+| 3      | Order creation,detail,filters,estimate edits,approval,extra work,estimate data       | Own order-domain business rules; support Member2 integration |
+| 4      | Notification adapter,invoice,payment,public tracking,dashboard,acceptance collection | Offer fake mail and fixture orders immediately               |
 
 ## Complete task board
 
-| Task | Owner | Priority | Endpoint or scope | Dependencies |
-|---|---|---|---|---|
-| [BE-001 Project structure and local runtime](foundation/be-001-project-foundation.md) | M1 | Must | Shared infrastructure | — |
-| [BE-002 Database migrations and deterministic seed data](foundation/be-002-database-and-seeds.md) | M1 | Must | Shared infrastructure | BE-001 |
-| [BE-003 Shared authentication, authorization, validation and error middleware](foundation/be-003-auth-validation-errors.md) | M1 | Must | Shared infrastructure | BE-001, BE-002 |
-| [BE-004 Staff login](auth/be-004-login.md) | M1 | Must | `POST /api/auth/login` | BE-001, BE-002, BE-003 |
-| [BE-005 Request password reset](auth/be-005-forgot-password.md) | M1 | Must (agreed addition) | `POST /api/auth/forgot-password` | BE-003, BE-043 |
-| [BE-006 Reset forgotten password](auth/be-006-reset-password.md) | M1 | Must (agreed addition) | `POST /api/auth/reset-password` | BE-005 |
-| [BE-007 Change own password](auth/be-007-change-password.md) | M1 | Should | `PATCH /api/auth/password` | BE-003, BE-004 |
-| [BE-008 Get own staff profile](auth/be-008-get-profile.md) | M1 | Must (agreed addition) | `GET /api/profile` | BE-003 |
-| [BE-009 Create employee](employees/be-009-create-employee.md) | M1 | Must | `POST /api/employees` | BE-003 |
-| [BE-010 List and search employees](employees/be-010-list-employees.md) | M1 | Must | `GET /api/employees` | BE-003 |
-| [BE-011 View employee](employees/be-011-get-employee.md) | M1 | Must | `GET /api/employees/:employee_id` | BE-003 |
-| [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md) | M1 | Must | `PATCH /api/employees/:employee_id` | BE-009 |
-| [BE-013 List fixed staff roles](settings/be-013-list-roles.md) | M1 | Must (supporting endpoint) | `GET /api/roles` | BE-003 |
-| [BE-014 Read garage settings](settings/be-014-get-settings.md) | M1 | Must (supporting endpoint) | `GET /api/settings` | BE-003 |
-| [BE-015 Update garage settings](settings/be-015-update-settings.md) | M1 | Must (supporting endpoint) | `PATCH /api/settings` | BE-014 |
-| [BE-016 Register customer](customers/be-016-create-customer.md) | M2 | Must | `POST /api/customers` | BE-003 |
-| [BE-017 List and search customers](customers/be-017-list-customers.md) | M2 | Must | `GET /api/customers` | BE-003 |
-| [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md) | M2 | Must | `GET /api/customers/:customer_id` | BE-016, BE-003 |
-| [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md) | M2 | Must | `PATCH /api/customers/:customer_id` | BE-016 |
-| [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md) | M2 | Must | `POST /api/vehicles` | BE-016 |
-| [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md) | M2 | Must | `GET /api/customers/:customer_id/vehicles` | BE-020 |
-| [BE-022 View vehicle](vehicles/be-022-get-vehicle.md) | M2 | Must | `GET /api/vehicles/:vehicle_id` | BE-020 |
-| [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md) | M2 | Must | `PATCH /api/vehicles/:vehicle_id` | BE-020 |
-| [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md) | M2 | Should | `GET /api/vehicles/:vehicle_id/orders` | BE-022 |
-| [BE-025 Create repair service](services/be-025-create-service.md) | M2 | Must | `POST /api/services` | BE-003 |
-| [BE-026 List staff service catalogue](services/be-026-list-services.md) | M2 | Must | `GET /api/services` | BE-003 |
-| [BE-027 Edit or deactivate service](services/be-027-update-service.md) | M2 | Must | `PATCH /api/services/:service_id` | BE-025 |
-| [BE-028 Read public services and prices](services/be-028-public-services.md) | M2 | Should (scope overlap resolved for release) | `GET /api/public/services` | BE-025 |
-| [BE-029 Create repair order and estimate](orders/be-029-create-order.md) | M3 | Must | `POST /api/orders` | BE-003, BE-016, BE-020, BE-025, BE-043 |
-| [BE-030 List and filter orders](orders/be-030-list-orders.md) | M3 | Must | `GET /api/orders` | BE-003 |
-| [BE-031 View repair order detail](orders/be-031-get-order.md) | M3 | Must | `GET /api/orders/:order_id` | BE-003 |
-| [BE-032 Edit estimate or order notes](orders/be-032-update-order.md) | M3 | Must; custom prices Should | `PATCH /api/orders/:order_id` | BE-029 |
-| [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md) | M3 | Must | `PATCH /api/orders/:order_id/approval` | BE-029 |
-| [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md) | M3 | Should | `POST /api/orders/:order_id/lines` | BE-032, BE-033 |
-| [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md) | M2 | Must | `PATCH /api/order-lines/:line_id/technician` | BE-003, BE-029 |
-| [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md) | M2 | Must | `GET /api/my-jobs` | BE-035 |
-| [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md) | M2 | Must | `PATCH /api/order-lines/:line_id/status` | BE-035, BE-033, BE-043 |
-| [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md) | M2 | Should | `PATCH /api/order-lines/:line_id/note` | BE-035 |
-| [BE-039 Read printable estimate data](orders/be-039-get-estimate.md) | M3 | Must | `GET /api/orders/:order_id/estimate` | BE-031 |
-| [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md) | M4 | Must (supporting endpoint) | `POST /api/orders/:order_id/invoice` | BE-037, BE-039 |
-| [BE-041 Read issued invoice](billing/be-041-get-invoice.md) | M4 | Must | `GET /api/orders/:order_id/invoice` | BE-040 |
-| [BE-042 Record cash payment](billing/be-042-record-cash-payment.md) | M4 | Must | `PATCH /api/orders/:order_id/payment` | BE-040 |
-| [BE-043 Shared email adapter and automatic order notifications](foundation/be-043-notification-adapter.md) | M4 | Must | Shared infrastructure | BE-001, BE-002 |
-| [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md) | M4 | Must | `GET /api/public/orders/:order_hash` | BE-003 |
-| [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md) | M4 | Should | `POST /api/orders/:order_id/resend-email` | BE-043, BE-029 |
-| [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md) | M4 | Must; money totals Should | `GET /api/dashboard` | BE-003, BE-042 |
-| [BE-047 Initialize and lock installation](setup/be-047-install.md) | M1 | Must; repeat safety Should | `POST /api/install` | BE-001, BE-002 |
-| [BE-048 Check API readiness](setup/be-048-health.md) | M1 | Must (operational) | `GET /api/health` | BE-001 |
-| [BE-049 Shared backend integration and acceptance tests](foundation/be-049-backend-acceptance-tests.md) | M4 | Must | Shared infrastructure | BE-003 |
-| [BE-050 Backend deployment and handover](foundation/be-050-backend-deployment.md) | M1 | Must | Shared infrastructure | BE-047, BE-048, BE-049 |
+| Task                                                                                                                        | Owner | Priority                                    | Endpoint or scope                            | Dependencies                           |
+| --------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------- | -------------------------------------------- | -------------------------------------- |
+| [BE-001 Project structure and local runtime](foundation/be-001-project-foundation.md)                                       | M1    | Must                                        | Shared infrastructure                        | —                                      |
+| [BE-002 Database migrations and deterministic seed data](foundation/be-002-database-and-seeds.md)                           | M1    | Must                                        | Shared infrastructure                        | BE-001                                 |
+| [BE-003 Shared authentication, authorization, validation and error middleware](foundation/be-003-auth-validation-errors.md) | M1    | Must                                        | Shared infrastructure                        | BE-001, BE-002                         |
+| [BE-004 Staff login](auth/be-004-login.md)                                                                                  | M1    | Must                                        | `POST /api/auth/login`                       | BE-001, BE-002, BE-003                 |
+| [BE-005 Request password reset](auth/be-005-forgot-password.md)                                                             | M1    | Must (agreed addition)                      | `POST /api/auth/forgot-password`             | BE-003, BE-043                         |
+| [BE-006 Reset forgotten password](auth/be-006-reset-password.md)                                                            | M1    | Must (agreed addition)                      | `POST /api/auth/reset-password`              | BE-005                                 |
+| [BE-007 Change own password](auth/be-007-change-password.md)                                                                | M1    | Should                                      | `PATCH /api/auth/password`                   | BE-003, BE-004                         |
+| [BE-008 Get own staff profile](auth/be-008-get-profile.md)                                                                  | M1    | Must (agreed addition)                      | `GET /api/profile`                           | BE-003                                 |
+| [BE-009 Create employee](employees/be-009-create-employee.md)                                                               | M1    | Must                                        | `POST /api/employees`                        | BE-003                                 |
+| [BE-010 List and search employees](employees/be-010-list-employees.md)                                                      | M1    | Must                                        | `GET /api/employees`                         | BE-003                                 |
+| [BE-011 View employee](employees/be-011-get-employee.md)                                                                    | M1    | Must                                        | `GET /api/employees/:employee_id`            | BE-003                                 |
+| [BE-012 Edit or deactivate employee](employees/be-012-update-employee.md)                                                   | M1    | Must                                        | `PATCH /api/employees/:employee_id`          | BE-009                                 |
+| [BE-013 List fixed staff roles](settings/be-013-list-roles.md)                                                              | M1    | Must (supporting endpoint)                  | `GET /api/roles`                             | BE-003                                 |
+| [BE-014 Read garage settings](settings/be-014-get-settings.md)                                                              | M1    | Must (supporting endpoint)                  | `GET /api/settings`                          | BE-003                                 |
+| [BE-015 Update garage settings](settings/be-015-update-settings.md)                                                         | M1    | Must (supporting endpoint)                  | `PATCH /api/settings`                        | BE-014                                 |
+| [BE-016 Register customer](customers/be-016-create-customer.md)                                                             | M2    | Must                                        | `POST /api/customers`                        | BE-003                                 |
+| [BE-017 List and search customers](customers/be-017-list-customers.md)                                                      | M2    | Must                                        | `GET /api/customers`                         | BE-003                                 |
+| [BE-018 View customer profile and financial summary](customers/be-018-get-customer.md)                                      | M2    | Must                                        | `GET /api/customers/:customer_id`            | BE-016, BE-003                         |
+| [BE-019 Edit or deactivate customer](customers/be-019-update-customer.md)                                                   | M2    | Must                                        | `PATCH /api/customers/:customer_id`          | BE-016                                 |
+| [BE-020 Add vehicle to customer](vehicles/be-020-create-vehicle.md)                                                         | M2    | Must                                        | `POST /api/vehicles`                         | BE-016                                 |
+| [BE-021 List a customer’s vehicles](vehicles/be-021-list-customer-vehicles.md)                                              | M2    | Must                                        | `GET /api/customers/:customer_id/vehicles`   | BE-020                                 |
+| [BE-022 View vehicle](vehicles/be-022-get-vehicle.md)                                                                       | M2    | Must                                        | `GET /api/vehicles/:vehicle_id`              | BE-020                                 |
+| [BE-023 Edit vehicle details](vehicles/be-023-update-vehicle.md)                                                            | M2    | Must                                        | `PATCH /api/vehicles/:vehicle_id`            | BE-020                                 |
+| [BE-024 View vehicle service history](vehicles/be-024-vehicle-history.md)                                                   | M2    | Should                                      | `GET /api/vehicles/:vehicle_id/orders`       | BE-022                                 |
+| [BE-025 Create repair service](services/be-025-create-service.md)                                                           | M2    | Must                                        | `POST /api/services`                         | BE-003                                 |
+| [BE-026 List staff service catalogue](services/be-026-list-services.md)                                                     | M2    | Must                                        | `GET /api/services`                          | BE-003                                 |
+| [BE-027 Edit or deactivate service](services/be-027-update-service.md)                                                      | M2    | Must                                        | `PATCH /api/services/:service_id`            | BE-025                                 |
+| [BE-028 Read public services and prices](services/be-028-public-services.md)                                                | M2    | Should (scope overlap resolved for release) | `GET /api/public/services`                   | BE-025                                 |
+| [BE-029 Create repair order and estimate](orders/be-029-create-order.md)                                                    | M3    | Must                                        | `POST /api/orders`                           | BE-003, BE-016, BE-020, BE-025, BE-043 |
+| [BE-030 List and filter orders](orders/be-030-list-orders.md)                                                               | M3    | Must                                        | `GET /api/orders`                            | BE-003                                 |
+| [BE-031 View repair order detail](orders/be-031-get-order.md)                                                               | M3    | Must                                        | `GET /api/orders/:order_id`                  | BE-003                                 |
+| [BE-032 Edit estimate or order notes](orders/be-032-update-order.md)                                                        | M3    | Must; custom prices Should                  | `PATCH /api/orders/:order_id`                | BE-029                                 |
+| [BE-033 Record estimate approval or decline](orders/be-033-record-approval.md)                                              | M3    | Must                                        | `PATCH /api/orders/:order_id/approval`       | BE-029                                 |
+| [BE-034 Add extra work and request reapproval](orders/be-034-add-extra-job.md)                                              | M3    | Should                                      | `POST /api/orders/:order_id/lines`           | BE-032, BE-033                         |
+| [BE-035 Assign technician to job line](technician-jobs/be-035-assign-technician.md)                                         | M2    | Must                                        | `PATCH /api/order-lines/:line_id/technician` | BE-003, BE-029                         |
+| [BE-036 List my technician jobs](technician-jobs/be-036-my-jobs.md)                                                         | M2    | Must                                        | `GET /api/my-jobs`                           | BE-035                                 |
+| [BE-037 Start or finish technician job](technician-jobs/be-037-update-job-status.md)                                        | M2    | Must                                        | `PATCH /api/order-lines/:line_id/status`     | BE-035, BE-033, BE-043                 |
+| [BE-038 Add or edit technician work note](technician-jobs/be-038-job-note.md)                                               | M2    | Should                                      | `PATCH /api/order-lines/:line_id/note`       | BE-035                                 |
+| [BE-039 Read printable estimate data](orders/be-039-get-estimate.md)                                                        | M3    | Must                                        | `GET /api/orders/:order_id/estimate`         | BE-031                                 |
+| [BE-040 Issue immutable invoice](billing/be-040-issue-invoice.md)                                                           | M4    | Must (supporting endpoint)                  | `POST /api/orders/:order_id/invoice`         | BE-037, BE-039                         |
+| [BE-041 Read issued invoice](billing/be-041-get-invoice.md)                                                                 | M4    | Must                                        | `GET /api/orders/:order_id/invoice`          | BE-040                                 |
+| [BE-042 Record cash payment](billing/be-042-record-cash-payment.md)                                                         | M4    | Must                                        | `PATCH /api/orders/:order_id/payment`        | BE-040                                 |
+| [BE-043 Shared email adapter and automatic order notifications](foundation/be-043-notification-adapter.md)                  | M4    | Must                                        | Shared infrastructure                        | BE-001, BE-002                         |
+| [BE-044 Read private-link customer order status](tracking/be-044-public-order-status.md)                                    | M4    | Must                                        | `GET /api/public/orders/:order_hash`         | BE-003                                 |
+| [BE-045 Resend order tracking email](tracking/be-045-resend-status-email.md)                                                | M4    | Should                                      | `POST /api/orders/:order_id/resend-email`    | BE-043, BE-029                         |
+| [BE-046 Read operational dashboard](dashboard/be-046-get-dashboard.md)                                                      | M4    | Must; money totals Should                   | `GET /api/dashboard`                         | BE-003, BE-042                         |
+| [BE-047 Initialize and lock installation](setup/be-047-install.md)                                                          | M1    | Must; repeat safety Should                  | `POST /api/install`                          | BE-001, BE-002                         |
+| [BE-048 Check API readiness](setup/be-048-health.md)                                                                        | M1    | Must (operational)                          | `GET /api/health`                            | BE-001                                 |
+| [BE-049 Shared backend integration and acceptance tests](foundation/be-049-backend-acceptance-tests.md)                     | M4    | Must                                        | Shared infrastructure                        | BE-003                                 |
+| [BE-050 Backend deployment and handover](foundation/be-050-backend-deployment.md)                                           | M1    | Must                                        | Shared infrastructure                        | BE-047, BE-048, BE-049                 |
 
 ## Start without waiting
 
