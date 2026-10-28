@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+.npm-cache/
+.eslintcache
 
 # Environment variables and secrets
 .env
@@ -17,6 +19,8 @@ npm-debug.log*
 
 # Test coverage
 coverage/
+test-results/
+playwright-report/
 
 # Operating system files
 .DS_Store
@@ -28,3 +32,4 @@ Thumbs.db
 
 # Scripts & temporary utilities
 setup-trello*.js
+backend/tmp/

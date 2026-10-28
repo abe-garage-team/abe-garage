@@ -19,13 +19,15 @@
     "start": "npm run start --workspace backend",
     "check:structure": "node scripts/verify-project.cjs",
     "generate:openapi": "node scripts/generate-openapi.cjs",
+    "check:openapi": "node scripts/generate-openapi.cjs --check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm test --workspace backend && npm test --workspace frontend",
-    "check": "npm run check:structure && npm run lint && npm run format:check && npm test && npm run build",
+    "check": "npm run check:structure && npm run check:openapi && npm run lint && npm run format:check && npm test && npm run build",
     "db:migrate": "npm run db:migrate --workspace backend",
+    "db:migrate:status": "npm run db:migrate:status --workspace backend",
     "seed:admin": "npm run seed:admin --workspace backend"
   },
   "devDependencies": {

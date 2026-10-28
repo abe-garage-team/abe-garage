@@ -2,93 +2,95 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pool } from '../src/config/db.js';
+import { listMigrations, splitSqlStatements } from './migration-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const migrationsDir = path.resolve(__dirname, '../db/migrations');
+const migrationsDir = path.resolve(path.dirname(__filename), '../db/migrations');
+const lockName = 'abe_garage_schema_migrations';
 
-async function runMigrations() {
-  console.log('[Migrate] Checking database migrations...');
-  const connection = await pool.getConnection();
+async function ensureLedger(connection) {
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      version VARCHAR(255) PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      applied_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  `);
+}
 
+async function main() {
+  const statusOnly = process.argv.includes('--status');
+  const unknownArguments = process.argv.slice(2).filter((argument) => argument !== '--status');
+  if (unknownArguments.length) throw new Error(`Unknown argument: ${unknownArguments.join(', ')}`);
+  if (!fs.existsSync(migrationsDir)) throw new Error('Missing backend/db/migrations directory');
+
+  let connection;
+  let lockAcquired = false;
   try {
-    // 1. Ensure migrations ledger exists
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS schema_migrations (
-        version VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        applied_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-    `);
-
-    // 2. Fetch already applied versions
-    const [appliedRows] = await connection.query('SELECT version FROM schema_migrations');
-    const appliedVersions = new Set(appliedRows.map((r) => r.version));
-
-    // 3. Scan migrations folder for .sql files
-    if (!fs.existsSync(migrationsDir)) {
-      console.log('[Migrate] No migrations directory found.');
-      return;
+    connection = await pool.getConnection();
+    const [lockRows] = await connection.query('SELECT GET_LOCK(?, 10) AS acquired', [lockName]);
+    if (Number(lockRows[0]?.acquired) !== 1) {
+      throw new Error('Could not acquire the migration lock within 10 seconds');
     }
+    lockAcquired = true;
 
-    const migrationFiles = fs
-      .readdirSync(migrationsDir)
-      .filter((file) => file.endsWith('.sql'))
-      .sort();
-
-    if (migrationFiles.length === 0) {
-      console.log('[Migrate] No migration files found in backend/db/migrations.');
-      return;
-    }
-
-    let appliedCount = 0;
-    for (const file of migrationFiles) {
-      const version = file.split('_')[0] || file;
-      if (appliedVersions.has(version)) {
-        continue;
+    await ensureLedger(connection);
+    const migrations = listMigrations(migrationsDir);
+    const [appliedRows] = await connection.query(
+      'SELECT version, name FROM schema_migrations ORDER BY version',
+    );
+    const appliedByVersion = new Map(appliedRows.map((row) => [row.version, row.name]));
+    for (const migration of migrations) {
+      const appliedName = appliedByVersion.get(migration.version);
+      if (appliedName && appliedName !== migration.file) {
+        throw new Error(
+          `Migration ${migration.version} was recorded as ${appliedName}, not ${migration.file}. Do not rename applied migrations.`,
+        );
       }
+    }
 
-      console.log(`[Migrate] Applying ${file}...`);
-      const filePath = path.join(migrationsDir, file);
-      const sqlContent = fs.readFileSync(filePath, 'utf8');
+    const pending = migrations.filter((migration) => !appliedByVersion.has(migration.version));
+    if (statusOnly) {
+      console.log(`Applied migrations: ${appliedRows.length}`);
+      console.log(`Pending migrations: ${pending.length}`);
+      for (const migration of pending) console.log(`  pending ${migration.file}`);
+      return;
+    }
 
-      // Strip comments and split by semicolon for multiple statements
-      const statements = sqlContent
-        .split(/;\s*$/m)
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-
+    for (const migration of pending) {
+      const statements = splitSqlStatements(fs.readFileSync(migration.path, 'utf8'));
+      if (!statements.length) throw new Error(`Migration has no executable SQL: ${migration.file}`);
+      console.log(`[migrate] Applying ${migration.file}`);
       await connection.beginTransaction();
       try {
-        for (const statement of statements) {
-          await connection.query(statement);
-        }
-        await connection.query('INSERT INTO schema_migrations (version, name) VALUES (?, ?)', [
-          version,
-          file,
+        for (const statement of statements) await connection.query(statement);
+        await connection.execute('INSERT INTO schema_migrations (version, name) VALUES (?, ?)', [
+          migration.version,
+          migration.file,
         ]);
         await connection.commit();
-        appliedCount++;
-        console.log(`[Migrate] Successfully applied ${file}`);
-      } catch (err) {
-        await connection.rollback();
-        console.error(`[Migrate] Failed to apply ${file}:`, err.message);
-        throw err;
+      } catch (error) {
+        try {
+          await connection.rollback();
+        } catch {
+          // Preserve the migration error.
+        }
+        throw new Error(`Migration ${migration.file} failed: ${error.message}`, { cause: error });
       }
     }
-
-    if (appliedCount === 0) {
-      console.log('[Migrate] All migrations are up to date.');
-    } else {
-      console.log(`[Migrate] Successfully applied ${appliedCount} migration(s).`);
-    }
+    console.log(
+      pending.length
+        ? `[migrate] Applied ${pending.length} migration(s).`
+        : '[migrate] Up to date.',
+    );
   } finally {
-    connection.release();
+    if (connection && lockAcquired) await connection.query('SELECT RELEASE_LOCK(?)', [lockName]);
+    connection?.release();
     await pool.end();
   }
 }
 
-runMigrations().catch((err) => {
-  console.error('[Migrate] Migration process terminated with error:', err.message);
-  process.exit(1);
+main().catch((error) => {
+  console.error(`[migrate] ${error.message}`);
+  process.exitCode = 1;
 });

@@ -15,7 +15,6 @@ We share contracts and infrastructure. Each member writes their feature implemen
 
 - Controller/service function names and named objects versus individual exports.
 - Page/form/table component names and a useful component breakdown.
-- Feature API helper location: existing services folder or alongside the feature.
 - Whether to use shared async/response helpers or equivalent explicit code.
 - Additional repositories, validation helpers and subfolders when they help.
 
@@ -31,4 +30,6 @@ API task documents define behavior and acceptance criteria. Their suggested inte
 
 Customer vehicle listing belongs under the customer router at `/:customer_id/vehicles`; it may call a vehicle service. Billing and notification routers extend `/orders` with their own subpaths. Profile has a dedicated module. Separate route files handle roles, public services, My Jobs and public tracking without repeating prefixes.
 
-The manifest in `scripts/scaffold-manifest.json` records planned URLs and mounts; it is not a runtime dispatcher or an enforced list of function names. Keep shared contracts stable so others can work against sample responses while implementation proceeds.
+Keep HTTP communication out of React components. Put each feature wrapper in `frontend/src/services/<domain>.service.js` and use the shared client in `frontend/src/services/core/api-client.js`.
+
+`docs/api/contracts.json` is the machine-readable API source of truth. `docs/api/openapi.json` is generated from it; run `npm run generate:openapi` after changing a contract. The manifest in `scripts/scaffold-manifest.json` records route composition and is checked against the contracts; it is not a runtime dispatcher or an enforced list of function names.

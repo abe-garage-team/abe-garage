@@ -55,6 +55,13 @@ for (const file of files) {
 const manifest = JSON.parse(
   fs.readFileSync(path.join(root, 'scripts/scaffold-manifest.json'), 'utf8'),
 );
+const contracts = JSON.parse(fs.readFileSync(path.join(root, 'docs/api/contracts.json'), 'utf8'));
+const contractByTaskId = new Map();
+for (const contract of contracts.endpoints) {
+  if (contractByTaskId.has(contract.task_id))
+    issues.push('Duplicate task ID in contracts.json: ' + contract.task_id);
+  contractByTaskId.set(contract.task_id, contract);
+}
 const entry = fs.readFileSync(path.join(root, manifest.routing.entry), 'utf8');
 const main = fs.readFileSync(path.join(root, manifest.routing.main), 'utf8');
 if ([...entry.matchAll(/app\.use\(['"]\/api['"]\s*,\s*mainRouter\)/g)].length !== 1)
@@ -71,6 +78,17 @@ for (const endpoint of manifest.endpoints) {
     (endpoint.mount_prefix === '/' ? '' : endpoint.mount_prefix) +
     (endpoint.local_path === '/' ? '' : endpoint.local_path);
   if (composed !== endpoint.path) issues.push('Contract path mismatch: ' + endpoint.task_id);
+  const contract = contractByTaskId.get(endpoint.task_id);
+  if (!contract) {
+    issues.push('Missing contract fixture for ' + endpoint.task_id);
+  } else if (contract.path !== endpoint.path || contract.method !== endpoint.method) {
+    issues.push('Manifest differs from contract fixture: ' + endpoint.task_id);
+  }
+}
+const manifestTaskIds = new Set(manifest.endpoints.map((endpoint) => endpoint.task_id));
+for (const contract of contracts.endpoints) {
+  if (!manifestTaskIds.has(contract.task_id))
+    issues.push('Contract fixture missing from scaffold manifest: ' + contract.task_id);
 }
 for (const page of manifest.frontend_pages) {
   if (
@@ -83,12 +101,17 @@ for (const page of manifest.frontend_pages) {
 const schema = fs.readFileSync(path.join(root, 'backend/db/schema.sql'), 'utf8');
 if ([...schema.matchAll(/CREATE TABLE /g)].length !== 14)
   issues.push('Expected 14 normalized tables');
+const triggerCount = [...schema.matchAll(/CREATE TRIGGER /g)].length;
+const triggerTerminators = [...schema.matchAll(/^END\$\$$/gm)].length;
+if (triggerCount !== triggerTerminators)
+  issues.push('Every database trigger must terminate with END$$');
 console.log(
   JSON.stringify(
     {
       files: files.length,
       route_mounts: manifest.routing.mounts.length,
       planned_endpoints: manifest.endpoints.length,
+      contract_fixtures: contracts.endpoints.length,
       retained_pages: manifest.frontend_pages.length,
       imports_checked: imports,
       javascript_syntax_checks: syntaxChecks,

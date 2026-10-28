@@ -17,7 +17,7 @@ Thank you for contributing to Abe Garage.
 - `feat/<short-description>`: branch for a new feature.
 - `fix/<short-description>`: branch for a bug fix.
 
-Create feature and fix branches from `dev`. When your work is ready, open a pull request targeting `dev`.
+Before the first feature branch, a maintainer creates and pushes `dev` from `main`. Create feature and fix branches from `dev`; when your work is ready, open a pull request targeting `dev`.
 
 Changes intended for `main` should be tested before merging.
 
@@ -52,9 +52,10 @@ Never modify `schema.sql` directly after the baseline has been initialized.
 
 ## API Contracts & Single Source of Truth
 
-The authoritative machine-readable contract for all endpoints is [`docs/api/openapi.json`](docs/api/openapi.json).
+[`docs/api/contracts.json`](docs/api/contracts.json) is the authoritative machine-readable contract for all endpoints. [`docs/api/openapi.json`](docs/api/openapi.json) is a generated artifact and must not be edited by hand.
 
-- To regenerate OpenAPI documentation from contracts, run `npm run generate:openapi`.
+- Run `npm run generate:openapi` after a contract change, then commit both files.
+- `npm run check:openapi` verifies that the generated file is current.
 
 ## Frontend Architecture & API Ownership
 

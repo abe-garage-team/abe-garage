@@ -61,7 +61,7 @@ This package defines the backend implementation work for your four-person garage
 
 ## Supporting files
 
-- [Contract fixtures](contracts.json):all endpoint request/query/success response examples and ownership,for building mocks without waiting for teammates. Placeholders are not working credentials.
+- [Contract fixtures](contracts.json) are the machine-readable source of truth for endpoint request/query/success examples and ownership. [OpenAPI](openapi.json) is generated from them with `npm run generate:openapi`; do not edit it directly.
 - foundation/:6 non-endpoint implementation and verification tasks.
 - Every endpoint file has request body (or None),success JSON,permissions,error cases,business rules,dependencies,paths,Git instructions,acceptance checks and logic diagram.
 

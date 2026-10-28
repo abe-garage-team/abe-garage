@@ -8,6 +8,7 @@
     "start": "node index.js",
     "db:check": "node scripts/check-db.js",
     "db:migrate": "node scripts/migrate.js",
+    "db:migrate:status": "node scripts/migrate.js --status",
     "seed:admin": "node scripts/seed-admin.js",
     "seed:development": "node scripts/seed-development.js",
     "test": "node --test"
