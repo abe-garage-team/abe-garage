@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 
 // Validation rules for customer registration (BE-016)
 export const createCustomerValidation = [
@@ -35,4 +35,29 @@ export const createCustomerValidation = [
     .optional()
     .isBoolean()
     .withMessage('Active must be a boolean value'),
+];
+
+// Validation rules for customer listing & search (BE-017)
+export const listCustomersValidation = [
+  query('search')
+    .optional()
+    .isString()
+    .withMessage('Search must be a string')
+    .isLength({ max: 100 })
+    .withMessage('Search cannot exceed 100 characters'),
+
+  query('active')
+    .optional()
+    .isBoolean()
+    .withMessage('Active must be a boolean value'),
+
+  query('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Page must be a positive integer'),
+
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage('Limit must be an integer between 1 and 100'),
 ];
