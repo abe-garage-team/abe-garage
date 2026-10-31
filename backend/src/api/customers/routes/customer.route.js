@@ -3,8 +3,11 @@ import { authenticate } from '../../../middleware/authentication.js';
 import { hasRole } from '../../../middleware/authorization.js';
 import { validationHandler } from '../../../middleware/validation-handler.js';
 import { ROLES } from '../../../constants/roles.js';
-import { createCustomerValidation } from '../validations/customer.validation.js';
-import { createCustomer } from '../controller/customer.controller.js';
+import {
+  createCustomerValidation,
+  listCustomersValidation,
+} from '../validations/customer.validation.js';
+import { createCustomer, listCustomers } from '../controller/customer.controller.js';
 
 const router = Router();
 
@@ -18,8 +21,10 @@ router.post(
   createCustomer,
 );
 
-// Planned endpoints
-// BE-017  GET   /
+// BE-017: List and search customers (Any active staff)
+router.get('/', authenticate, listCustomersValidation, validationHandler, listCustomers);
+
+// Planned endpoints:
 // BE-018  GET   /:customer_id
 // BE-019  PATCH /:customer_id
 // BE-021  GET   /:customer_id/vehicles
