@@ -30,3 +30,16 @@ export const listCustomers = asyncHandler(async (req, res) => {
 
   return respond(res, result, 'List and search customers successful', 200);
 });
+
+// Controller to handle viewing customer profile and financial summary (BE-018)
+export const getCustomer = asyncHandler(async (req, res) => {
+  const { customer_id } = req.params;
+
+  const profile = await customerService.getCustomer(customer_id);
+
+  return respond(res, profile, 'View customer profile and financial summary successful', 200);
+});
+
+// Aliases for compatibility
+export const getCustomerController = getCustomer;
+export const getCustomerProfile = getCustomer;
