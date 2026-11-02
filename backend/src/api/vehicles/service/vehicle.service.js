@@ -85,5 +85,34 @@ export async function createVehicle({
     };
 }
 
+// Service to fetch a single vehicle by vehicle_id (BE-022)
+export async function getVehicle(vehicleId) {
+    const [rows] = await pool.execute(
+        `SELECT vehicle_id, customer_id, year, make, model, vehicle_type AS type, mileage, plate, vin, color
+     FROM vehicles
+     WHERE vehicle_id = ?`,
+        [vehicleId],
+    );
+
+    if (rows.length === 0) {
+        throw new AppError('Vehicle not found', 404);
+    }
+
+    const vehicle = rows[0];
+    return {
+        vehicle_id: Number(vehicle.vehicle_id),
+        customer_id: Number(vehicle.customer_id),
+        year: Number(vehicle.year),
+        make: vehicle.make,
+        model: vehicle.model,
+        type: vehicle.type,
+        mileage: Number(vehicle.mileage),
+        plate: vehicle.plate,
+        vin: vehicle.vin || null,
+        color: vehicle.color,
+    };
+}
+
 // Aliases for compatibility
 export const createVehicleService = createVehicle;
+export const getVehicleService = getVehicle;
