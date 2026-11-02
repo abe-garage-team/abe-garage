@@ -31,10 +31,7 @@ export const createCustomerValidation = [
     .isLength({ min: 7, max: 32 })
     .withMessage('Phone number must be between 7 and 32 characters'),
 
-  body('active')
-    .optional()
-    .isBoolean()
-    .withMessage('Active must be a boolean value'),
+  body('active').optional().isBoolean().withMessage('Active must be a boolean value'),
 ];
 
 // Validation rules for customer listing & search (BE-017)
@@ -46,15 +43,9 @@ export const listCustomersValidation = [
     .isLength({ max: 100 })
     .withMessage('Search cannot exceed 100 characters'),
 
-  query('active')
-    .optional()
-    .isBoolean()
-    .withMessage('Active must be a boolean value'),
+  query('active').optional().isBoolean().withMessage('Active must be a boolean value'),
 
-  query('page')
-    .optional()
-    .isInt({ min: 1 })
-    .withMessage('Page must be a positive integer'),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
 
   query('limit')
     .optional()
@@ -64,7 +55,5 @@ export const listCustomersValidation = [
 
 // Validation rules for retrieving a customer profile (BE-018)
 export const getCustomerValidation = [
-  param('customer_id')
-    .isInt({ min: 1 })
-    .withMessage('Customer ID must be a positive integer'),
+  param('customer_id').isInt({ min: 1 }).withMessage('Customer ID must be a positive integer'),
 ];

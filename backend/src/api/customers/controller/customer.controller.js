@@ -17,8 +17,6 @@ export const createCustomer = asyncHandler(async (req, res) => {
   return respond(res, customer, 'Register customer successful', 201);
 });
 
-
-
 // Controller to handle customer listing and search (BE-017)
 export const listCustomers = asyncHandler(async (req, res) => {
   const { search, active, page, limit } = req.query;
