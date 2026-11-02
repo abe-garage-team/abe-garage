@@ -317,7 +317,46 @@ export async function updateCustomer(customerId, updates = {}) {
   };
 }
 
+// Service to list all vehicles owned by a specific customer (BE-021)
+export async function listCustomerVehicles(customerId) {
+  // Check if customer exists
+  const [customerRows] = await pool.execute(
+    'SELECT customer_id FROM customers WHERE customer_id = ?',
+    [customerId],
+  );
+
+  if (customerRows.length === 0) {
+    throw new AppError('Customer not found', 404);
+  }
+
+  // Fetch all vehicles owned by this customer, ordered newest first
+  const [vehicleRows] = await pool.execute(
+    `SELECT vehicle_id, customer_id, year, make, model, vehicle_type AS type, mileage, plate, vin, color
+     FROM vehicles
+     WHERE customer_id = ?
+     ORDER BY vehicle_id DESC`,
+    [customerId],
+  );
+
+  return {
+    customer_id: Number(customerId),
+    vehicles: vehicleRows.map((v) => ({
+      vehicle_id: Number(v.vehicle_id),
+      customer_id: Number(v.customer_id),
+      year: Number(v.year),
+      make: v.make,
+      model: v.model,
+      type: v.type,
+      mileage: Number(v.mileage),
+      plate: v.plate,
+      vin: v.vin || null,
+      color: v.color,
+    })),
+  };
+}
+
 // Aliases for compatibility
 export const getCustomerService = getCustomer;
 export const getCustomerProfile = getCustomer;
 export const updateCustomerService = updateCustomer;
+export const listCustomerVehiclesService = listCustomerVehicles;
