@@ -8,11 +8,7 @@ import {
   listCustomersValidation,
   getCustomerValidation,
 } from '../validations/customer.validation.js';
-import {
-  createCustomer,
-  listCustomers,
-  getCustomer,
-} from '../controller/customer.controller.js';
+import { createCustomer, listCustomers, getCustomer } from '../controller/customer.controller.js';
 
 const router = Router();
 
