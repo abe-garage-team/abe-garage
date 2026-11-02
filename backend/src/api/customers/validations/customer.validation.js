@@ -1,4 +1,4 @@
-import { body, query } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 // Validation rules for customer registration (BE-016)
 export const createCustomerValidation = [
@@ -60,4 +60,11 @@ export const listCustomersValidation = [
     .optional()
     .isInt({ min: 1, max: 100 })
     .withMessage('Limit must be an integer between 1 and 100'),
+];
+
+// Validation rules for retrieving a customer profile (BE-018)
+export const getCustomerValidation = [
+  param('customer_id')
+    .isInt({ min: 1 })
+    .withMessage('Customer ID must be a positive integer'),
 ];
