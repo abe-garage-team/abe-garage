@@ -56,7 +56,17 @@ export const updateCustomer = asyncHandler(async (req, res) => {
   return respond(res, updatedCustomer, 'Edit or deactivate customer successful', 200);
 });
 
+// Controller to handle listing a customer's vehicles (BE-021)
+export const listCustomerVehicles = asyncHandler(async (req, res) => {
+  const { customer_id } = req.params;
+
+  const data = await customerService.listCustomerVehicles(customer_id);
+
+  return respond(res, data, 'List a customer’s vehicles successful', 200);
+});
+
 // Aliases for compatibility
 export const getCustomerController = getCustomer;
 export const getCustomerProfile = getCustomer;
 export const updateCustomerController = updateCustomer;
+export const listCustomerVehiclesController = listCustomerVehicles;
