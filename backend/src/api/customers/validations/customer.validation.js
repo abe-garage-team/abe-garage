@@ -113,3 +113,8 @@ export const updateCustomerValidation = [
     return true;
   }),
 ];
+
+// Validation rules for listing a customer's vehicles (BE-021)
+export const listCustomerVehiclesValidation = [
+  param('customer_id').isInt({ min: 1 }).withMessage('Customer ID must be a positive integer'),
+];
