@@ -294,10 +294,7 @@ export async function updateCustomer(customerId, updates = {}) {
 
   params.push(customerId);
 
-  await pool.execute(
-    `UPDATE customers SET ${fields.join(', ')} WHERE customer_id = ?`,
-    params,
-  );
+  await pool.execute(`UPDATE customers SET ${fields.join(', ')} WHERE customer_id = ?`, params);
 
   // Return the freshly updated customer record
   const [updatedRows] = await pool.execute(
