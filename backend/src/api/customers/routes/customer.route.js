@@ -6,8 +6,15 @@ import { ROLES } from '../../../constants/roles.js';
 import {
   createCustomerValidation,
   listCustomersValidation,
+  getCustomerValidation,
+  updateCustomerValidation,
 } from '../validations/customer.validation.js';
-import { createCustomer, listCustomers } from '../controller/customer.controller.js';
+import {
+  createCustomer,
+  listCustomers,
+  getCustomer,
+  updateCustomer,
+} from '../controller/customer.controller.js';
 
 const router = Router();
 
@@ -24,9 +31,20 @@ router.post(
 // BE-017: List and search customers (Any active staff)
 router.get('/', authenticate, listCustomersValidation, validationHandler, listCustomers);
 
+// BE-018: View customer profile and financial summary (Any active staff)
+router.get('/:customer_id', authenticate, getCustomerValidation, validationHandler, getCustomer);
+
+// BE-019: Edit or deactivate customer (Manager or Admin only)
+router.patch(
+  '/:customer_id',
+  authenticate,
+  hasRole(ROLES.MANAGER, ROLES.ADMIN),
+  updateCustomerValidation,
+  validationHandler,
+  updateCustomer,
+);
+
 // Planned endpoints:
-// BE-018  GET   /:customer_id
-// BE-019  PATCH /:customer_id
 // BE-021  GET   /:customer_id/vehicles
 
 export default router;
