@@ -217,6 +217,107 @@ export async function getCustomer(customerId) {
   };
 }
 
+// Service to edit or deactivate a customer record (BE-019)
+export async function updateCustomer(customerId, updates = {}) {
+  // Check if customer exists
+  const [existingRows] = await pool.execute(
+    'SELECT customer_id, first_name, last_name, email, phone, active, created_at FROM customers WHERE customer_id = ?',
+    [customerId],
+  );
+
+  if (existingRows.length === 0) {
+    throw new AppError('Customer not found', 404);
+  }
+
+  // Check for email or phone uniqueness conflict with another customer
+  if (updates.email || updates.phone) {
+    const conditions = [];
+    const params = [];
+
+    if (updates.email) {
+      conditions.push('LOWER(email) = LOWER(?)');
+      params.push(updates.email);
+    }
+    if (updates.phone) {
+      conditions.push('phone = ?');
+      params.push(updates.phone);
+    }
+
+    const [conflicts] = await pool.execute(
+      `SELECT customer_id, email, phone FROM customers WHERE (${conditions.join(' OR ')}) AND customer_id != ?`,
+      [...params, customerId],
+    );
+
+    if (conflicts.length > 0) {
+      const errors = {};
+      if (
+        updates.email &&
+        conflicts.some((c) => c.email.toLowerCase() === updates.email.toLowerCase())
+      ) {
+        errors.email = 'Email already registered';
+      }
+      if (updates.phone && conflicts.some((c) => c.phone === updates.phone)) {
+        errors.phone = 'Phone number already registered';
+      }
+      throw new AppError('Customer email or phone already used', 409, { errors });
+    }
+  }
+
+  // Dynamically assemble SQL fields to update
+  const fields = [];
+  const params = [];
+
+  if (updates.first_name !== undefined) {
+    fields.push('first_name = ?');
+    params.push(updates.first_name);
+  }
+  if (updates.last_name !== undefined) {
+    fields.push('last_name = ?');
+    params.push(updates.last_name);
+  }
+  if (updates.email !== undefined) {
+    fields.push('email = ?');
+    params.push(updates.email);
+  }
+  if (updates.phone !== undefined) {
+    fields.push('phone = ?');
+    params.push(updates.phone);
+  }
+  if (updates.active !== undefined) {
+    fields.push('active = ?');
+    params.push(Boolean(updates.active));
+  }
+
+  if (fields.length === 0) {
+    throw new AppError('No fields provided for update', 400);
+  }
+
+  params.push(customerId);
+
+  await pool.execute(
+    `UPDATE customers SET ${fields.join(', ')} WHERE customer_id = ?`,
+    params,
+  );
+
+  // Return the freshly updated customer record
+  const [updatedRows] = await pool.execute(
+    'SELECT customer_id, first_name, last_name, email, phone, active, created_at FROM customers WHERE customer_id = ?',
+    [customerId],
+  );
+
+  const customer = updatedRows[0];
+  return {
+    customer_id: Number(customer.customer_id),
+    first_name: customer.first_name,
+    last_name: customer.last_name,
+    email: customer.email,
+    phone: customer.phone,
+    active: Boolean(customer.active),
+    created_at: customer.created_at,
+  };
+}
+
 // Aliases for compatibility
 export const getCustomerService = getCustomer;
 export const getCustomerProfile = getCustomer;
+export const updateCustomerService = updateCustomer;
