@@ -8,12 +8,14 @@ import {
   listCustomersValidation,
   getCustomerValidation,
   updateCustomerValidation,
+  listCustomerVehiclesValidation,
 } from '../validations/customer.validation.js';
 import {
   createCustomer,
   listCustomers,
   getCustomer,
   updateCustomer,
+  listCustomerVehicles,
 } from '../controller/customer.controller.js';
 
 const router = Router();
@@ -44,7 +46,13 @@ router.patch(
   updateCustomer,
 );
 
-// Planned endpoints:
-// BE-021  GET   /:customer_id/vehicles
+// BE-021: List a customer's vehicles (Any active staff)
+router.get(
+  '/:customer_id/vehicles',
+  authenticate,
+  listCustomerVehiclesValidation,
+  validationHandler,
+  listCustomerVehicles,
+);
 
 export default router;
