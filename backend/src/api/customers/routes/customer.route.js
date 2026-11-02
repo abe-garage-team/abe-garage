@@ -1,16 +1,32 @@
 import { Router } from 'express';
+import { authenticate } from '../../../middleware/authentication.js';
+import { hasRole } from '../../../middleware/authorization.js';
+import { validationHandler } from '../../../middleware/validation-handler.js';
+import { ROLES } from '../../../constants/roles.js';
+import {
+  createCustomerValidation,
+  listCustomersValidation,
+} from '../validations/customer.validation.js';
+import { createCustomer, listCustomers } from '../controller/customer.controller.js';
 
 const router = Router();
 
-// Mounted at /api/customers.
-// Planned endpoints (add handlers when implementing each task):
-// BE-016  POST  /
-// BE-017  GET   /
+// BE-016: Register customer (Manager or Admin only)
+router.post(
+  '/',
+  authenticate,
+  hasRole(ROLES.MANAGER, ROLES.ADMIN),
+  createCustomerValidation,
+  validationHandler,
+  createCustomer,
+);
+
+// BE-017: List and search customers (Any active staff)
+router.get('/', authenticate, listCustomersValidation, validationHandler, listCustomers);
+
+// Planned endpoints:
 // BE-018  GET   /:customer_id
 // BE-019  PATCH /:customer_id
 // BE-021  GET   /:customer_id/vehicles
-
-// Import your controllers and validation here when the feature is ready.
-// Write local paths only; do not repeat /api or the resource prefix.
 
 export default router;
