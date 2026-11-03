@@ -49,7 +49,19 @@ export const updateVehicle = asyncHandler(async (req, res) => {
   return respond(res, updatedVehicle, 'Edit vehicle details successful', 200);
 });
 
+// Controller to handle viewing vehicle service & repair order history (BE-024)
+export const getVehicleHistory = asyncHandler(async (req, res) => {
+  const { vehicle_id } = req.params;
+  const { page, limit } = req.query;
+
+  const result = await vehicleService.getVehicleHistory(vehicle_id, { page, limit });
+
+  return respond(res, result, 'View vehicle service history successful', 200);
+});
+
 // Aliases for compatibility
 export const createVehicleController = createVehicle;
 export const getVehicleController = getVehicle;
 export const updateVehicleController = updateVehicle;
+export const vehicleHistoryController = getVehicleHistory;
+export const getVehicleHistoryController = getVehicleHistory;
