@@ -27,9 +27,11 @@ Other module folders (customers, orders, ...) remain placeholders. Choose your o
 
 ```
 npm run dev                 start with file watching
+npm run db:setup            create the database, load schema.sql, migrate, seed Admin and fixtures (development only)
 npm run db:migrate          apply pending migrations (schema.sql must be loaded first)
 npm run db:migrate:status   list pending migrations
 npm run seed:admin          create the first Admin and garage settings from .env
+npm run seed:development    add sample employees, customers, vehicles and services
 npm run db:purge-auth       delete expired sessions, rate-limit windows and reset tokens
 npm test                    unit + routing tests; integration tests run when MySQL is reachable
 ```

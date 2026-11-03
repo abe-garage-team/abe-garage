@@ -1,7 +1,25 @@
 {
-  "name": "Abe Garage local example",
+  "name": "Abe Garage local",
   "values": [
-    { "key": "base_url", "value": "http://localhost:5000/api", "enabled": true },
-    { "key": "frontend_origin", "value": "http://localhost:5173", "enabled": true }
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "enabled": true
+    },
+    {
+      "key": "frontend_origin",
+      "value": "http://localhost:5173",
+      "enabled": true
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@abegarage.com",
+      "enabled": true
+    },
+    {
+      "key": "admin_password",
+      "value": "Password123!",
+      "enabled": true
+    }
   ]
 }
