@@ -22,3 +22,21 @@ SELECT 1;`;
     'SELECT 1',
   ]);
 });
+
+test('migration SQL splitter recognises DELIMITER after a comment and drops comment-only chunks', async () => {
+  const { splitSqlStatements } = await import('../../scripts/migration-utils.js');
+  const statements = splitSqlStatements(`
+-- integrity guards
+DELIMITER $$
+CREATE TRIGGER t BEFORE UPDATE ON x FOR EACH ROW
+BEGIN
+  SET NEW.a = 1;
+END$$
+DELIMITER ;
+INSERT INTO roles (role_id) VALUES (1);
+-- trailing note only
+`);
+  assert.equal(statements.length, 2);
+  assert.match(statements[0], /^CREATE TRIGGER/);
+  assert.match(statements[1], /^INSERT INTO roles/);
+});

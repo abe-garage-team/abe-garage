@@ -65,7 +65,7 @@ The endpoint URLs and outward JSON may remain the same; implementation queries m
 - PATCH payment: lock parent order and issued invoice, insert cash_payments once. Return paid=true and existing data for a retry. No order paid flag to update.
 - Dashboard money: join cash_payments -> invoices -> v_order_financials and filter cash_payments.paid_at by UTC-converted business-period boundaries. Unpaid means status=4 and no payment row.
 - History.details is optional plain explanatory text in this normalized version; decision/method/actor/timestamps have dedicated columns in order_approvals. Adjust the earlier details JSON expectation to text or present a structured DTO produced by the service.
-- Reset IDs are INT UNSIGNED in this fresh schema for simple numeric API handling; all FK types match. Password reset token hashes and token_version behavior are unchanged.
+- Reset IDs are INT UNSIGNED in this fresh schema for simple numeric API handling; all FK types match. Password reset token hashes are unchanged; token_version was replaced by the sessions table in migration 002 (see docs/api/AUTH-DESIGN.md).
 
 ## Application rules still required
 
@@ -77,7 +77,7 @@ Foreign keys, CHECK constraints and triggers do not replace these rules:
 - Save an order with at least one line atomically. MySQL cannot enforce a minimum child-row count using a normal FK. Ensure line replacement never commits an empty order.
 - Ensure assigned employee is an active Technician; never change an already finished line's assignment. One database FK cannot express role-based eligibility.
 - Maintain 1->2/5,2->3,3->4 status rules and reapproval behavior. Update completed_at at the same time as status=4. Do not allow state changes that disagree with approvals/job states.
-- Guard the last active Admin and increment token_version for password/security changes.
+- Guard the last active Admin and delete the employee's sessions for password/role/active changes.
 - Record status and billing changes in history; email only after commit. SMTP failure cannot undo a saved order.
 - Populate invoice snapshots from trusted database records, not caller-supplied customer/garage/vehicle data. Freeze service-version rows and billed job facts after issue; only technician_note may change on an invoiced line.
 - Preserve referenced master records through deactivation. Grant the runtime DB account least privilege; no hard DELETE on roles,employees,customers,vehicles,services,orders or garage_settings. Unstarted draft-line replacement and expired reset-token cleanup need narrowly controlled DELETE access.
