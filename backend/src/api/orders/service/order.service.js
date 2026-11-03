@@ -194,7 +194,6 @@ export async function getOrderDetails(db, orderId) {
 export async function createOrderService(
   input,
   actorId,
-  notifyOrderCreated
 ) {
   const data = await withTransaction(async (connection) => {
     // 1. Find customer
