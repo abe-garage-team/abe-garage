@@ -3,8 +3,11 @@ import { authenticate } from '../../../middleware/authentication.js';
 import { hasRole } from '../../../middleware/authorization.js';
 import { validationHandler } from '../../../middleware/validation-handler.js';
 import { ROLES } from '../../../constants/roles.js';
-import { createVehicleValidation } from '../validations/vehicle.validation.js';
-import { createVehicle } from '../controller/vehicle.controller.js';
+import {
+    createVehicleValidation,
+    getVehicleValidation,
+} from '../validations/vehicle.validation.js';
+import { createVehicle, getVehicle } from '../controller/vehicle.controller.js';
 
 const router = Router();
 
@@ -18,8 +21,10 @@ router.post(
     createVehicle,
 );
 
+// BE-022: View vehicle (Any active staff)
+router.get('/:vehicle_id', authenticate, getVehicleValidation, validationHandler, getVehicle);
+
 // Planned endpoints:
-// BE-022  GET   /:vehicle_id
 // BE-023  PATCH /:vehicle_id
 // BE-024  GET   /:vehicle_id/orders
 
