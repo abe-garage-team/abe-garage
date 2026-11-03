@@ -4,7 +4,7 @@ This is a proposed design update, not an executed migration. The supplied ER dia
 
 ## Already agreed authentication additions
 
-- employees.token_version INT UNSIGNED NOT NULL DEFAULT0.
+- employees.token_version was dropped in migration 002. Sessions live in the sessions table; see AUTH-DESIGN.md. Migration 002 also adds auth_rate_limits, app_setup and auth_events.
 - password_reset_tokens:reset_id BIGINT UNSIGNED PK AUTO_INCREMENT;employee_id matching employees PK FK;token_hash CHAR(64) UNIQUE NOT NULL;expires_at DATETIME NOT NULL;used_at DATETIME NULL;created_at DATETIME NOT NULL. SHA-256 digest only.
 - Index reset(employee_id,used_at,expires_at). UTC values and InnoDB.
 

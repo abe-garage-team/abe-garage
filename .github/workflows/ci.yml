@@ -26,6 +26,15 @@ jobs:
       JWT_SECRET: ci-super-secret-test-key-32-chars-long!
       JWT_ISSUER: abe-garage-test
       JWT_AUDIENCE: abe-garage-clients
+      INITIAL_ADMIN_EMAIL: admin@abegarage.com
+      INITIAL_ADMIN_FIRST_NAME: Abe
+      INITIAL_ADMIN_LAST_NAME: Admin
+      INITIAL_ADMIN_PHONE: '0911000000'
+      INITIAL_ADMIN_PASSWORD: Password123!
+      GARAGE_NAME: Abe Garage
+      GARAGE_ADDRESS: Addis Ababa
+      GARAGE_PHONE: '0111234567'
+      GARAGE_EMAIL: contact@abegarage.com
       INSTALL_ENABLED: true
       INSTALL_SECRET: ci-setup-secret-test-key-32-chars!
       DATABASE_INTEGRATION: true
@@ -46,6 +55,12 @@ jobs:
 
       - name: Run database migrations
         run: npm run db:migrate
+
+      - name: Run all quality checks
+        run: npm run check
+
+      - name: Seed the initial Admin
+        run: npm run seed:admin
 
       - name: Run all quality checks
         run: npm run check
