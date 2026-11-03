@@ -90,6 +90,13 @@ export function createOrderNotificationService({ getTransport, db, frontendUrl, 
         buildEmail: buildCarReadyEmail,
       });
     },
+
+    resendOrderEmail({ status, ...input }) {
+      return sendOrderEmail({
+        ...input,
+        buildEmail: status === 4 ? buildCarReadyEmail : buildOrderCreatedEmail,
+      });
+    },
   };
 }
 
@@ -103,3 +110,4 @@ const orderNotifications = createOrderNotificationService({
 
 export const sendOrderCreatedEmail = orderNotifications.sendOrderCreatedEmail;
 export const sendCarReadyEmail = orderNotifications.sendCarReadyEmail;
+export const resendOrderEmail = orderNotifications.resendOrderEmail;
