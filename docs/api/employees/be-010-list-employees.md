@@ -11,7 +11,7 @@
 - **Method**: `GET`
 - **URL**: `/api/employees`
 - **Access**: Admin; Manager limited to active technicians
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -67,7 +67,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 403 Managers may only list active technicians
 - 500 Unexpected server error
@@ -123,7 +123,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 403 Managers may only list active technicians.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.

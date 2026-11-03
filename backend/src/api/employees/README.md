@@ -1,10 +1,5 @@
 # employees
 
-This folder is reserved for this module. Controllers, services and validations are intentionally empty. Add your own exports, imports and handlers when implementing a task.
+Routes are mounted at /api/employees. Every route requires a logged-in employee.
 
-- BE-009 · `POST /api/employees` (planned)
-- BE-010 · `GET /api/employees` (planned)
-- BE-011 · `GET /api/employees/:employee_id` (planned)
-- BE-012 · `PATCH /api/employees/:employee_id` (planned)
-
-Read [the team guide](../../../../docs/TEAM-GUIDE.md) for shared API contracts and routing. No function names or controller wrappers are mandatory.
+- BE-009 · `POST /api/employees` · Admin only · creates a staff account

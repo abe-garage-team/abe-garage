@@ -1,2 +1,5 @@
-import { AppError } from '../utils/errors/index.js';
-export const notFound = (req, res, next) => next(new AppError('Route not found', 404));
+import { NotFoundError } from '../utils/errors/index.js';
+
+export function notFound(req, res, next) {
+  next(new NotFoundError('Route not found'));
+}

@@ -1,16 +1,21 @@
 import { timingSafeEqual } from 'node:crypto';
 import { env } from '../config/env.js';
-import { AppError } from '../utils/errors/index.js';
-export function setupAccess(req, res, next) {
-  if (!env.installEnabled) return next(new AppError('Route not found', 404));
-  const supplied = Buffer.from(req.get('X-Setup-Key') || '');
-  const expected = Buffer.from(env.installSecret);
-  if (
-    !expected.length ||
-    supplied.length !== expected.length ||
-    !timingSafeEqual(supplied, expected)
-  )
-    return next(new AppError('Setup access denied', 403));
-  // BE-047 must additionally check persisted installation lock before any setup writes.
+import { NotFoundError, ForbiddenError, ERROR_CODES } from '../utils/errors/index.js';
+
+export function requireSetupKey(req, res, next) {
+  if (!env.installEnabled) return next(new NotFoundError('Route not found'));
+
+  const givenKey = Buffer.from(req.get('X-Setup-Key') || '');
+  const expectedKey = Buffer.from(env.installSecret);
+  const keyMatches =
+    expectedKey.length > 0 &&
+    givenKey.length === expectedKey.length &&
+    timingSafeEqual(givenKey, expectedKey);
+
+  if (!keyMatches) {
+    return next(
+      new ForbiddenError('Setup access denied', { code: ERROR_CODES.SETUP_ACCESS_DENIED }),
+    );
+  }
   next();
 }

@@ -5,7 +5,7 @@ This contract applies to every endpoint and task. Node.js/Express and MySQL form
 ## Requests and responses
 
 - snake_case JSON names; plural resource URLs; Content-Type:application/json. GET requests have no body. PATCH is partial update, never an unrestricted database merge.
-- Successful envelope: {status:"success",message,data}. Error envelope: {status:"error",message,data:null}; validation uses data.errors keyed by field. HTTP statuses remain authoritative.
+- Successful envelope: {status:"success",message,data}. Error envelope: {status:"error",message,data:null,code}; validation uses data.errors keyed by field; code is a stable string from backend/src/constants/error-codes.js. HTTP statuses remain authoritative.
 - Missing required data/invalid type/empty PATCH/unknown body or query field →400. Duplicate unique data or invalid state →409; missing resource →404. Wrong method on unknown API route →404 through shared not-found handler.
 - Public tracking malformed/unknown hash intentionally returns404; reset invalid/used/expired token intentionally returns400. Never leak underlying token existence.
 - IDs are positive safe JSON integers; SQL BIGINT must remain within Number.MAX_SAFE_INTEGER or be serialized consistently as strings after an explicit contract change. FK types must exactly match referenced PK types.
@@ -13,20 +13,20 @@ This contract applies to every endpoint and task. Node.js/Express and MySQL form
 - Time values are ISO8601 UTC with Z; store UTC DATETIME. Configure DB/session timezone UTC. Null timestamps remain null. Local day/week/month boundaries use GARAGE_TIMEZONE=Africa/Addis_Ababa.
 - Illustrative launch currency is ETB; team must confirm before release. Use one CURRENCY_CODE env value consistently; no FX or multicurrency. Currency is snapshotted with orders/invoices.
 - Names: nonempty 1–100 chars; email max254 normalized lowercase; phone max32 normalized with one shared policy while preserving string format; notes max2000; plate max32 uppercase; other vehicle strings max100; year1886..current year+1. Validate strict numbers, not coercible mixtures.
-- Password policy: at least8 characters and at most72 UTF-8 bytes for bcrypt; never trim passwords. Existing passwords can be checked on login without reapplying new-password rules.
+- Password policy: 8 to 128 characters, hashed with Node's built-in scrypt; never trim passwords. Existing passwords can be checked on login without reapplying new-password rules.
 - Positive page defaults1; limit defaults10, max100. Invalid/zero/negative/noninteger values →400, no silent clamping. total_pages=ceil(total/limit),0 if no results. Empty/beyond-last page →200 empty array.
 - search is trimmed text max100. Query active/paid/unpaid_only accept only strings true or false, not truthiness. status1..5, role_id1..3, line_status0..2; customer_id/vehicle_id positive integers. Unspecified filters mean all allowed records.
 - Examples show optional filters, not mandatory combinations. No unlisted client-controlled sort fields. Stable sort defined per endpoint.
 
 ## Authentication and errors
 
-- Bearer access JWT; lifetime default3600 seconds; payload employee_id,token_version,token_use=access,iat,exp plus issuer/audience. Verify signature/algorithm/expiry/issuer/audience, then read employee and current role/active/token_version from DB.
-- Missing,invalid,expired,version-mismatched JWT →401. Deleted/unavailable employee →401. Inactive employee →403. Current role disallowed →403. JWT claims or frontend cache never grant authority alone.
-- Deactivation/reactivation/role changes increment token_version. Password reset/change increment it. Email changes invalidate outstanding reset links; current role always comes from DB. Logout only clears frontend token/profile; it does not revoke a still-valid JWT.
+- Server-side sessions in an httpOnly, SameSite=Lax cookie (see [AUTH-DESIGN.md](AUTH-DESIGN.md)). The cookie value is signed; the database stores only the token hash. On every protected request read the session and the employee's current role/active flag from MySQL.
+- Missing, invalid or expired session →401. Deleted/unavailable employee →401. Inactive employee →403. Current role disallowed →403. Cookies or frontend cache never grant authority alone.
+- Deactivation/reactivation/role changes and password reset/change delete every session of that employee (logged out everywhere). Email changes invalidate outstanding reset links; current role always comes from DB. Logout deletes the current session row and clears the cookie.
 - Central AppError(message,statusCode,details) and typed subclasses. Controllers catch and next(error); shared async wrapper is permitted. Error middleware (err,req,res,next) comes after all routes and not-found handler.
 - Map validation400,auth401,forbidden403,missing404,duplicate/state409,rate limit429,unexpected500,external mail outage503. Unknown errors return generic message, with sanitized server-side logs and no SQL/stack/secret to client.
 - Malformed JSON and body-size limit errors use same envelope (400/413). Include Retry-After on429. Parameterized SQL for every untrusted value; dynamic columns/sort/clauses from static allowlists only.
-- Bound JSON bodies to256KB by default. Configure allowed frontend origin,HTTPS,request IDs and login/reset/public lookup/resend rate limits. Redact Authorization,passwords,reset tokens and public tracking hashes from logs.
+- Bound JSON bodies to256KB by default. Configure allowed frontend origin,HTTPS,request IDs and login/reset/public lookup/resend rate limits (stored in auth_rate_limits). Data-changing requests carrying a session cookie must send the frontend Origin header. Redact cookies,passwords,reset tokens and public tracking hashes from logs.
 
 ## Money and order lifecycle
 

@@ -20,8 +20,6 @@ test('every feature router is mounted below /api at its documented prefix', asyn
     const { default: router } = await import(new URL('../src/api/' + mount.file, import.meta.url));
     const probe = '/__routing-test-' + mount.name;
     router.get(probe, (req, res) => res.json({ feature: mount.name }));
-    // Isolate mount wiring from any auth/business middleware a feature later adds.
-    // This temporary layer exists only in the test process and is always removed.
     const probeLayer = router.stack.pop();
     router.stack.unshift(probeLayer);
     try {
@@ -44,6 +42,7 @@ test('unknown paths and duplicate /api prefixes return centralized 404 responses
       status: 'error',
       message: 'Route not found',
       data: null,
+      code: 'NOT_FOUND',
     });
   }
 });
@@ -60,5 +59,6 @@ test('malformed JSON is handled before feature routing', async (t) => {
     status: 'error',
     message: 'Invalid JSON body',
     data: null,
+    code: 'INVALID_JSON',
   });
 });

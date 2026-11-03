@@ -883,7 +883,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/auth/password`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -910,7 +910,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 400 Current password is incorrect
 - 500 Unexpected server error
@@ -966,7 +966,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 400 Current password is incorrect.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] Transaction/concurrency behavior and repeated-request behavior match the logic below.
@@ -1002,7 +1002,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/profile`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1034,7 +1034,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -1088,7 +1088,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -1123,7 +1123,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/employees`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1165,7 +1165,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 409 Email already used
 - 500 Unexpected server error
@@ -1220,7 +1220,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 409 Email already used.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] Transaction/concurrency behavior and repeated-request behavior match the logic below.
@@ -1256,7 +1256,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/employees`
 - **Access**: Admin; Manager limited to active technicians
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1312,7 +1312,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 403 Managers may only list active technicians
 - 500 Unexpected server error
@@ -1368,7 +1368,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 403 Managers may only list active technicians.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -1404,7 +1404,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/employees/:employee_id`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `employee_id` (positive integer)
 
@@ -1437,7 +1437,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Employee not found
 - 500 Unexpected server error
@@ -1491,7 +1491,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Employee not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -1527,7 +1527,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/employees/:employee_id`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `employee_id` (positive integer)
 
@@ -1566,7 +1566,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Employee not found
 - 409 Email already used
@@ -1625,7 +1625,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Employee not found.
 - [ ] Verify 409 Email already used.
 - [ ] Verify 409 At least one active Admin is required.
@@ -1663,7 +1663,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/roles`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1700,7 +1700,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -1752,7 +1752,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -1787,7 +1787,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/settings`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1816,7 +1816,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 503 System not initialized
 - 500 Unexpected server error
@@ -1869,7 +1869,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 503 System not initialized.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -1905,7 +1905,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/settings`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -1940,7 +1940,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -1994,7 +1994,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] Transaction/concurrency behavior and repeated-request behavior match the logic below.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -2029,7 +2029,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/customers`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -2067,7 +2067,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 409 Customer email or phone already used
 - 500 Unexpected server error
@@ -2122,7 +2122,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 409 Customer email or phone already used.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] Transaction/concurrency behavior and repeated-request behavior match the logic below.
@@ -2158,7 +2158,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/customers`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -2211,7 +2211,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -2264,7 +2264,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -2299,7 +2299,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/customers/:customer_id`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `customer_id` (positive integer)
 
@@ -2367,7 +2367,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Customer not found
 - 500 Unexpected server error
@@ -2423,7 +2423,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Customer not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -2459,7 +2459,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/customers/:customer_id`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `customer_id` (positive integer)
 
@@ -2495,7 +2495,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Customer not found
 - 409 Customer email or phone already used
@@ -2551,7 +2551,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Customer not found.
 - [ ] Verify 409 Customer email or phone already used.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
@@ -2588,7 +2588,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/vehicles`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -2633,7 +2633,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Customer not found
 - 409 Customer is inactive
@@ -2690,7 +2690,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Customer not found.
 - [ ] Verify 409 Customer is inactive.
 - [ ] Verify 409 Plate already used.
@@ -2728,7 +2728,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/customers/:customer_id/vehicles`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `customer_id` (positive integer)
 
@@ -2767,7 +2767,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Customer not found
 - 500 Unexpected server error
@@ -2821,7 +2821,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Customer not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -2857,7 +2857,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/vehicles/:vehicle_id`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `vehicle_id` (positive integer)
 
@@ -2891,7 +2891,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Vehicle not found
 - 500 Unexpected server error
@@ -2944,7 +2944,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Vehicle not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -2980,7 +2980,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/vehicles/:vehicle_id`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `vehicle_id` (positive integer)
 
@@ -3019,7 +3019,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Vehicle not found
 - 409 Plate already used
@@ -3076,7 +3076,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Vehicle not found.
 - [ ] Verify 409 Plate already used.
 - [ ] Verify 409 Mileage cannot decrease.
@@ -3114,7 +3114,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/vehicles/:vehicle_id/orders`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `vehicle_id` (positive integer)
 
@@ -3185,7 +3185,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Vehicle not found
 - 500 Unexpected server error
@@ -3239,7 +3239,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Vehicle not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -3275,7 +3275,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/services`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -3312,7 +3312,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 409 Service name already used
 - 500 Unexpected server error
@@ -3366,7 +3366,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 409 Service name already used.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] Transaction/concurrency behavior and repeated-request behavior match the logic below.
@@ -3402,7 +3402,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/services`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -3454,7 +3454,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -3507,7 +3507,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -3542,7 +3542,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/services/:service_id`
 - **Access**: Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `service_id` (positive integer)
 
@@ -3577,7 +3577,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Service not found
 - 409 Service name already used
@@ -3632,7 +3632,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Service not found.
 - [ ] Verify 409 Service name already used.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
@@ -3809,7 +3809,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/orders`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -3937,7 +3937,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Customer, vehicle or service not found
 - 409 Vehicle does not belong to customer
@@ -3997,7 +3997,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Customer, vehicle or service not found.
 - [ ] Verify 409 Vehicle does not belong to customer.
 - [ ] Verify 409 Customer or service is inactive.
@@ -4035,7 +4035,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/orders`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -4098,7 +4098,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -4152,7 +4152,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -4187,7 +4187,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/orders/:order_id`
 - **Access**: Any active staff
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -4300,7 +4300,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 500 Unexpected server error
@@ -4355,7 +4355,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -4391,7 +4391,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/orders/:order_id`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -4519,7 +4519,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 409 Order is not editable in this state
@@ -4579,7 +4579,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Verify 409 Order is not editable in this state.
 - [ ] Verify 409 Cannot modify performed work or issued invoice lines.
@@ -4617,7 +4617,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/orders/:order_id/approval`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -4652,7 +4652,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 409 Order is not awaiting approval
@@ -4712,7 +4712,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Verify 409 Order is not awaiting approval.
 - [ ] Verify 409 Cannot decline an estimate with performed work.
@@ -4750,7 +4750,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/orders/:order_id/lines`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -4802,7 +4802,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order or service not found
 - 409 Extra work cannot be added in this state
@@ -4860,7 +4860,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order or service not found.
 - [ ] Verify 409 Extra work cannot be added in this state.
 - [ ] Verify 409 Service is inactive or already present.
@@ -4898,7 +4898,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/order-lines/:line_id/technician`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `line_id` (positive integer)
 
@@ -4930,7 +4930,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Job line or employee not found
 - 409 Employee is not an active Technician
@@ -4988,7 +4988,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Job line or employee not found.
 - [ ] Verify 409 Employee is not an active Technician.
 - [ ] Verify 409 Job or order is closed.
@@ -5026,7 +5026,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/my-jobs`
 - **Access**: Technician only
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -5092,7 +5092,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -5146,7 +5146,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.
@@ -5181,7 +5181,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/order-lines/:line_id/status`
 - **Access**: Assigned Technician; Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `line_id` (positive integer)
 
@@ -5216,7 +5216,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Job line not found
 - 403 Job is assigned to another Technician
@@ -5277,7 +5277,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
 - [ ] Run two final-job completions concurrently; order completes once and only one readiness notification is scheduled.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Job line not found.
 - [ ] Verify 403 Job is assigned to another Technician.
 - [ ] Verify 409 Invalid transition or approval is required.
@@ -5316,7 +5316,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/order-lines/:line_id/note`
 - **Access**: Assigned Technician; Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `line_id` (positive integer)
 
@@ -5346,7 +5346,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Job line not found
 - 403 Job is assigned to another Technician
@@ -5403,7 +5403,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Job line not found.
 - [ ] Verify 403 Job is assigned to another Technician.
 - [ ] Verify 409 Order is not approved.
@@ -5441,7 +5441,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/orders/:order_id/estimate`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -5515,7 +5515,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 500 Unexpected server error
@@ -5571,7 +5571,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -5607,7 +5607,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/orders/:order_id/invoice`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -5684,7 +5684,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 409 Only completed orders can be invoiced
@@ -5743,7 +5743,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 
 - [ ] Successful request returns 201 and exactly the documented safe response shape.
 - [ ] Repeat issuance returns200 with identical invoice_number,issued_at and snapshot.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Verify 409 Only completed orders can be invoiced.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
@@ -5780,7 +5780,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/orders/:order_id/invoice`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -5857,7 +5857,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order or issued invoice not found
 - 500 Unexpected server error
@@ -5912,7 +5912,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order or issued invoice not found.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
@@ -5948,7 +5948,7 @@ flowchart TD
 - **Method**: `PATCH`
 - **URL**: `/api/orders/:order_id/payment`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -5983,7 +5983,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 409 Complete order and issue invoice before payment
@@ -6040,7 +6040,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Verify 409 Complete order and issue invoice before payment.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
@@ -6265,7 +6265,7 @@ flowchart TD
 - **Method**: `POST`
 - **URL**: `/api/orders/:order_id/resend-email`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 - **Path parameters**: `order_id` (positive integer)
 
@@ -6291,7 +6291,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 404 Order not found
 - 429 Too many resend attempts
@@ -6349,7 +6349,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Verify 404 Order not found.
 - [ ] Verify 429 Too many resend attempts.
 - [ ] Verify 503 Email could not be sent.
@@ -6387,7 +6387,7 @@ flowchart TD
 - **Method**: `GET`
 - **URL**: `/api/dashboard`
 - **Access**: Manager or Admin
-- **Authentication**: `Authorization: Bearer <access_token>`
+- **Authentication**: session cookie set by `POST /api/auth/login` (see [AUTH-DESIGN.md](../AUTH-DESIGN.md))
 - **Content-Type**: `application/json`
 
 ### Request body
@@ -6425,7 +6425,7 @@ Examples use representative fixture records. Responses may have more/fewer array
 ### Errors
 
 - 400 Invalid input (unless this task specifies a different public-token rule)
-- 401 Missing, invalid, expired or revoked access token
+- 401 Missing, invalid or expired session cookie
 - 403 Inactive account or insufficient role
 - 500 Unexpected server error
 
@@ -6480,7 +6480,7 @@ Open a PR into dev with requirement IDs, examples and test evidence. One teammat
 ### PR checklist and acceptance criteria
 
 - [ ] Successful request returns 200 and exactly the documented safe response shape.
-- [ ] Missing/expired/revoked token returns401; inactive account and unauthorized role return403.
+- [ ] Missing/expired session cookie returns401; inactive account and unauthorized role return403.
 - [ ] Invalid/unknown input fields are rejected; no unexpected database changes occur on failure.
 - [ ] GET has no data-changing side effects; list pagination/counts stay consistent.
 - [ ] All errors go through centralized error middleware; no sensitive fields or stack traces escape.

@@ -1,15 +1,45 @@
 import { Router } from 'express';
+import { authenticate } from '../../../middleware/authentication.js';
+import {
+  loginRateLimit,
+  forgotPasswordRateLimit,
+  resetPasswordRateLimit,
+} from '../../../middleware/rate-limits.js';
+import {
+  loginValidation,
+  logoutValidation,
+  forgotPasswordValidation,
+  resetPasswordValidation,
+  changePasswordValidation,
+} from '../validations/auth.validation.js';
+import {
+  loginController,
+  logoutController,
+  changePasswordController,
+  forgotPasswordController,
+  resetPasswordController,
+} from '../controller/auth.controller.js';
 
 const router = Router();
 
-// Mounted at /api/auth.
-// Planned endpoints (add handlers when implementing each task):
-// BE-004  POST  /login
-// BE-005  POST  /forgot-password
-// BE-006  POST  /reset-password
-// BE-007  PATCH /password
+router.post('/login', loginRateLimit, loginValidation, loginController);
+router.post('/logout', logoutValidation, attachUserIfLoggedIn, logoutController);
+router.patch('/password', authenticate, changePasswordValidation, changePasswordController);
+router.post(
+  '/forgot-password',
+  forgotPasswordRateLimit,
+  forgotPasswordValidation,
+  forgotPasswordController,
+);
+router.post(
+  '/reset-password',
+  resetPasswordRateLimit,
+  resetPasswordValidation,
+  resetPasswordController,
+);
 
-// Import your controllers and validation here when the feature is ready.
-// Write local paths only; do not repeat /api or the resource prefix.
+function attachUserIfLoggedIn(req, res, next) {
+  authenticate(req, res, () => next());
+}
 
 export default router;

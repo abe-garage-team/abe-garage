@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+
 export function createMailTransport() {
   if (!process.env.SMTP_HOST || !process.env.MAIL_FROM)
     throw new Error('Configure SMTP_HOST and MAIL_FROM before sending email');

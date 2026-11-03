@@ -7,7 +7,16 @@
       "local_path": "/login",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
+    },
+    {
+      "task_id": "BE-004b",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "local_path": "/logout",
+      "route_file": "backend/src/api/auth/routes/auth.route.js",
+      "mount_prefix": "/auth",
+      "implemented": true
     },
     {
       "task_id": "BE-005",
@@ -16,7 +25,7 @@
       "local_path": "/forgot-password",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-006",
@@ -25,7 +34,7 @@
       "local_path": "/reset-password",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-007",
@@ -34,7 +43,7 @@
       "local_path": "/password",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-008",
@@ -43,7 +52,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/profile/routes/profile.route.js",
       "mount_prefix": "/profile",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-009",
@@ -52,7 +61,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/employees/routes/employee.route.js",
       "mount_prefix": "/employees",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-010",
@@ -572,7 +581,7 @@
         "name": "auth",
         "file": "auth/routes/auth.route.js",
         "prefix": "/auth",
-        "ids": ["BE-004", "BE-005", "BE-006", "BE-007"]
+        "ids": ["BE-004", "BE-004b", "BE-005", "BE-006", "BE-007"]
       },
       {
         "name": "profile",

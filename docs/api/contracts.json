@@ -21,9 +21,6 @@
         "status": "success",
         "message": "Staff login successful",
         "data": {
-          "access_token": "<application-jwt>",
-          "token_type": "Bearer",
-          "expires_in": 3600,
           "employee": {
             "employee_id": 2,
             "first_name": "Abebe",
@@ -36,7 +33,27 @@
             "created_at": "2026-10-25T12:00:00Z"
           }
         }
-      }
+      },
+      "sets_cookie": "session cookie",
+      "authentication": "None"
+    },
+    {
+      "task_id": "BE-004b",
+      "owner": "Member 1",
+      "priority": "Must",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "access": "Any staff (also succeeds with an expired session)",
+      "request": null,
+      "query_example": null,
+      "success_status": 200,
+      "response": {
+        "status": "success",
+        "message": "Logged out",
+        "data": null
+      },
+      "clears_cookie": "session cookie",
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-005",
@@ -54,7 +71,8 @@
         "status": "success",
         "message": "If an eligible account exists, a password reset link will be sent.",
         "data": null
-      }
+      },
+      "authentication": "None"
     },
     {
       "task_id": "BE-006",
@@ -73,7 +91,8 @@
         "status": "success",
         "message": "Password reset successfully. Please log in.",
         "data": null
-      }
+      },
+      "authentication": "None"
     },
     {
       "task_id": "BE-007",
@@ -92,7 +111,8 @@
         "status": "success",
         "message": "Password changed successfully. Please log in again.",
         "data": null
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-008",
@@ -118,7 +138,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-009",
@@ -152,7 +173,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-010",
@@ -194,7 +216,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-011",
@@ -220,7 +243,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-012",
@@ -250,7 +274,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-013",
@@ -281,7 +306,8 @@
             }
           ]
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-014",
@@ -304,7 +330,8 @@
           "email": "contact@abegarage.com",
           "vat_rate": "15.00"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-015",
@@ -331,7 +358,8 @@
           "email": "contact@abegarage.com",
           "vat_rate": "15.00"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-016",
@@ -361,7 +389,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-017",
@@ -400,7 +429,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-018",
@@ -461,7 +491,8 @@
           "unpaid_total": "264.50",
           "currency": "ETB"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-019",
@@ -488,7 +519,8 @@
           "active": true,
           "created_at": "2026-10-25T12:00:00Z"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-020",
@@ -525,7 +557,8 @@
           "vin": "JTDBR32E720123456",
           "color": "White"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-021",
@@ -557,7 +590,8 @@
             }
           ]
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-022",
@@ -584,7 +618,8 @@
           "vin": "JTDBR32E720123456",
           "color": "White"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-023",
@@ -614,7 +649,8 @@
           "vin": "JTDBR32E720123456",
           "color": "Silver"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-024",
@@ -670,7 +706,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-025",
@@ -699,7 +736,8 @@
           "labor_hours": "0.50",
           "active": true
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-026",
@@ -737,7 +775,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-027",
@@ -763,7 +802,8 @@
           "labor_hours": "0.50",
           "active": true
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-028",
@@ -801,7 +841,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "None"
     },
     {
       "task_id": "BE-029",
@@ -921,7 +962,8 @@
             }
           ]
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-030",
@@ -970,7 +1012,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-031",
@@ -1076,7 +1119,8 @@
             }
           ]
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-032",
@@ -1195,7 +1239,8 @@
             }
           ]
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-033",
@@ -1221,7 +1266,8 @@
           "approved_at": "2026-10-25T12:00:00Z",
           "approval_method": "phone"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-034",
@@ -1264,7 +1310,8 @@
           "total": "368.00",
           "currency": "ETB"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-035",
@@ -1287,7 +1334,8 @@
           "technician_id": 5,
           "technician_name": "Abebe Kebede"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-036",
@@ -1339,7 +1387,8 @@
             "total_pages": 1
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-037",
@@ -1365,7 +1414,8 @@
           "order_status": 3,
           "order_status_name": "In progress"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-038",
@@ -1386,7 +1436,8 @@
           "line_id": 41,
           "technician_note": "Inspected pads; replaced worn components."
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-039",
@@ -1453,7 +1504,8 @@
           "currency": "ETB",
           "status": 1
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-040",
@@ -1523,7 +1575,8 @@
           "paid_at": null,
           "paid_received_by": null
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-041",
@@ -1593,7 +1646,8 @@
           "paid_at": null,
           "paid_received_by": null
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-042",
@@ -1619,7 +1673,8 @@
           "total": "264.50",
           "currency": "ETB"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-044",
@@ -1664,7 +1719,8 @@
           "currency": "ETB",
           "paid": false
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-045",
@@ -1683,7 +1739,8 @@
           "order_id": 24,
           "email_status": "sent"
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-046",
@@ -1715,7 +1772,8 @@
             "paid_this_month": "1058.00"
           }
         }
-      }
+      },
+      "authentication": "session cookie"
     },
     {
       "task_id": "BE-047",
@@ -1735,7 +1793,8 @@
           "roles_created": 3,
           "admin_created": true
         }
-      }
+      },
+      "authentication": "X-Setup-Key header"
     },
     {
       "task_id": "BE-048",
@@ -1754,7 +1813,14 @@
           "service": "abe-garage-api",
           "ready": true
         }
-      }
+      },
+      "authentication": "None"
     }
-  ]
+  ],
+  "error_envelope": ["status", "message", "data", "code"],
+  "authentication": {
+    "scheme": "session cookie",
+    "cookie": "abe_session (__Host-abe_session in production)",
+    "description": "POST /api/auth/login sets an httpOnly, SameSite=Lax session cookie. Browsers send it automatically; the frontend must call fetch with credentials: 'include'. Requests that change data must carry the frontend Origin header. No bearer tokens are issued."
+  }
 }

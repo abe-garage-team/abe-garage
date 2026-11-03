@@ -1,12 +1,10 @@
 import { Router } from 'express';
+import { authenticate } from '../../../middleware/authentication.js';
+import { getProfileValidation } from '../validations/profile.validation.js';
+import { getProfileController } from '../controller/profile.controller.js';
 
 const router = Router();
 
-// Mounted at /api/profile.
-// Planned endpoints (add handlers when implementing each task):
-// BE-008  GET   /
-
-// Import your controllers and validation here when the feature is ready.
-// Write local paths only; do not repeat /api or the resource prefix.
+router.get('/', authenticate, getProfileValidation, getProfileController);
 
 export default router;

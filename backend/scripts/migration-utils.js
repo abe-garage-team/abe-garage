@@ -24,6 +24,14 @@ export function listMigrations(migrationsDir) {
   return migrations;
 }
 
+function isOnlyCommentsOrWhitespace(text) {
+  const withoutComments = text
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*(--\s|#).*$/gm, '')
+    .replace(/^\s*--\s*$/gm, '');
+  return withoutComments.trim() === '';
+}
+
 export function splitSqlStatements(source) {
   const statements = [];
   let delimiter = ';';
@@ -33,18 +41,19 @@ export function splitSqlStatements(source) {
   let index = 0;
 
   const pushStatement = () => {
-    if (statement.trim()) statements.push(statement.trim());
+    if (!isOnlyCommentsOrWhitespace(statement)) statements.push(statement.trim());
     statement = '';
   };
 
   while (index < source.length) {
     const lineStart = index === 0 || source[index - 1] === '\n';
-    if (!quote && !blockComment && lineStart && !statement.trim()) {
+    if (!quote && !blockComment && lineStart && isOnlyCommentsOrWhitespace(statement)) {
       const lineEnd = source.indexOf('\n', index);
       const line = source.slice(index, lineEnd === -1 ? source.length : lineEnd).replace(/\r$/, '');
       const directive = /^\s*DELIMITER\s+(\S+)\s*$/i.exec(line);
       if (directive) {
         delimiter = directive[1];
+        statement = '';
         index = lineEnd === -1 ? source.length : lineEnd + 1;
         continue;
       }
