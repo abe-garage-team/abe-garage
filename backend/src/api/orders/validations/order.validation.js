@@ -210,3 +210,12 @@ export const listOrdersValidation = [
     return true;
   }),
 ];
+
+
+// BE-031 — Get Order by ID Validation
+export const getOrderParamsValidation = [
+  param("order_id")
+    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
+    .withMessage("Order ID must be a positive safe integer")
+    .toInt(),
+];

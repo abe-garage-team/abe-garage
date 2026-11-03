@@ -1,5 +1,5 @@
 
-import { createOrderService, listOrdersService } from "../service/order.service.js";
+import { createOrderService, listOrdersService, getOrderByIdService } from "../service/order.service.js";
 import { matchedData } from "express-validator";
 
 
@@ -43,3 +43,25 @@ export const listOrdersController = async (req, res, next) => {
   }
 };
 
+
+// BE-031 — Get single repair order
+
+export const getOrderByIdController = async (req, res, next) => {
+  try {
+    // Extract validated URL parameters
+    const { order_id } = matchedData(req, {
+      locations: ["params"],
+      onlyValidData: true,
+    });
+
+    const order = await getOrderByIdService(order_id);
+
+    return res.status(200).json({
+      status: "success",
+      message: "Get order details successful",
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

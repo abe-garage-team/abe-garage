@@ -543,3 +543,11 @@ export async function listOrdersService(filters = {}) {
     };
   });
 }
+
+
+// BE-031 — Read existing order without writing to database.
+export async function getOrderByIdService(orderId) {
+  const details = await getOrderDetails(pool, orderId);
+  if (!details) fail(404, "Order not found");
+  return details;
+}
