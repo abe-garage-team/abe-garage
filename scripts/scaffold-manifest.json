@@ -61,7 +61,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/employees/routes/employee.route.js",
       "mount_prefix": "/employees",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-010",
