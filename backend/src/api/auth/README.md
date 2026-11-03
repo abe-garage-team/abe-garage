@@ -1,10 +1,8 @@
 # auth
 
-This folder is reserved for this module. Controllers, services and validations are intentionally empty. Add your own exports, imports and handlers when implementing a task.
+Routes are mounted at /api/auth.
 
-- BE-004 · `POST /api/auth/login` (planned)
-- BE-005 · `POST /api/auth/forgot-password` (planned)
-- BE-006 · `POST /api/auth/reset-password` (planned)
-- BE-007 · `PATCH /api/auth/password` (planned)
+- BE-004 · `POST /api/auth/login` · sets the session cookie
+- BE-004b · `POST /api/auth/logout` · deletes the session and clears the cookie
 
-Read [the team guide](../../../../docs/TEAM-GUIDE.md) for shared API contracts and routing. No function names or controller wrappers are mandatory.
+Files: `routes/auth.route.js` (middleware order), `validations/auth.validation.js`, `controller/auth.controller.js`, `service/auth.service.js` (all business rules and SQL). Design: [docs/api/AUTH-DESIGN.md](../../../../docs/api/AUTH-DESIGN.md).

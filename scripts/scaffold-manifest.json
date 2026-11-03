@@ -7,7 +7,7 @@
       "local_path": "/login",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-004b",
@@ -16,7 +16,7 @@
       "local_path": "/logout",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-005",

@@ -1,3 +1,20 @@
-// auth: add request validation as you implement this module.
-// Endpoint behavior is documented in docs/api; function names and internal layout are yours.
-export {};
+import { body } from 'express-validator';
+import { validationHandler } from '../../../middleware/validation-handler.js';
+import {
+  rejectUnknownBodyFields,
+  rejectRequestBody,
+  emailField,
+} from '../../../middleware/validators.js';
+
+export const loginValidation = [
+  rejectUnknownBodyFields(['email', 'password']),
+  emailField('email'),
+  body('password')
+    .isString()
+    .withMessage('Password is required')
+    .notEmpty()
+    .withMessage('Password is required'),
+  validationHandler,
+];
+
+export const logoutValidation = [rejectRequestBody];
