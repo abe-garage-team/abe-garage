@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 const currentYear = new Date().getFullYear();
 const maxYear = currentYear + 1;
@@ -149,4 +149,21 @@ export const updateVehicleValidation = [
 
         return true;
     }),
+];
+
+// Validation rules for viewing vehicle service history (BE-024)
+export const vehicleHistoryValidation = [
+    param('vehicle_id')
+        .isInt({ min: 1 })
+        .withMessage('Vehicle ID must be a positive integer'),
+
+    query('page')
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage('Page must be a positive integer'),
+
+    query('limit')
+        .optional()
+        .isInt({ min: 1, max: 100 })
+        .withMessage('Limit must be an integer between 1 and 100'),
 ];
