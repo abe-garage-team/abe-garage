@@ -2,7 +2,7 @@
 
 A modular full-stack foundation for a four-person garage-management team. It contains the agreed API contracts, normalized MySQL schema, Express/React project structure, quality checks, and placeholders for feature owners to implement.
 
-Only `GET /api/health` and the initial Admin/settings seed are implemented. The remaining endpoints and UI pages are deliberate placeholders, not completed features.
+Authentication (login, logout, password reset and change, profile), customers and vehicles are implemented. The remaining endpoints and UI pages are placeholders for their owners.
 
 ## Stack
 
@@ -13,7 +13,7 @@ Only `GET /api/health` and the initial Admin/settings seed are implemented. The 
 
 ## First-time setup
 
-Use the Node version in `.nvmrc`, then run the following from the repository root:
+Use the Node version in `.nvmrc` and have MySQL 8 running locally. From the repository root:
 
 ```powershell
 npm ci
@@ -21,17 +21,24 @@ Copy-Item backend/.env.example backend/.env
 Copy-Item frontend/.env.example frontend/.env
 ```
 
-Set the database, JWT, initial Admin, and garage values in `backend/.env`. Create an empty MySQL database, then load the baseline schema and apply migrations:
+Open `backend/.env` and set `DB_USER` and `DB_PASSWORD` to your MySQL login. Everything else already has a development value. Then:
 
 ```powershell
-# Replace abe_garage with the database you created.
-Get-Content -Raw backend/db/schema.sql | mysql -u root -p -D abe_garage
-npm run db:migrate
-npm run seed:admin
+npm run db:setup
 npm run dev
 ```
 
+`db:setup` creates the `abe_garage` database if it is missing, loads `backend/db/schema.sql`, applies pending migrations, seeds the Admin from `INITIAL_ADMIN_*`, and adds development fixtures (a manager, two technicians, three customers, four vehicles, four services). Running it again is safe; it skips what already exists. Use `npm run db:setup -- --no-fixtures` for an empty garage.
+
 The frontend runs at `http://localhost:5173`; the API runs at `http://localhost:5000/api`.
+
+## Testing the API with Postman
+
+1. Import `postman/Abe-Garage.postman_collection.json` and `postman/local.environment.example.json`, then select the "Abe Garage local" environment.
+2. Send **Auth → Login**. Postman stores the session cookie; every other request now works.
+3. Add your own module's requests to the collection and run them before opening a PR.
+
+Development logins (all with password `Password123!`): `admin@abegarage.com`, `manager@abegarage.com`, `tech1@abegarage.com`, `tech2@abegarage.com`.
 
 ## Quality checks
 
@@ -39,7 +46,7 @@ The frontend runs at `http://localhost:5173`; the API runs at `http://localhost:
 npm run check
 ```
 
-This verifies project structure, API-contract/OpenAPI synchronization, linting, formatting, backend/frontend tests, and the frontend production build. For database work, use `npm run db:migrate:status` before `npm run db:migrate`.
+This verifies project structure, API-contract/OpenAPI synchronization, linting, formatting, backend/frontend tests, and the frontend production build. For database changes after the first setup, use `npm run db:migrate:status` before `npm run db:migrate`.
 
 ## Team conventions
 
