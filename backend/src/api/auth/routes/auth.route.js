@@ -10,10 +10,12 @@ import {
   logoutValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
+  changePasswordValidation,
 } from '../validations/auth.validation.js';
 import {
   loginController,
   logoutController,
+  changePasswordController,
   forgotPasswordController,
   resetPasswordController,
 } from '../controller/auth.controller.js';
@@ -22,6 +24,7 @@ const router = Router();
 
 router.post('/login', loginRateLimit, loginValidation, loginController);
 router.post('/logout', logoutValidation, attachUserIfLoggedIn, logoutController);
+router.patch('/password', authenticate, changePasswordValidation, changePasswordController);
 router.post(
   '/forgot-password',
   forgotPasswordRateLimit,

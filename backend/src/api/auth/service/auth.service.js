@@ -61,6 +61,39 @@ export async function logoutService(user, requestInfo) {
   await recordAuthEvent(AUTH_EVENT.LOGOUT, { ...requestInfo, employeeId: user.employee_id });
 }
 
+export async function changePasswordService(user, { currentPassword, newPassword }, requestInfo) {
+  await withTransaction(async (connection) => {
+    const [rows] = await connection.execute(
+      'SELECT employee_id, password_hash, active FROM employees WHERE employee_id = ? FOR UPDATE',
+      [user.employee_id],
+    );
+    const employee = rows[0];
+    if (!employee || !employee.active) {
+      throw new ForbiddenError('Account disabled', { code: ERROR_CODES.ACCOUNT_DISABLED });
+    }
+
+    const currentMatches = await verifyPassword(currentPassword, employee.password_hash);
+    if (!currentMatches) {
+      throw new BadRequestError('Current password is incorrect', {
+        code: ERROR_CODES.CURRENT_PASSWORD_INCORRECT,
+      });
+    }
+
+    const newHash = await hashPassword(newPassword);
+    await connection.execute('UPDATE employees SET password_hash = ? WHERE employee_id = ?', [
+      newHash,
+      user.employee_id,
+    ]);
+    await markAllResetTokensUsed(user.employee_id, connection);
+    await revokeAllSessionsForEmployee(user.employee_id, connection);
+    await recordAuthEvent(
+      AUTH_EVENT.PASSWORD_CHANGED,
+      { ...requestInfo, employeeId: user.employee_id },
+      connection,
+    );
+  });
+}
+
 export async function forgotPasswordService({ email }, requestInfo) {
   const [rows] = await pool.execute(
     'SELECT employee_id, first_name, active FROM employees WHERE email = ?',

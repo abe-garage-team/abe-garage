@@ -5,6 +5,7 @@ import { setSessionCookie, clearSessionCookie } from '../../../shared/sessions/s
 import {
   loginService,
   logoutService,
+  changePasswordService,
   forgotPasswordService,
   resetPasswordService,
 } from '../service/auth.service.js';
@@ -22,6 +23,17 @@ export const logoutController = asyncHandler(async (req, res) => {
   clearSessionCookie(res);
   res.set('Cache-Control', 'no-store');
   return respond(res, null, 'Logged out');
+});
+
+export const changePasswordController = asyncHandler(async (req, res) => {
+  const { current_password, new_password } = req.body;
+  await changePasswordService(
+    req.user,
+    { currentPassword: current_password, newPassword: new_password },
+    requestDetails(req),
+  );
+  clearSessionCookie(res);
+  return respond(res, null, 'Password changed successfully. Please log in again.');
 });
 
 export const forgotPasswordController = asyncHandler(async (req, res) => {

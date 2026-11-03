@@ -37,3 +37,14 @@ export const resetPasswordValidation = [
   passwordField('new_password'),
   validationHandler,
 ];
+
+export const changePasswordValidation = [
+  rejectUnknownBodyFields(['current_password', 'new_password']),
+  body('current_password')
+    .isString()
+    .withMessage('Current password is required')
+    .notEmpty()
+    .withMessage('Current password is required'),
+  passwordField('new_password'),
+  validationHandler,
+];
