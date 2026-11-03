@@ -1,18 +1,4 @@
-// Add an escaped text/HTML template when implementing notifications.
-
-function escapeHtml(value) {
-  const replacements = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  };
-
-  return String(value).replace(/[&<>"']/g, (character) => {
-    return replacements[character];
-  });
-}
+import { escapeHtml } from './escape-html.js';
 
 export function buildOrderCreatedEmail({ customerName, trackingUrl }) {
   const safeName = escapeHtml(customerName);
