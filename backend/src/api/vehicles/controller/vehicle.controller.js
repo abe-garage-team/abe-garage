@@ -30,6 +30,26 @@ export const getVehicle = asyncHandler(async (req, res) => {
   return respond(res, vehicle, 'View vehicle successful', 200);
 });
 
+// Controller to handle editing vehicle details (BE-023)
+export const updateVehicle = asyncHandler(async (req, res) => {
+  const { vehicle_id } = req.params;
+  const { year, make, model, type, mileage, plate, vin, color } = req.body;
+
+  const updatedVehicle = await vehicleService.updateVehicle(vehicle_id, {
+    year,
+    make,
+    model,
+    type,
+    mileage,
+    plate,
+    vin,
+    color,
+  });
+
+  return respond(res, updatedVehicle, 'Edit vehicle details successful', 200);
+});
+
 // Aliases for compatibility
 export const createVehicleController = createVehicle;
 export const getVehicleController = getVehicle;
+export const updateVehicleController = updateVehicle;
