@@ -43,7 +43,7 @@
       "local_path": "/password",
       "route_file": "backend/src/api/auth/routes/auth.route.js",
       "mount_prefix": "/auth",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-008",
