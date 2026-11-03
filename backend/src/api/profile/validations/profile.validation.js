@@ -1,2 +1,3 @@
-// Profile module: add request validation for GET /api/profile.
-export {};
+import { rejectRequestBody, rejectUnknownQueryFields } from '../../../middleware/validators.js';
+
+export const getProfileValidation = [rejectRequestBody, rejectUnknownQueryFields([])];
