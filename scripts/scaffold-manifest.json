@@ -10,6 +10,15 @@
       "implemented": false
     },
     {
+      "task_id": "BE-004b",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "local_path": "/logout",
+      "route_file": "backend/src/api/auth/routes/auth.route.js",
+      "mount_prefix": "/auth",
+      "implemented": false
+    },
+    {
       "task_id": "BE-005",
       "method": "POST",
       "path": "/api/auth/forgot-password",
@@ -572,7 +581,7 @@
         "name": "auth",
         "file": "auth/routes/auth.route.js",
         "prefix": "/auth",
-        "ids": ["BE-004", "BE-005", "BE-006", "BE-007"]
+        "ids": ["BE-004", "BE-004b", "BE-005", "BE-006", "BE-007"]
       },
       {
         "name": "profile",

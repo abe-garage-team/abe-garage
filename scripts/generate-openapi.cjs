@@ -39,7 +39,13 @@ function buildOpenApi(contracts) {
     paths: {},
     components: {
       securitySchemes: {
-        BearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        SessionCookie: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'abe_session',
+          description:
+            'httpOnly session cookie set by POST /api/auth/login (named __Host-abe_session in production).',
+        },
         SetupKey: { type: 'apiKey', in: 'header', name: 'X-Setup-Key' },
       },
     },
@@ -63,7 +69,7 @@ function buildOpenApi(contracts) {
           content: { 'application/json': { example: endpoint.response } },
         },
         400: { description: 'Validation failed or invalid input' },
-        401: { description: 'Missing, invalid, expired, or revoked access token' },
+        401: { description: 'Missing, invalid or expired session cookie' },
         403: { description: 'Inactive account or insufficient role' },
         500: { description: 'Unexpected server error' },
       },
@@ -92,7 +98,7 @@ function buildOpenApi(contracts) {
 
     if (endpoint.access !== 'Public') {
       operation.security =
-        endpoint.path === `${basePath}/install` ? [{ SetupKey: [] }] : [{ BearerAuth: [] }];
+        endpoint.path === `${basePath}/install` ? [{ SetupKey: [] }] : [{ SessionCookie: [] }];
     }
 
     openapi.paths[pathKey][method] = operation;
