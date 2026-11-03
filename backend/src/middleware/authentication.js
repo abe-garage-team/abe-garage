@@ -1,43 +1,49 @@
-import jwt from 'jsonwebtoken';
-import { pool } from '../config/db.js';
-import { env } from '../config/env.js';
-import { AppError } from '../utils/errors/index.js';
 import { asyncHandler } from '../utils/async-handler.js';
+import { UnauthorizedError, ForbiddenError, ERROR_CODES } from '../utils/errors/index.js';
+import {
+  readSessionTokenFromRequest,
+  setSessionCookie,
+  clearSessionCookie,
+  hasSessionCookie,
+} from '../shared/sessions/session.cookie.js';
+import {
+  findLiveSessionByToken,
+  extendSession,
+  touchSession,
+} from '../shared/sessions/session.store.js';
 
 export const authenticate = asyncHandler(async (req, res, next) => {
-  const match = /^Bearer ([^ ]+)$/i.exec(req.get('Authorization') || '');
-  if (!match) throw new AppError('Authentication required', 401);
-  let payload;
-  try {
-    payload = jwt.verify(match[1], env.jwt.secret, {
-      algorithms: ['HS256'],
-      issuer: env.jwt.issuer,
-      audience: env.jwt.audience,
+  const token = readSessionTokenFromRequest(req);
+
+  if (!token) {
+    if (hasSessionCookie(req)) clearSessionCookie(res);
+    throw new UnauthorizedError('Authentication required');
+  }
+
+  const session = await findLiveSessionByToken(token);
+  if (!session) {
+    clearSessionCookie(res);
+    throw new UnauthorizedError('Your session has expired. Please log in again.', {
+      code: ERROR_CODES.SESSION_EXPIRED,
     });
-  } catch {
-    throw new AppError('Invalid or expired access token', 401);
   }
-  if (
-    !payload ||
-    typeof payload !== 'object' ||
-    payload.token_use !== 'access' ||
-    !Number.isSafeInteger(payload.employee_id) ||
-    payload.employee_id < 1 ||
-    !Number.isInteger(payload.token_version) ||
-    payload.token_version < 0 ||
-    !Number.isFinite(payload.exp)
-  ) {
-    throw new AppError('Invalid access token', 401);
+
+  if (!session.active) {
+    clearSessionCookie(res);
+    throw new ForbiddenError('Account disabled', { code: ERROR_CODES.ACCOUNT_DISABLED });
   }
-  const [rows] = await pool.execute(
-    'SELECT employee_id, role_id, active, token_version FROM employees WHERE employee_id = ?',
-    [payload.employee_id],
-  );
-  const employee = rows[0];
-  if (!employee) throw new AppError('Invalid access token', 401);
-  if (!employee.active) throw new AppError('Account disabled', 403);
-  if (employee.token_version !== payload.token_version)
-    throw new AppError('Access token has been revoked', 401);
-  req.user = { employee_id: employee.employee_id, role_id: employee.role_id };
+
+  if (session.needs_extension) {
+    const newExpiresAt = await extendSession(session.session_id);
+    setSessionCookie(res, token, newExpiresAt);
+  } else {
+    await touchSession(session.session_id);
+  }
+
+  req.user = {
+    employee_id: session.employee_id,
+    role_id: session.role_id,
+    session_id: session.session_id,
+  };
   next();
 });
