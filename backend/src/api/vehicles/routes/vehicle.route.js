@@ -7,11 +7,13 @@ import {
     createVehicleValidation,
     getVehicleValidation,
     updateVehicleValidation,
+    vehicleHistoryValidation,
 } from '../validations/vehicle.validation.js';
 import {
     createVehicle,
     getVehicle,
     updateVehicle,
+    getVehicleHistory,
 } from '../controller/vehicle.controller.js';
 
 const router = Router();
@@ -39,7 +41,13 @@ router.patch(
     updateVehicle,
 );
 
-// Planned endpoints:
-// BE-024  GET   /:vehicle_id/orders
+// BE-024: View vehicle service history (Any active staff)
+router.get(
+    '/:vehicle_id/orders',
+    authenticate,
+    vehicleHistoryValidation,
+    validationHandler,
+    getVehicleHistory,
+);
 
 export default router;
