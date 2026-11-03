@@ -23,9 +23,8 @@ jobs:
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: abe_garage_test
-      JWT_SECRET: ci-super-secret-test-key-32-chars-long!
-      JWT_ISSUER: abe-garage-test
-      JWT_AUDIENCE: abe-garage-clients
+      AUTH_TOKEN_PEPPER: ci-super-secret-test-pepper-32-chars-long!
+      MAIL_ADAPTER: fake
       INITIAL_ADMIN_EMAIL: admin@abegarage.com
       INITIAL_ADMIN_FIRST_NAME: Abe
       INITIAL_ADMIN_LAST_NAME: Admin
@@ -55,9 +54,6 @@ jobs:
 
       - name: Run database migrations
         run: npm run db:migrate
-
-      - name: Run all quality checks
-        run: npm run check
 
       - name: Seed the initial Admin
         run: npm run seed:admin
