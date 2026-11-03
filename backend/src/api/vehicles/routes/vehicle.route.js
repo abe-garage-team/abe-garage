@@ -6,8 +6,13 @@ import { ROLES } from '../../../constants/roles.js';
 import {
     createVehicleValidation,
     getVehicleValidation,
+    updateVehicleValidation,
 } from '../validations/vehicle.validation.js';
-import { createVehicle, getVehicle } from '../controller/vehicle.controller.js';
+import {
+    createVehicle,
+    getVehicle,
+    updateVehicle,
+} from '../controller/vehicle.controller.js';
 
 const router = Router();
 
@@ -24,8 +29,17 @@ router.post(
 // BE-022: View vehicle (Any active staff)
 router.get('/:vehicle_id', authenticate, getVehicleValidation, validationHandler, getVehicle);
 
+// BE-023: Edit vehicle details (Manager or Admin only)
+router.patch(
+    '/:vehicle_id',
+    authenticate,
+    hasRole(ROLES.MANAGER, ROLES.ADMIN),
+    updateVehicleValidation,
+    validationHandler,
+    updateVehicle,
+);
+
 // Planned endpoints:
-// BE-023  PATCH /:vehicle_id
 // BE-024  GET   /:vehicle_id/orders
 
 export default router;
