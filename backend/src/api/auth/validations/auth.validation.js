@@ -4,7 +4,9 @@ import {
   rejectUnknownBodyFields,
   rejectRequestBody,
   emailField,
+  passwordField,
 } from '../../../middleware/validators.js';
+import { TOKEN_PATTERN } from '../../../shared/auth/tokens.js';
 
 export const loginValidation = [
   rejectUnknownBodyFields(['email', 'password']),
@@ -22,5 +24,16 @@ export const logoutValidation = [rejectRequestBody];
 export const forgotPasswordValidation = [
   rejectUnknownBodyFields(['email']),
   emailField('email'),
+  validationHandler,
+];
+
+export const resetPasswordValidation = [
+  rejectUnknownBodyFields(['token', 'new_password']),
+  body('token')
+    .isString()
+    .withMessage('Reset token is required')
+    .matches(TOKEN_PATTERN)
+    .withMessage('Invalid reset token'),
+  passwordField('new_password'),
   validationHandler,
 ];
