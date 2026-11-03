@@ -18,3 +18,9 @@ export const loginValidation = [
 ];
 
 export const logoutValidation = [rejectRequestBody];
+
+export const forgotPasswordValidation = [
+  rejectUnknownBodyFields(['email']),
+  emailField('email'),
+  validationHandler,
+];
