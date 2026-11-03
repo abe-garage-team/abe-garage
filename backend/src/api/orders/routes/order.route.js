@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../../../middleware/authentication.js';
-import { createOrderValidation } from '../validations/order.validation.js';
-import { createOrderController } from '../controller/order.controller.js';
+import { createOrderValidation,  listOrdersValidation  } from '../validations/order.validation.js';
+import { createOrderController, listOrdersController } from '../controller/order.controller.js';
 const router = Router();
 
 
@@ -13,7 +13,15 @@ router.post(
   createOrderValidation,
   createOrderController
 ); 
+
 // BE-030  GET   /
+router.get(
+  "/",
+  authenticate,
+  listOrdersValidation,
+  listOrdersController
+);
+
 // BE-031  GET   /:order_id
 // BE-032  PATCH /:order_id
 // BE-033  PATCH /:order_id/approval

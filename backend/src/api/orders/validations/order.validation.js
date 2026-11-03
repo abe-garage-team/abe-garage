@@ -95,3 +95,118 @@ export const createOrderValidation = [
     .bail()
     .trim(),
 ];
+
+// BE-030 — List and filter orders
+export const listOrdersValidation = [
+  // Reject query parameters not documented by BE-030.
+  query().custom((value) => {
+    const allowedFields = [
+      "search",
+      "status",
+      "paid",
+      "customer_id",
+      "vehicle_id",
+      "unpaid_only",
+      "page",
+      "limit",
+    ];
+
+    const unknownFields = Object.keys(value ?? {}).filter(
+      (field) => !allowedFields.includes(field)
+    );
+
+    if (unknownFields.length > 0) {
+      throw new Error(
+        `Unknown query parameters: ${unknownFields.join(", ")}`
+      );
+    }
+
+    return true;
+  }),
+
+  query("search")
+    .optional()
+    .isString()
+    .withMessage("Search must be a string")
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage("Search cannot be empty"),
+
+  query("status")
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Status must be between 1 and 5")
+    .bail()
+    .toInt(),
+
+  query("paid")
+    .optional()
+    .isIn(["true", "false"])
+    .withMessage("Paid must be true or false")
+    .bail()
+    .toBoolean(),
+
+  query("customer_id")
+    .optional()
+    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
+    .withMessage("Customer ID must be a positive integer")
+    .bail()
+    .toInt(),
+
+  query("vehicle_id")
+    .optional()
+    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
+    .withMessage("Vehicle ID must be a positive integer")
+    .bail()
+    .toInt(),
+
+  query("unpaid_only")
+    .optional()
+    .isIn(["true", "false"])
+    .withMessage("Unpaid only must be true or false")
+    .bail()
+    .toBoolean(),
+
+  query("page")
+    .optional()
+    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
+    .withMessage("Page must be a positive integer")
+    .bail()
+    .toInt(),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be between 1 and 100")
+    .bail()
+    .toInt(),
+
+  // Business rule: unpaid_only=true requires status 4 and paid=false if those filters are supplied.
+  query().custom((_value, { req }) => {
+    const unpaidOnly = req.query.unpaid_only === true ||
+      req.query.unpaid_only === "true";
+
+    if (!unpaidOnly) return true;
+
+    if (
+      req.query.paid === true ||
+      req.query.paid === "true"
+    ) {
+      throw new Error(
+        "unpaid_only=true cannot be combined with paid=true"
+      );
+    }
+
+    if (
+      req.query.status !== undefined &&
+      Number(req.query.status) !== 4
+    ) {
+      throw new Error(
+        "unpaid_only=true requires status=4"
+      );
+    }
+
+    return true;
+  }),
+];

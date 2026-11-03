@@ -363,3 +363,183 @@ export async function createOrderService(
   
   return data;
 }
+
+
+// ! BE-030 — List and filter orders
+const getOrderStatusName = (status) => {
+  const statusNames = {
+    1: "Awaiting approval",
+    2: "Approved",
+    3: "In Progress",
+    4: "Completed",
+    5: "Declined",
+
+};
+
+  return statusNames[status] ?? null;
+};
+
+export async function listOrdersService(filters = {}) {
+  const {
+    search,
+    status,
+    paid,
+    customer_id,
+    vehicle_id,
+    unpaid_only = false,
+    page = 1,
+    limit = 10,
+  } = filters;
+
+  // Additional protection even when called outside the route.
+  if (unpaid_only === true) {
+    if (paid === true || (status !== undefined && status !== 4)) {
+      fail(
+        400,
+        "unpaid_only requires status=4 and paid=false"
+      );
+    }
+  }
+
+  const offset = (page - 1) * limit;
+
+  if (!Number.isSafeInteger(offset)) {
+    fail(400, "Pagination offset is too large");
+  }
+
+  // Build SQL dynamically with allowlisted conditions.
+  // User values are always passed as parameters.
+  const conditions = [];
+  const params = [];
+
+  if (search !== undefined) {
+    conditions.push(`(
+      c.first_name LIKE ?
+      OR c.last_name LIKE ?
+      OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?
+      OR v.plate LIKE ?
+    )`);
+
+    const searchValue = `%${search}%`;
+
+    params.push(
+      searchValue,
+      searchValue,
+      searchValue,
+      searchValue
+    );
+  }
+
+  if (unpaid_only === true) {
+    // Unpaid invoice queue: completed AND not paid.
+    conditions.push("o.status = 4");
+    conditions.push("o.paid = 0");
+  } else {
+    if (status !== undefined) {
+      conditions.push("o.status = ?");
+      params.push(status);
+    }
+
+    if (paid !== undefined) {
+      conditions.push("o.paid = ?");
+      params.push(paid ? 1 : 0);
+    }
+  }
+
+  if (customer_id !== undefined) {
+    conditions.push("c.customer_id = ?");
+    params.push(customer_id);
+  }
+
+  if (vehicle_id !== undefined) {
+    conditions.push("o.vehicle_id = ?");
+    params.push(vehicle_id);
+  }
+
+  const whereClause = conditions.length
+    ? `WHERE ${conditions.join(" AND ")}`
+    : "";
+
+  // Reuse the order summary view from BE-029/BE-031.
+  const fromClause = `
+    FROM v_orders o
+    INNER JOIN vehicles v
+      ON v.vehicle_id = o.vehicle_id
+    INNER JOIN customers c
+      ON c.customer_id = v.customer_id
+  `;
+
+  // Read the count and page from one consistent snapshot.
+  // withTransaction() must use the same connection for both reads.
+  return await withTransaction(async (connection) => {
+    const [[countRow]] = await connection.execute(
+      `
+        SELECT COUNT(*) AS total
+        ${fromClause}
+        ${whereClause}
+      `,
+      params
+    );
+
+    const total = Number(countRow.total);
+
+    const [rows] = await connection.execute(
+      `
+        SELECT
+          o.order_id,
+          c.customer_id,
+          CONCAT(c.first_name, ' ', c.last_name)
+            AS customer_name,
+          o.vehicle_id,
+          v.plate,
+          o.status,
+          o.subtotal,
+          o.vat_rate,
+          o.currency,
+          o.paid,
+          o.created_at,
+          o.estimated_ready_date,
+          o.completed_at
+        ${fromClause}
+        ${whereClause}
+        ORDER BY o.created_at DESC, o.order_id DESC
+        LIMIT ? OFFSET ?
+      `,
+      [...params, limit, offset]
+    );
+
+    const orders = rows.map((row) => {
+      const subtotal = cents(row.subtotal);
+      const vat = vatCents(subtotal, row.vat_rate);
+
+      return {
+        order_id: row.order_id,
+        customer_id: row.customer_id,
+        customer_name: row.customer_name,
+        vehicle_id: row.vehicle_id,
+        plate: row.plate,
+        status: Number(row.status),
+        status_name: getOrderStatusName(Number(row.status)),
+        subtotal: money(subtotal),
+        vat_rate: String(row.vat_rate),
+        vat_amount: money(vat),
+        total: money(subtotal + vat),
+        currency: row.currency,
+        paid: Boolean(row.paid),
+        created_at: isoUtc(row.created_at),
+        estimated_ready_date: isoUtc(row.estimated_ready_date),
+        completed_at: isoUtc(row.completed_at),
+      };
+    });
+
+    return {
+      orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
+  });
+}
