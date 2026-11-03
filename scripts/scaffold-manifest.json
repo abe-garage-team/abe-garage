@@ -52,7 +52,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/profile/routes/profile.route.js",
       "mount_prefix": "/profile",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-009",
