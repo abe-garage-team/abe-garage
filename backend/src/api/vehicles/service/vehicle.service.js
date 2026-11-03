@@ -113,6 +113,113 @@ export async function getVehicle(vehicleId) {
     };
 }
 
+// Service to edit vehicle specifications (BE-023)
+export async function updateVehicle(vehicleId, updates = {}) {
+    // 1. Verify vehicle exists
+    const [existingRows] = await pool.execute(
+        'SELECT vehicle_id, customer_id, year, make, model, vehicle_type, mileage, plate, vin, color FROM vehicles WHERE vehicle_id = ?',
+        [vehicleId],
+    );
+
+    if (existingRows.length === 0) {
+        throw new AppError('Vehicle not found', 404);
+    }
+
+    const existingVehicle = existingRows[0];
+
+    // 2. Validate mileage does not decrease
+    if (updates.mileage !== undefined && Number(updates.mileage) < Number(existingVehicle.mileage)) {
+        throw new AppError('Mileage cannot decrease', 409, {
+            errors: { mileage: 'Mileage cannot decrease' },
+        });
+    }
+
+    // 3. Validate plate uniqueness if updating plate
+    let normalizedPlate;
+    if (updates.plate !== undefined) {
+        normalizedPlate = updates.plate.trim().toUpperCase();
+
+        const [conflictRows] = await pool.execute(
+            'SELECT vehicle_id FROM vehicles WHERE UPPER(plate) = ? AND vehicle_id != ?',
+            [normalizedPlate, vehicleId],
+        );
+
+        if (conflictRows.length > 0) {
+            throw new AppError('Plate already used', 409, {
+                errors: { plate: 'Plate number already registered' },
+            });
+        }
+    }
+
+    // 4. Assemble dynamic update fields
+    const fields = [];
+    const params = [];
+
+    if (updates.year !== undefined) {
+        fields.push('year = ?');
+        params.push(Number(updates.year));
+    }
+    if (updates.make !== undefined) {
+        fields.push('make = ?');
+        params.push(updates.make.trim());
+    }
+    if (updates.model !== undefined) {
+        fields.push('model = ?');
+        params.push(updates.model.trim());
+    }
+    if (updates.type !== undefined) {
+        fields.push('vehicle_type = ?');
+        params.push(updates.type.trim());
+    }
+    if (updates.mileage !== undefined) {
+        fields.push('mileage = ?');
+        params.push(Number(updates.mileage));
+    }
+    if (updates.plate !== undefined) {
+        fields.push('plate = ?');
+        params.push(normalizedPlate);
+    }
+    if (updates.vin !== undefined) {
+        fields.push('vin = ?');
+        params.push(updates.vin ? updates.vin.trim() : null);
+    }
+    if (updates.color !== undefined) {
+        fields.push('color = ?');
+        params.push(updates.color.trim());
+    }
+
+    if (fields.length === 0) {
+        throw new AppError('No fields provided for update', 400);
+    }
+
+    params.push(vehicleId);
+
+    await pool.execute(`UPDATE vehicles SET ${fields.join(', ')} WHERE vehicle_id = ?`, params);
+
+    // 5. Retrieve and return updated vehicle
+    const [updatedRows] = await pool.execute(
+        `SELECT vehicle_id, customer_id, year, make, model, vehicle_type AS type, mileage, plate, vin, color
+     FROM vehicles
+     WHERE vehicle_id = ?`,
+        [vehicleId],
+    );
+
+    const updated = updatedRows[0];
+    return {
+        vehicle_id: Number(updated.vehicle_id),
+        customer_id: Number(updated.customer_id),
+        year: Number(updated.year),
+        make: updated.make,
+        model: updated.model,
+        type: updated.type,
+        mileage: Number(updated.mileage),
+        plate: updated.plate,
+        vin: updated.vin || null,
+        color: updated.color,
+    };
+}
+
 // Aliases for compatibility
 export const createVehicleService = createVehicle;
 export const getVehicleService = getVehicle;
+export const updateVehicleService = updateVehicle;
