@@ -1,10 +1,18 @@
 import { Router } from 'express';
-
+import { authenticate } from '../../../middleware/authentication.js';
+import { createOrderValidation } from '../validations/order.validation.js';
+import { createOrderController } from '../controller/order.controller.js';
 const router = Router();
 
-// Mounted at /api/orders.
-// Planned endpoints (add handlers when implementing each task):
+
+ // Mounted at /api/orders.
 // BE-029  POST  /
+router.post(
+  "/",
+  authenticate,
+  createOrderValidation,
+  createOrderController
+); 
 // BE-030  GET   /
 // BE-031  GET   /:order_id
 // BE-032  PATCH /:order_id
