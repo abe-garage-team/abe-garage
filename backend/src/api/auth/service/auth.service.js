@@ -1,6 +1,11 @@
 import { pool, withTransaction } from '../../../config/db.js';
 import { env } from '../../../config/env.js';
-import { UnauthorizedError, ForbiddenError, ERROR_CODES } from '../../../utils/errors/index.js';
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  BadRequestError,
+  ERROR_CODES,
+} from '../../../utils/errors/index.js';
 import {
   hashPassword,
   verifyPassword,
@@ -11,6 +16,7 @@ import { AUTH_EVENT, recordAuthEvent } from '../../../shared/auth/auth-events.js
 import {
   createSessionForEmployee,
   revokeSessionById,
+  revokeAllSessionsForEmployee,
 } from '../../../shared/sessions/session.store.js';
 import { findEmployeeWithPasswordByEmail } from '../../../shared/employees/employee.queries.js';
 import { toPublicEmployee } from '../../../shared/employees/employee.presenter.js';
@@ -93,5 +99,54 @@ export async function forgotPasswordService({ email }, requestInfo) {
     firstName: employee.first_name,
     resetUrl: resetUrl.toString(),
     expiresInMinutes: Math.round(env.auth.resetTokenTtlMs / 60000),
+  });
+}
+
+export async function resetPasswordService({ token, newPassword }, requestInfo) {
+  const invalidLink = () =>
+    new BadRequestError('Invalid or expired reset link', { code: ERROR_CODES.INVALID_RESET_LINK });
+
+  await withTransaction(async (connection) => {
+    const [candidates] = await connection.execute(
+      'SELECT reset_id, employee_id FROM password_reset_tokens WHERE token_hash = ?',
+      [hashToken(token)],
+    );
+    const candidate = candidates[0];
+    if (!candidate) {
+      await recordAuthEvent(AUTH_EVENT.RESET_REJECTED, requestInfo, connection);
+      throw invalidLink();
+    }
+
+    const [employees] = await connection.execute(
+      'SELECT employee_id, active FROM employees WHERE employee_id = ? FOR UPDATE',
+      [candidate.employee_id],
+    );
+    const [tokens] = await connection.execute(
+      `SELECT reset_id FROM password_reset_tokens
+       WHERE reset_id = ? AND used_at IS NULL AND expires_at > UTC_TIMESTAMP(6) FOR UPDATE`,
+      [candidate.reset_id],
+    );
+    const employee = employees[0];
+    if (!employee || !employee.active || !tokens.length) {
+      await recordAuthEvent(
+        AUTH_EVENT.RESET_REJECTED,
+        { ...requestInfo, employeeId: candidate.employee_id },
+        connection,
+      );
+      throw invalidLink();
+    }
+
+    const newHash = await hashPassword(newPassword);
+    await connection.execute('UPDATE employees SET password_hash = ? WHERE employee_id = ?', [
+      newHash,
+      employee.employee_id,
+    ]);
+    await markAllResetTokensUsed(employee.employee_id, connection);
+    await revokeAllSessionsForEmployee(employee.employee_id, connection);
+    await recordAuthEvent(
+      AUTH_EVENT.RESET_COMPLETED,
+      { ...requestInfo, employeeId: employee.employee_id },
+      connection,
+    );
   });
 }
