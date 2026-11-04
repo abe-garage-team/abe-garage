@@ -289,7 +289,7 @@ export async function createOrderService(
 
     // 5. Calculate financial values
     const tax = vatCents(subtotalCents, settings.vat_rate);
-    const total = subtotalCents + tax;
+  
 
     // 6. Generate 64-character tracking hash
     const orderHash = randomBytes(32).toString("hex");
