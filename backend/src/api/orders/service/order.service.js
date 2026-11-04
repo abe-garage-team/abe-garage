@@ -244,7 +244,6 @@ export async function createOrderService(
     }
 
     const selected = [];
-    let subtotalCents = 0n;
 
     for (const serviceId of serviceIds) {
       const [[service]] = await connection.execute(
@@ -284,17 +283,12 @@ export async function createOrderService(
       }
 
       selected.push(version);
-      subtotalCents += cents(version.default_price);
     }
 
-    // 5. Calculate financial values
-    const tax = vatCents(subtotalCents, settings.vat_rate);
-  
+    // 5. Generate 64-character tracking hash
+    const orderHash = randomBytes(32).toString('hex');
 
-    // 6. Generate 64-character tracking hash
-    const orderHash = randomBytes(32).toString("hex");
-
-    // 7. Insert order
+    // 6. Insert order
     const [inserted] = await connection.execute(
       `INSERT INTO orders (
          vehicle_id,
