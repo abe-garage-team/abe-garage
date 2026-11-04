@@ -1,5 +1,5 @@
 
-import { createOrderService, listOrdersService, getOrderByIdService, updateOrderService } from "../service/order.service.js";
+import { createOrderService, listOrdersService, getOrderByIdService, updateOrderService , recordApprovalService} from "../service/order.service.js";
 import { matchedData } from "express-validator";
 
 
@@ -90,6 +90,38 @@ export const updateOrderController = async (req, res, next) => {
     return res.status(200).json({
       status: "success",
       message: "Edit estimate or order notes successful",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// BE-033 — Record estimate approval or decline
+export const recordApprovalController = async (req, res, next) => {
+  try {
+    const { order_id } = matchedData(req, {
+      locations: ["params"],
+      onlyValidData: true,
+    });
+
+    const input = matchedData(req, {
+      locations: ["body"],
+      onlyValidData: true,
+    });
+
+    // Comes from authenticated staff context.
+    const actorId = req.user.employee_id;
+
+    const result = await recordApprovalService(
+      order_id,
+      input,
+      actorId
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: "Record estimate approval or decline successful",
       data: result,
     });
   } catch (error) {
