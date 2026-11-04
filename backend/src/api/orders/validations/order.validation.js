@@ -219,3 +219,114 @@ export const getOrderParamsValidation = [
     .withMessage("Order ID must be a positive safe integer")
     .toInt(),
 ];
+
+// BE-032 — Update order
+//It does not accept customer_id, vehicle_id, paid, status, vat_rate, or calculated totals because BE-032 explicitly prohibits modifying those fields.
+export const updateOrderValidation = [
+  param("order_id")
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage("Order ID must be a positive integer")
+    .bail()
+    .toInt(),
+
+  // Reject unknown fields.
+  body().custom((value) => {
+    const allowed = [
+      "lines",
+      "estimated_ready_date",
+      "notes_for_customer",
+      "internal_notes",
+    ];
+
+    if (!value || typeof value !== "object" ||
+        Array.isArray(value)) {
+      throw new Error("Request body must be an object");
+    }
+
+    if (Object.keys(value).length === 0) {
+      throw new Error("Provide at least one field to update");
+    }
+
+    if (Object.keys(value).some(
+      (key) => !allowed.includes(key)
+    )) {
+      throw new Error("Unknown fields are not allowed");
+    }
+
+    return true;
+  }),
+
+  body("lines")
+    .optional()
+    .isArray({ min: 1, max: 100 })
+    .withMessage("Lines must contain 1 to 100 services")
+    .bail()
+    .custom((lines) => {
+      const ids = [];
+
+      for (const line of lines) {
+        if (!line || typeof line !== "object" ||
+            Array.isArray(line)) {
+          throw new Error("Each line must be an object");
+        }
+
+        const allowed = ["service_id", "line_price"];
+
+        if (Object.keys(line).some(
+          (key) => !allowed.includes(key)
+        )) {
+          throw new Error("Unknown line fields");
+        }
+
+        ids.push(line.service_id);
+      }
+
+      if (new Set(ids.map(String)).size !== ids.length) {
+        throw new Error("Duplicate services are not allowed");
+      }
+
+      return true;
+    }),
+
+  body("lines.*.service_id")
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage("Invalid service ID")
+    .bail()
+    .toInt(),
+
+  body("lines.*.line_price")
+    .optional()
+    .matches(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/)
+    .withMessage(
+      "Line price must be a nonnegative amount with up to 2 decimals"
+    ),
+
+  body("estimated_ready_date")
+    .optional()
+    .isISO8601({ strict: true, strictSeparator: true })
+    .withMessage("Invalid estimated ready date")
+    .bail()
+    .custom((value) => {
+      if (
+        !/(Z|[+-]\d{2}:\d{2})$/i.test(value) ||
+        !Number.isFinite(Date.parse(value))
+      ) {
+        throw new Error("Date must include a valid timezone");
+      }
+      return true;
+    }),
+
+  body("notes_for_customer")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Customer notes must be a string")
+    .bail()
+    .trim(),
+
+  body("internal_notes")
+    .optional({ values: "null" })
+    .isString()
+    .withMessage("Internal notes must be a string")
+    .bail()
+    .trim(),
+];

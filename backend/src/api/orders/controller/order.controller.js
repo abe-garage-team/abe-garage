@@ -1,5 +1,5 @@
 
-import { createOrderService, listOrdersService, getOrderByIdService } from "../service/order.service.js";
+import { createOrderService, listOrdersService, getOrderByIdService, updateOrderService } from "../service/order.service.js";
 import { matchedData } from "express-validator";
 
 
@@ -60,6 +60,37 @@ export const getOrderByIdController = async (req, res, next) => {
       status: "success",
       message: "Get order details successful",
       data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// BE-032 — Edit estimate or order notes
+export const updateOrderController = async (req, res, next) => {
+  try {
+    const { order_id } = matchedData(req, {
+      locations: ["params"],
+    });
+
+    const input = matchedData(req, {
+      locations: ["body"],
+    });
+
+    // Use your team's verified authentication context.
+    const actorId = req.user.employee_id;
+
+    const result = await updateOrderService(
+      order_id,
+      input,
+      actorId
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: "Edit estimate or order notes successful",
+      data: result,
     });
   } catch (error) {
     next(error);

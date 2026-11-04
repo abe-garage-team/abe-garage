@@ -550,3 +550,276 @@ export async function getOrderByIdService(orderId) {
   if (!details) fail(404, "Order not found");
   return details;
 }
+
+
+//   BE-032 — Edit estimate or order notes
+export async function updateOrderService(
+  orderId,
+  input,
+  actorId
+) {
+  return await withTransaction(async (connection) => {
+
+    // 1. Lock the order to prevent concurrent edits.
+    const [[order]] = await connection.execute(
+      `SELECT *
+       FROM orders
+       WHERE order_id = ?
+       FOR UPDATE`,
+      [orderId]
+    );
+
+    if (!order) {
+      fail(404, "Order not found");
+    }
+
+    if (Number(order.status) === 5) {
+      fail(409, "Declined orders cannot be edited");
+    }
+
+    const hasLines = Object.hasOwn(input, "lines");
+
+    if (hasLines && Number(order.status) !== 1) {
+      fail(409, "Order lines are not editable in this state");
+    }
+
+    // 2. Read and lock existing lines.
+    const [existingLines] = await connection.execute(
+      `SELECT
+         ol.line_id,
+         ol.service_version_id,
+         ol.agreed_price,
+         ol.line_status,
+         sv.service_id
+       FROM order_lines ol
+       JOIN service_versions sv
+         ON sv.service_version_id = ol.service_version_id
+       WHERE ol.order_id = ?
+       ORDER BY ol.line_id
+       FOR UPDATE`,
+      [orderId]
+    );
+
+    // 3. Check invoice issuance.
+    const [[invoice]] = await connection.execute(
+      `SELECT invoice_id
+       FROM invoices
+       WHERE order_id = ?
+       FOR UPDATE`,
+      [orderId]
+    );
+
+    if (hasLines && invoice) {
+      fail(409, "Issued invoice lines cannot be modified");
+    }
+
+    // 4. Update services only when lines were supplied.
+    if (hasLines) {
+
+      const requestedIds = new Set(
+        input.lines.map(line => Number(line.service_id))
+      );
+
+      const existingByService = new Map(
+        existingLines.map(line => [
+          Number(line.service_id),
+          line
+        ])
+      );
+
+      // 4a. Remove omitted services, but only if unstarted.
+      for (const existing of existingLines) {
+        const serviceId = Number(existing.service_id);
+
+        if (!requestedIds.has(serviceId)) {
+          if (Number(existing.line_status) !== 0) {
+            fail(
+              409,
+              "Cannot remove started or completed work"
+            );
+          }
+
+          await connection.execute(
+            `DELETE FROM order_lines
+             WHERE line_id = ?
+               AND order_id = ?`,
+            [existing.line_id, orderId]
+          );
+        }
+      }
+
+      // 4b. Retain, reprice, or add service lines.
+      for (const requested of input.lines) {
+        const serviceId = Number(requested.service_id);
+
+        const existing = existingByService.get(serviceId);
+
+        if (existing) {
+          // Retained line: preserve its ID and assignment.
+          if (requested.line_price !== undefined) {
+            const oldPrice = cents(existing.agreed_price);
+            const newPrice = cents(requested.line_price);
+
+            if (
+              newPrice !== oldPrice &&
+              Number(existing.line_status) !== 0
+            ) {
+              fail(
+                409,
+                "Cannot reprice started or completed work"
+              );
+            }
+
+            if (newPrice !== oldPrice) {
+              await connection.execute(
+                `UPDATE order_lines
+                 SET agreed_price = ?
+                 WHERE line_id = ?`,
+                [
+                  money(newPrice),
+                  existing.line_id
+                ]
+              );
+            }
+          }
+
+          // An unspecified price retains the old snapshot.
+          continue;
+        }
+
+        // New service: validate current service availability.
+        const [[service]] = await connection.execute(
+          `SELECT service_id, active
+           FROM services
+           WHERE service_id = ?
+           FOR UPDATE`,
+          [serviceId]
+        );
+
+        if (!service) {
+          fail(404, `Service ${serviceId} not found`);
+        }
+
+        if (!service.active) {
+          fail(409, `Service ${serviceId} is inactive`);
+        }
+
+        const [[version]] = await connection.execute(
+          `SELECT
+             service_version_id,
+             default_price
+           FROM service_versions
+           WHERE service_id = ?
+           ORDER BY version_number DESC
+           LIMIT 1`,
+          [serviceId]
+        );
+
+        if (!version) {
+          fail(409, "Service has no available version");
+        }
+
+        const agreedPrice =
+          requested.line_price !== undefined
+            ? money(cents(requested.line_price))
+            : money(cents(version.default_price));
+
+        await connection.execute(
+          `INSERT INTO order_lines (
+             order_id,
+             service_version_id,
+             agreed_price,
+             line_status
+           )
+           VALUES (?, ?, ?, 0)`,
+          [
+            orderId,
+            version.service_version_id,
+            agreedPrice
+          ]
+        );
+      }
+    }
+
+    // 5. Prepare optional metadata changes.
+    const updates = [];
+    const values = [];
+
+    if (input.estimated_ready_date !== undefined) {
+      const newDate = new Date(input.estimated_ready_date);
+
+      if (
+        Number(order.status) === 4 &&
+        (
+          !order.completed_at ||
+          newDate.getTime() >
+            new Date(isoUtc(order.completed_at)).getTime()
+        )
+      ) {
+        fail(
+          409,
+          "Ready date cannot be later than completion"
+        );
+      }
+
+      updates.push("estimated_ready_date = ?");
+      values.push(mysqlUtc(input.estimated_ready_date));
+    }
+
+    if (
+      Object.hasOwn(input, "notes_for_customer")
+    ) {
+      updates.push("notes_for_customer = ?");
+      values.push(input.notes_for_customer);
+    }
+
+    if (
+      Object.hasOwn(input, "internal_notes")
+    ) {
+      updates.push("internal_notes = ?");
+      values.push(input.internal_notes);
+    }
+
+    // 6. Update order metadata.
+    if (updates.length > 0) {
+      await connection.execute(
+        `UPDATE orders
+         SET ${updates.join(", ")}
+         WHERE order_id = ?`,
+        [...values, orderId]
+      );
+    }
+
+    // 7. Append audit history.
+    await connection.execute(
+      `INSERT INTO order_history (
+         order_id,
+         employee_id,
+         action,
+         details
+       )
+       VALUES (?, ?, ?, ?)`,
+      [
+        orderId,
+        actorId,
+        "order_updated",
+        JSON.stringify({
+          lines_updated: hasLines,
+          updated_fields: Object.keys(input)
+        })
+      ]
+    );
+
+    // 8. Return the same BE-031 detail structure.
+    const details = await getOrderDetails(
+      connection,
+      orderId
+    );
+
+    if (!details) {
+      fail(500, "Updated order could not be loaded");
+    }
+
+    return details;
+  });
+}
