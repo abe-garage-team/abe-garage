@@ -5,12 +5,14 @@ import {
   listOrdersValidation,
   getOrderParamsValidation,
   updateOrderValidation,
+  recordApprovalValidation,
 } from '../validations/order.validation.js';
 import {
   createOrderController,
   listOrdersController,
   getOrderByIdController,
   updateOrderController,
+  recordApprovalController,
 } from '../controller/order.controller.js';
 const router = Router();
 
@@ -26,6 +28,12 @@ router.get('/:order_id', authenticate, getOrderParamsValidation, getOrderByIdCon
 // BE-032  PATCH /:order_id
 router.patch('/:order_id', authenticate, updateOrderValidation, updateOrderController);
 // BE-033  PATCH /:order_id/approval
+router.patch(
+  '/:order_id/approval',
+  authenticate,
+  recordApprovalValidation,
+  recordApprovalController,
+);
 // BE-034  POST  /:order_id/lines
 // BE-039  GET   /:order_id/estimate
 

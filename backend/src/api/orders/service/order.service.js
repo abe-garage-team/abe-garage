@@ -744,3 +744,145 @@ export async function updateOrderService(orderId, input, actorId) {
     return details;
   });
 }
+
+// ! BE-033 — Record estimate approval or decline
+export async function recordApprovalService(orderId, input, actorId) {
+  const result = await withTransaction(async (connection) => {
+    // 1. Lock order to serialize concurrent decisions.
+    const [[order]] = await connection.execute(
+      `SELECT order_id, status
+       FROM orders
+       WHERE order_id = ?
+       FOR UPDATE`,
+      [orderId],
+    );
+
+    if (!order) {
+      fail(404, 'Order not found');
+    }
+
+    // Only orders awaiting approval can be decided.
+    if (Number(order.status) !== 1) {
+      fail(409, 'Order is not awaiting approval');
+    }
+
+    // 2. Inspect existing work.
+    const [lines] = await connection.execute(
+      `SELECT line_id, line_status
+       FROM order_lines
+       WHERE order_id = ?
+       ORDER BY line_id
+       FOR UPDATE`,
+      [orderId],
+    );
+
+    if (lines.length === 0) {
+      fail(409, 'Order has no service lines');
+    }
+
+    const hasPerformedWork = lines.some((line) => Number(line.line_status) > 0);
+
+    const allDone = lines.every((line) => Number(line.line_status) === 2);
+
+    // Customer cannot decline work already performed.
+    if (input.decision === 'declined' && hasPerformedWork) {
+      fail(409, 'Cannot decline an estimate with performed work');
+    }
+
+    // 3. Derive status from decision and actual progress.
+    let nextStatus;
+
+    if (input.decision === 'declined') {
+      nextStatus = 5;
+    } else if (allDone) {
+      nextStatus = 4;
+    } else if (hasPerformedWork) {
+      nextStatus = 3;
+    } else {
+      nextStatus = 2;
+    }
+
+    // 4. Server-generated decision time.
+    const [[clock]] = await connection.execute(`SELECT UTC_TIMESTAMP(6) AS decided_at`);
+
+    const decidedAt = clock.decided_at;
+
+    // 5. Record an immutable decision.
+    const [approvalResult] = await connection.execute(
+      `INSERT INTO order_approvals (
+         order_id,
+         recorded_by,
+         decision,
+         approval_method,
+         decided_at
+       )
+       VALUES (?, ?, ?, ?, ?)`,
+      [orderId, actorId, input.decision, input.approval_method, decidedAt],
+    );
+
+    // 6. Update order status.
+    // Completed orders require completed_at to be present.
+    if (nextStatus === 4) {
+      await connection.execute(
+        `UPDATE orders
+         SET status = 4, completed_at = ?
+         WHERE order_id = ?`,
+        [decidedAt, orderId],
+      );
+    } else {
+      await connection.execute(
+        `UPDATE orders
+         SET status = ?, completed_at = NULL
+         WHERE order_id = ?`,
+        [nextStatus, orderId],
+      );
+    }
+
+    // 7. Record audit history.
+    await connection.execute(
+      `INSERT INTO order_history (
+         order_id,
+         employee_id,
+         action,
+         details
+       )
+       VALUES (?, ?, ?, ?)`,
+      [
+        orderId,
+        actorId,
+        input.decision === 'approved' ? 'estimate_approved' : 'estimate_declined',
+        JSON.stringify({
+          approval_id: approvalResult.insertId,
+          decision: input.decision,
+          recorded_by: actorId,
+          approval_method: input.approval_method,
+          decided_at: isoUtc(decidedAt),
+          resulting_status: nextStatus,
+        }),
+      ],
+    );
+
+    const statusNames = {
+      2: 'Approved',
+      3: 'In progress',
+      4: 'Completed',
+      5: 'Declined',
+    };
+
+    return {
+      order_id: Number(orderId),
+      status: nextStatus,
+      status_name: statusNames[nextStatus],
+      approved_by: input.decision === 'approved' ? actorId : null,
+      approved_at: input.decision === 'approved' ? isoUtc(decidedAt) : null,
+      approval_method: input.approval_method,
+      // Internal flag, not part of API response
+      newlyCompleted: nextStatus === 4,
+    };
+  });
+
+  // 8. Optional BE-043 notification after commit.
+
+  const { newlyCompleted, ...response } = result;
+  return response;
+}
