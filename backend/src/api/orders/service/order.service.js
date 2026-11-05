@@ -1109,3 +1109,139 @@ export async function addExtraJobService(orderId, input, actorId) {
     };
   });
 }
+
+// BE-039 — Read printable estimate data
+export async function getEstimateService(orderId) {
+  // 1. Read the existing order and financial snapshot.
+  const [[order]] = await pool.execute(
+    `SELECT
+       order_id,
+       vehicle_id,
+       status,
+       created_at,
+       vat_rate,
+       currency,
+       subtotal,
+       vat_amount,
+       total
+     FROM v_orders
+     WHERE order_id = ?`,
+    [orderId],
+  );
+
+  if (!order) {
+    fail(404, 'Order not found');
+  }
+
+  // 2. Read current garage settings.
+  const [[garage]] = await pool.execute(
+    `SELECT
+       settings_id,
+       name,
+       address,
+       phone,
+       email,
+       vat_rate
+     FROM garage_settings
+     WHERE settings_id = 1`,
+  );
+
+  if (!garage) {
+    fail(500, 'Garage settings not configured');
+  }
+
+  // 3. Get current vehicle and customer details.
+  const [[details]] = await pool.execute(
+    `SELECT
+       v.vehicle_id,
+       v.customer_id,
+       v.year,
+       v.make,
+       v.model,
+       v.vehicle_type,
+       v.mileage,
+       v.plate,
+       v.vin,
+       v.color,
+       c.first_name,
+       c.last_name,
+       c.email AS customer_email,
+       c.phone AS customer_phone
+     FROM vehicles v
+     JOIN customers c
+       ON c.customer_id = v.customer_id
+     WHERE v.vehicle_id = ?`,
+    [order.vehicle_id],
+  );
+
+  if (!details) {
+    fail(500, 'Order customer or vehicle not found');
+  }
+
+  // 4. Read historical service versions
+  // and the agreed order-line prices.
+  const [lines] = await pool.execute(
+    `SELECT
+       ol.line_id,
+       sv.name AS service_name,
+       sv.description,
+       ol.agreed_price AS line_price
+     FROM order_lines ol
+     JOIN service_versions sv
+       ON sv.service_version_id = ol.service_version_id
+     WHERE ol.order_id = ?
+     ORDER BY ol.line_id ASC`,
+    [orderId],
+  );
+
+  // 5. Return only the documented printable fields.
+  return {
+    order_id: Number(order.order_id),
+    document_type: 'estimate',
+    estimate_number: `EST-${order.order_id}`,
+    issued_at: isoUtc(order.created_at),
+
+    garage: {
+      settings_id: Number(garage.settings_id),
+      name: garage.name,
+      address: garage.address,
+      phone: garage.phone,
+      email: garage.email,
+      vat_rate: money(cents(garage.vat_rate)),
+    },
+
+    customer: {
+      first_name: details.first_name,
+      last_name: details.last_name,
+      email: details.customer_email,
+      phone: details.customer_phone,
+    },
+
+    vehicle: {
+      vehicle_id: Number(details.vehicle_id),
+      customer_id: Number(details.customer_id),
+      year: Number(details.year),
+      make: details.make,
+      model: details.model,
+      type: details.vehicle_type,
+      mileage: Number(details.mileage),
+      plate: details.plate,
+      vin: details.vin,
+      color: details.color,
+    },
+
+    lines: lines.map((line) => ({
+      line_id: Number(line.line_id),
+      service_name: line.service_name,
+      description: line.description,
+      line_price: money(cents(line.line_price)),
+    })),
+
+    subtotal: money(cents(order.subtotal)),
+    vat_rate: money(cents(order.vat_rate)),
+    vat_amount: money(cents(order.vat_amount)),
+    total: money(cents(order.total)),
+    currency: order.currency,
+    status: Number(order.status),
+  };
+}

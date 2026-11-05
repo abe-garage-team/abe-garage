@@ -367,3 +367,12 @@ export const addExtraJobValidation = [
     .matches(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/)
     .withMessage('Price must be nonnegative with up to 2 decimal places'),
 ];
+
+// BE-039 — Validate printable estimate order ID
+export const getEstimateValidation = [
+  param('order_id')
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage('Order ID must be a positive integer')
+    .bail()
+    .toInt(),
+];
