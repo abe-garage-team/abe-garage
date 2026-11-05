@@ -4,6 +4,7 @@ import {
   getOrderByIdService,
   updateOrderService,
   recordApprovalService,
+  addExtraJobService,
 } from '../service/order.service.js';
 import { matchedData } from 'express-validator';
 
@@ -111,6 +112,33 @@ export const recordApprovalController = async (req, res, next) => {
     return res.status(200).json({
       status: 'success',
       message: 'Record estimate approval or decline successful',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// BE-034 — Add extra work and request reapproval
+export const addExtraJobController = async (req, res, next) => {
+  try {
+    const { order_id } = matchedData(req, {
+      locations: ['params'],
+      onlyValidData: true,
+    });
+
+    const input = matchedData(req, {
+      locations: ['body'],
+      onlyValidData: true,
+    });
+
+    const actorId = req.user.employee_id;
+
+    const result = await addExtraJobService(order_id, input, actorId);
+
+    return res.status(201).json({
+      status: 'success',
+      message: 'Add extra work and request reapproval successful',
       data: result,
     });
   } catch (error) {

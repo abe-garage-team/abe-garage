@@ -886,3 +886,226 @@ export async function recordApprovalService(orderId, input, actorId) {
   const { newlyCompleted, ...response } = result;
   return response;
 }
+
+// BE-034 — Add extra work and request reapproval
+export async function addExtraJobService(orderId, input, actorId) {
+  return await withTransaction(async (connection) => {
+    // 1. Lock the order.
+    const [[order]] = await connection.execute(
+      `SELECT
+         order_id,
+         status,
+         vat_rate,
+         currency
+       FROM orders
+       WHERE order_id = ?
+       FOR UPDATE`,
+      [orderId],
+    );
+
+    if (!order) {
+      fail(404, 'Order not found');
+    }
+
+    // Only statuses 1, 2 and 3 allow extra work.
+    if (![1, 2, 3].includes(Number(order.status))) {
+      fail(409, 'Extra work cannot be added in this state');
+    }
+
+    // 2. Check that no invoice has been issued.
+    const [[invoice]] = await connection.execute(
+      `SELECT invoice_id
+       FROM invoices
+       WHERE order_id = ?`,
+      [orderId],
+    );
+
+    if (invoice) {
+      fail(409, 'Cannot add extra work after invoice issuance');
+    }
+
+    // 3. Lock and validate the service.
+    const [[service]] = await connection.execute(
+      `SELECT service_id, active
+       FROM services
+       WHERE service_id = ?
+       FOR UPDATE`,
+      [input.service_id],
+    );
+
+    if (!service) {
+      fail(404, 'Service not found');
+    }
+
+    if (!service.active) {
+      fail(409, 'Service is inactive');
+    }
+
+    // 4. Prevent duplicate service identities.
+    const [[duplicate]] = await connection.execute(
+      `SELECT ol.line_id
+       FROM order_lines ol
+       JOIN service_versions sv
+         ON sv.service_version_id = ol.service_version_id
+       WHERE ol.order_id = ?
+         AND sv.service_id = ?
+       LIMIT 1`,
+      [orderId, input.service_id],
+    );
+
+    if (duplicate) {
+      fail(409, 'Service is already present in this order');
+    }
+
+    // 5. Read the latest immutable service version.
+    const [[version]] = await connection.execute(
+      `SELECT
+         service_version_id,
+         service_id,
+         name,
+         description,
+         labor_hours,
+         default_price
+       FROM service_versions
+       WHERE service_id = ?
+       ORDER BY version_number DESC
+       LIMIT 1`,
+      [input.service_id],
+    );
+
+    if (!version) {
+      fail(409, 'Service has no available version');
+    }
+
+    // 6. Resolve the agreed price.
+    const priceCents =
+      input.line_price !== undefined ? cents(input.line_price) : cents(version.default_price);
+
+    const agreedPrice = money(priceCents);
+
+    // 7. Invalidate the current approved state.
+    // This must happen before INSERT due to the
+    // trg_order_lines_insert_guard database trigger.
+    if (Number(order.status) !== 1) {
+      await connection.execute(
+        `UPDATE orders
+         SET status = 1,
+             completed_at = NULL
+         WHERE order_id = ?`,
+        [orderId],
+      );
+    }
+
+    // 8. Insert the new unstarted service line.
+    // Existing lines are not modified.
+    const [inserted] = await connection.execute(
+      `INSERT INTO order_lines (
+         order_id,
+         service_version_id,
+         agreed_price,
+         technician_id,
+         line_status,
+         started_at,
+         done_at,
+         technician_note
+       )
+       VALUES (?, ?, ?, NULL, 0, NULL, NULL, NULL)`,
+      [orderId, version.service_version_id, agreedPrice],
+    );
+
+    const lineId = inserted.insertId;
+
+    // 9. Record extra work in order history.
+    await connection.execute(
+      `INSERT INTO order_history (
+         order_id,
+         employee_id,
+         action,
+         details
+       )
+       VALUES (?, ?, ?, ?)`,
+      [
+        orderId,
+        actorId,
+        'extra_work_added',
+        JSON.stringify({
+          line_id: lineId,
+          service_id: Number(input.service_id),
+          service_version_id: version.service_version_id,
+          line_price: agreedPrice,
+          previous_status: Number(order.status),
+          new_status: 1,
+        }),
+      ],
+    );
+
+    // 10. Record that fresh approval is required.
+    await connection.execute(
+      `INSERT INTO order_history (
+         order_id,
+         employee_id,
+         action,
+         details
+       )
+       VALUES (?, ?, ?, ?)`,
+      [
+        orderId,
+        actorId,
+        'approval_required',
+        JSON.stringify({
+          reason: 'extra_work_added',
+          line_id: lineId,
+        }),
+      ],
+    );
+
+    // 11. Read recalculated order financials.
+    // v_orders derives totals from order_lines.
+    const [[financials]] = await connection.execute(
+      `SELECT
+         order_id,
+         status,
+         subtotal,
+         vat_rate,
+         vat_amount,
+         total,
+         currency
+       FROM v_orders
+       WHERE order_id = ?`,
+      [orderId],
+    );
+
+    if (!financials) {
+      fail(500, 'Updated order could not be loaded');
+    }
+
+    // 12. Return the exact safe BE-034 projection.
+    return {
+      order_id: Number(orderId),
+      status: Number(financials.status),
+      status_name: 'Awaiting approval',
+
+      added_line: {
+        line_id: lineId,
+        order_id: Number(orderId),
+        service_id: Number(version.service_id),
+        service_name: version.name,
+        service_description: version.description,
+        labor_hours: String(version.labor_hours),
+        line_price: agreedPrice,
+        technician_id: null,
+        technician_name: null,
+        line_status: 0,
+        started_at: null,
+        done_at: null,
+        technician_note: null,
+      },
+
+      subtotal: money(cents(financials.subtotal)),
+      vat_rate: String(financials.vat_rate),
+      vat_amount: money(cents(financials.vat_amount)),
+      total: money(cents(financials.total)),
+      currency: financials.currency,
+    };
+  });
+}

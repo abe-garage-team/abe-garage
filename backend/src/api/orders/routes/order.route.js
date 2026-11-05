@@ -6,6 +6,7 @@ import {
   getOrderParamsValidation,
   updateOrderValidation,
   recordApprovalValidation,
+  addExtraJobValidation,
 } from '../validations/order.validation.js';
 import {
   createOrderController,
@@ -13,6 +14,7 @@ import {
   getOrderByIdController,
   updateOrderController,
   recordApprovalController,
+  addExtraJobController,
 } from '../controller/order.controller.js';
 const router = Router();
 
@@ -35,6 +37,7 @@ router.patch(
   recordApprovalController,
 );
 // BE-034  POST  /:order_id/lines
+router.post('/:order_id/lines', authenticate, addExtraJobValidation, addExtraJobController);
 // BE-039  GET   /:order_id/estimate
 
 // Import your controllers and validation here when the feature is ready.
