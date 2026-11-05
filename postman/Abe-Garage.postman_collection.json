@@ -615,6 +615,56 @@
           }
         }
       ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "Issue invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/{{invoice_order_id}}/invoice",
+              "host": ["{{base_url}}"],
+              "path": ["orders", "{{invoice_order_id}}", "invoice"]
+            },
+            "description": "BE-040: active Manager/Admin session required. Set invoice_order_id to a completed order with every job done. Send no body. First issue returns 201; repeats return 200 without changing the document. Stored order VAT is used. BE-037 completion remains a separate dependency."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invoice issue or repeat succeeds', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+                  "if ([200, 201].includes(pm.response.code)) {",
+                  "  const body = pm.response.json();",
+                  "  pm.test('Returns invoice document', () => {",
+                  "    pm.expect(body.status).to.eql('success');",
+                  "    pm.expect(body.data.document_type).to.eql('invoice');",
+                  "    pm.expect(body.data.invoice_number).to.match(/^INV-\\d{6,}$/);",
+                  "    pm.expect(body.data.order_id).to.eql(Number(pm.variables.get('invoice_order_id')));",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "invoice_order_id",
+      "value": "1",
+      "type": "string"
     }
   ]
 }

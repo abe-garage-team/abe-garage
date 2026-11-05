@@ -253,6 +253,11 @@ test('BE-040 MySQL and HTTP acceptance', async (t) => {
       concurrent,
     ]);
     assert.equal(Number(row.n), 1);
+    const [[audit]] = await db.execute(
+      "SELECT COUNT(*) AS n FROM order_history WHERE order_id=? AND action='invoice_issued'",
+      [concurrent],
+    );
+    assert.equal(Number(audit.n), 1);
   });
   await t.test('financial and historical invoice facts remain immutable in MySQL', async () => {
     for (const [sql, params] of [
