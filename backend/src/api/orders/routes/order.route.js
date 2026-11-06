@@ -5,12 +5,18 @@ import {
   listOrdersValidation,
   getOrderParamsValidation,
   updateOrderValidation,
+  recordApprovalValidation,
+  addExtraJobValidation,
+  getEstimateValidation,
 } from '../validations/order.validation.js';
 import {
   createOrderController,
   listOrdersController,
   getOrderByIdController,
   updateOrderController,
+  recordApprovalController,
+  addExtraJobController,
+  getEstimateController,
 } from '../controller/order.controller.js';
 const router = Router();
 
@@ -26,10 +32,15 @@ router.get('/:order_id', authenticate, getOrderParamsValidation, getOrderByIdCon
 // BE-032  PATCH /:order_id
 router.patch('/:order_id', authenticate, updateOrderValidation, updateOrderController);
 // BE-033  PATCH /:order_id/approval
+router.patch(
+  '/:order_id/approval',
+  authenticate,
+  recordApprovalValidation,
+  recordApprovalController,
+);
 // BE-034  POST  /:order_id/lines
+router.post('/:order_id/lines', authenticate, addExtraJobValidation, addExtraJobController);
 // BE-039  GET   /:order_id/estimate
-
-// Import your controllers and validation here when the feature is ready.
-// Write local paths only; do not repeat /api or the resource prefix.
+router.get('/:order_id/estimate', authenticate, getEstimateValidation, getEstimateController);
 
 export default router;

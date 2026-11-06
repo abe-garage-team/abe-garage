@@ -298,3 +298,81 @@ export const updateOrderValidation = [
     .bail()
     .trim(),
 ];
+
+// BE-033 — Approve or decline an order
+//rejects unknown fields, including client-supplied approved_by, approved_at, and status. Those values must come from the authenticated employee and server-side logic.
+export const recordApprovalValidation = [
+  param('order_id')
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage('Order ID must be a positive integer')
+    .bail()
+    .toInt(),
+
+  body().custom((value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error('Request body must be an object');
+    }
+
+    const allowed = ['decision', 'approval_method'];
+
+    if (Object.keys(value).some((key) => !allowed.includes(key))) {
+      throw new Error('Unknown fields are not allowed');
+    }
+
+    return true;
+  }),
+
+  body('decision')
+    .isIn(['approved', 'declined'])
+    .withMessage('Decision must be approved or declined'),
+
+  body('approval_method')
+    .isIn(['phone', 'in_person'])
+    .withMessage('Approval method must be phone or in_person'),
+];
+
+// BE-034 — Add extra work and request reapproval
+export const addExtraJobValidation = [
+  param('order_id')
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage('Order ID must be a positive integer')
+    .bail()
+    .toInt(),
+
+  body().custom((value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error('Request body must be an object');
+    }
+
+    const allowedFields = ['service_id', 'line_price'];
+
+    if (Object.keys(value).some((key) => !allowedFields.includes(key))) {
+      throw new Error('Unknown fields are not allowed');
+    }
+
+    return true;
+  }),
+
+  body('service_id')
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage('Service ID must be a positive integer')
+    .bail()
+    .toInt(),
+
+  body('line_price')
+    .optional()
+    .isString()
+    .withMessage('Line price must be a string')
+    .bail()
+    .matches(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/)
+    .withMessage('Price must be nonnegative with up to 2 decimal places'),
+];
+
+// BE-039 — Validate printable estimate order ID
+export const getEstimateValidation = [
+  param('order_id')
+    .isInt({ min: 1, max: 4294967295 })
+    .withMessage('Order ID must be a positive integer')
+    .bail()
+    .toInt(),
+];
