@@ -1,8 +1,7 @@
 import { body, param, query } from 'express-validator';
-
+import { validationHandler } from '../../../middleware/validation-handler.js';
 // BE-029 — Create Order Validation
 export const createOrderValidation = [
-  // Reject unknown fields (similar to Zod .strict())
   body().custom((value) => {
     const allowedFields = [
       'customer_id',
@@ -92,6 +91,7 @@ export const createOrderValidation = [
     .withMessage('Internal notes must be a string')
     .bail()
     .trim(),
+  validationHandler,
 ];
 
 // BE-030 — List and filter orders
@@ -157,13 +157,6 @@ export const listOrdersValidation = [
     .bail()
     .toInt(),
 
-  query('unpaid_only')
-    .optional()
-    .isIn(['true', 'false'])
-    .withMessage('Unpaid only must be true or false')
-    .bail()
-    .toBoolean(),
-
   query('page')
     .optional()
     .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
@@ -194,6 +187,7 @@ export const listOrdersValidation = [
 
     return true;
   }),
+  validationHandler,
 ];
 
 // BE-031 — Get Order by ID Validation
@@ -202,6 +196,7 @@ export const getOrderParamsValidation = [
     .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
     .withMessage('Order ID must be a positive safe integer')
     .toInt(),
+  validationHandler,
 ];
 
 // BE-032 — Update order
@@ -297,6 +292,7 @@ export const updateOrderValidation = [
     .withMessage('Internal notes must be a string')
     .bail()
     .trim(),
+  validationHandler,
 ];
 
 // BE-033 — Approve or decline an order
@@ -329,6 +325,7 @@ export const recordApprovalValidation = [
   body('approval_method')
     .isIn(['phone', 'in_person'])
     .withMessage('Approval method must be phone or in_person'),
+  validationHandler,
 ];
 
 // BE-034 — Add extra work and request reapproval
@@ -366,6 +363,7 @@ export const addExtraJobValidation = [
     .bail()
     .matches(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/)
     .withMessage('Price must be nonnegative with up to 2 decimal places'),
+  validationHandler,
 ];
 
 // BE-039 — Validate printable estimate order ID
@@ -375,4 +373,5 @@ export const getEstimateValidation = [
     .withMessage('Order ID must be a positive integer')
     .bail()
     .toInt(),
+  validationHandler,
 ];
