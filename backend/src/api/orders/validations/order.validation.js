@@ -2,7 +2,6 @@ import { body, param, query } from 'express-validator';
 import { validationHandler } from '../../../middleware/validation-handler.js';
 // BE-029 — Create Order Validation
 export const createOrderValidation = [
- 
   body().custom((value) => {
     const allowedFields = [
       'customer_id',
