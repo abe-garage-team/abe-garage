@@ -97,7 +97,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/settings/routes/roles.route.js",
       "mount_prefix": "/roles",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-014",
