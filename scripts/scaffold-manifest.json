@@ -115,7 +115,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/settings/routes/settings.route.js",
       "mount_prefix": "/settings",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-016",

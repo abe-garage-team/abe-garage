@@ -20,3 +20,22 @@ async function readSettings(connection = pool) {
 export async function getSettingsService() {
   return readSettings();
 }
+
+const EDITABLE_SETTINGS = ['name', 'address', 'phone', 'email', 'vat_rate'];
+
+// Changing vat_rate affects new orders only: each order stores the rate it was created with.
+export async function updateSettingsService(input) {
+  const fields = EDITABLE_SETTINGS.filter((field) => input[field] !== undefined);
+  // Column names come from EDITABLE_SETTINGS, never from the client.
+  const setClause = fields.map((field) => `${field} = ?`).join(', ');
+  const values = fields.map((field) => input[field]);
+
+  const [result] = await pool.execute(
+    `UPDATE garage_settings SET ${setClause} WHERE settings_id = 1`,
+    values,
+  );
+  if (result.affectedRows === 0) {
+    throw new ServiceUnavailableError('Installation has not completed');
+  }
+  return readSettings();
+}
