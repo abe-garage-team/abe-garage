@@ -1,6 +1,11 @@
 import { pool } from '../../../config/db.js';
 import { ROLES } from '../../../constants/roles.js';
-import { ConflictError, ForbiddenError, ERROR_CODES } from '../../../utils/errors/index.js';
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  ERROR_CODES,
+} from '../../../utils/errors/index.js';
 import { hashPassword } from '../../../shared/auth/passwords.js';
 import { AUTH_EVENT, recordAuthEvent } from '../../../shared/auth/auth-events.js';
 import { findPublicEmployeeById } from '../../../shared/employees/employee.queries.js';
@@ -97,4 +102,10 @@ export async function listEmployeesService(filters, actor) {
     employees: rows.map(present),
     pagination: { page, limit, total, total_pages: total === 0 ? 0 : Math.ceil(total / limit) },
   };
+}
+
+export async function getEmployeeService(employeeId) {
+  const employee = await findPublicEmployeeById(employeeId);
+  if (!employee) throw new NotFoundError('Employee not found');
+  return toPublicEmployee(employee);
 }

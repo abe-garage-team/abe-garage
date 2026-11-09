@@ -13,6 +13,7 @@ import {
   queryBooleanField,
   paginationQueryFields,
   searchQueryField,
+  positiveIdParam,
 } from '../../../middleware/validators.js';
 
 export const createEmployeeValidation = [
@@ -46,5 +47,11 @@ export const listEmployeesValidation = [
     .toInt(),
   queryBooleanField('active'),
   ...paginationQueryFields(),
+  validationHandler,
+];
+
+export const getEmployeeValidation = [
+  rejectRequestBody,
+  positiveIdParam('employee_id'),
   validationHandler,
 ];
