@@ -1,4 +1,4 @@
-import { pool } from '../../../config/db.js';
+import { pool, withTransaction } from '../../../config/db.js';
 import { ROLES } from '../../../constants/roles.js';
 import {
   ConflictError,
@@ -8,6 +8,8 @@ import {
 } from '../../../utils/errors/index.js';
 import { hashPassword } from '../../../shared/auth/passwords.js';
 import { AUTH_EVENT, recordAuthEvent } from '../../../shared/auth/auth-events.js';
+import { markAllResetTokensUsed } from '../../../shared/auth/reset-tokens.js';
+import { revokeAllSessionsForEmployee } from '../../../shared/sessions/session.store.js';
 import { findPublicEmployeeById } from '../../../shared/employees/employee.queries.js';
 import {
   EMPLOYEE_SELECT_COLUMNS,
@@ -108,4 +110,82 @@ export async function getEmployeeService(employeeId) {
   const employee = await findPublicEmployeeById(employeeId);
   if (!employee) throw new NotFoundError('Employee not found');
   return toPublicEmployee(employee);
+}
+
+const EDITABLE_FIELDS = ['first_name', 'last_name', 'email', 'phone', 'role_id', 'active'];
+
+export async function updateEmployeeService(employeeId, input, actor, requestInfo) {
+  return withTransaction(async (connection) => {
+    // Lock the Admin rows first (fixed order) whenever role or active may change, so two
+    // concurrent demotions cannot both pass the last-Admin check below.
+    let admins = [];
+    if (input.role_id !== undefined || input.active !== undefined) {
+      [admins] = await connection.execute(
+        'SELECT employee_id, active FROM employees WHERE role_id = ? ORDER BY employee_id FOR UPDATE',
+        [ROLES.ADMIN],
+      );
+    }
+
+    const [rows] = await connection.execute(
+      `SELECT ${EDITABLE_FIELDS.join(', ')} FROM employees WHERE employee_id = ? FOR UPDATE`,
+      [employeeId],
+    );
+    const current = rows[0];
+    if (!current) throw new NotFoundError('Employee not found');
+    current.active = Boolean(current.active);
+
+    // Only fields whose value really differs count as changes.
+    const changes = {};
+    for (const field of EDITABLE_FIELDS) {
+      if (input[field] !== undefined && input[field] !== current[field])
+        changes[field] = input[field];
+    }
+
+    const losesAdmin =
+      current.role_id === ROLES.ADMIN &&
+      current.active &&
+      ('role_id' in changes || changes.active === false);
+    if (losesAdmin) {
+      const otherActiveAdmins = admins.filter((a) => a.active && a.employee_id !== employeeId);
+      if (otherActiveAdmins.length === 0) {
+        throw new ConflictError('At least one active Admin is required', {
+          code: ERROR_CODES.LAST_ADMIN,
+        });
+      }
+    }
+
+    if (Object.keys(changes).length) {
+      // Column names come from EDITABLE_FIELDS, never from the client.
+      const setClause = Object.keys(changes)
+        .map((field) => `${field} = ?`)
+        .join(', ');
+      const values = Object.values(changes).map((v) => (typeof v === 'boolean' ? Number(v) : v));
+      try {
+        await connection.execute(`UPDATE employees SET ${setClause} WHERE employee_id = ?`, [
+          ...values,
+          employeeId,
+        ]);
+      } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+          throw new ConflictError('Email already used', { code: ERROR_CODES.EMAIL_IN_USE });
+        }
+        throw error;
+      }
+    }
+
+    // A role or active change ends every session of that employee: they must log in again.
+    const audit = { ...requestInfo, employeeId, actorEmployeeId: actor.employee_id };
+    if ('role_id' in changes || 'active' in changes) {
+      await revokeAllSessionsForEmployee(employeeId, connection);
+    }
+    if ('role_id' in changes) {
+      await recordAuthEvent(AUTH_EVENT.EMPLOYEE_ROLE_CHANGED, audit, connection);
+    }
+    if ('active' in changes) {
+      await recordAuthEvent(AUTH_EVENT.EMPLOYEE_ACTIVE_CHANGED, audit, connection);
+    }
+    if ('email' in changes) await markAllResetTokensUsed(employeeId, connection);
+
+    return toPublicEmployee(await findPublicEmployeeById(employeeId, connection));
+  });
 }
