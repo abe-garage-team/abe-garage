@@ -5,10 +5,12 @@ import { hasRole } from '../../../middleware/authorization.js';
 import {
   createEmployeeValidation,
   listEmployeesValidation,
+  getEmployeeValidation,
 } from '../validations/employee.validation.js';
 import {
   createEmployeeController,
   listEmployeesController,
+  getEmployeeController,
 } from '../controller/employee.controller.js';
 
 const router = Router();
@@ -22,5 +24,6 @@ router.get(
   listEmployeesValidation,
   listEmployeesController,
 );
+router.get('/:employee_id', hasRole(ROLES.ADMIN), getEmployeeValidation, getEmployeeController);
 
 export default router;
