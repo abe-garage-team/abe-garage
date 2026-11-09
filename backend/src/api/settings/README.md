@@ -1,8 +1,8 @@
 # settings
 
-This folder is reserved for this module. Controllers, services and validations are intentionally empty. Add your own exports, imports and handlers when implementing a task.
+Routes are mounted at /api/roles and /api/settings. Every route requires a logged-in Admin.
 
-- BE-013 · `GET /api/roles` (planned)
+- BE-013 · `GET /api/roles` · the three fixed staff roles in id order
 - BE-014 · `GET /api/settings` (planned)
 - BE-015 · `PATCH /api/settings` (planned)
 
