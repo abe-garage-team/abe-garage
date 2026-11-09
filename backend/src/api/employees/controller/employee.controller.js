@@ -5,6 +5,7 @@ import {
   createEmployeeService,
   listEmployeesService,
   getEmployeeService,
+  updateEmployeeService,
 } from '../service/employee.service.js';
 
 export const createEmployeeController = asyncHandler(async (req, res) => {
@@ -20,4 +21,14 @@ export const listEmployeesController = asyncHandler(async (req, res) => {
 export const getEmployeeController = asyncHandler(async (req, res) => {
   const employee = await getEmployeeService(req.params.employee_id);
   return respond(res, employee, 'View employee successful');
+});
+
+export const updateEmployeeController = asyncHandler(async (req, res) => {
+  const employee = await updateEmployeeService(
+    req.params.employee_id,
+    req.body,
+    req.user,
+    requestDetails(req),
+  );
+  return respond(res, employee, 'Edit or deactivate employee successful');
 });

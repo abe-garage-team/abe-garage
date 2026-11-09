@@ -3,6 +3,7 @@ import { validationHandler } from '../../../middleware/validation-handler.js';
 import {
   rejectUnknownBodyFields,
   rejectUnknownQueryFields,
+  requireAtLeastOneBodyField,
   rejectRequestBody,
   emailField,
   passwordField,
@@ -53,5 +54,18 @@ export const listEmployeesValidation = [
 export const getEmployeeValidation = [
   rejectRequestBody,
   positiveIdParam('employee_id'),
+  validationHandler,
+];
+
+export const updateEmployeeValidation = [
+  positiveIdParam('employee_id'),
+  rejectUnknownBodyFields(['first_name', 'last_name', 'email', 'phone', 'role_id', 'active']),
+  requireAtLeastOneBodyField,
+  nameField('first_name').optional(),
+  nameField('last_name').optional(),
+  emailField('email').optional(),
+  phoneField('phone').optional(),
+  roleIdField('role_id').optional(),
+  booleanField('active').optional(),
   validationHandler,
 ];
