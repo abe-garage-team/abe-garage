@@ -1,27 +1,46 @@
-import { body, param, query } from 'express-validator';
+import { body, query } from 'express-validator';
 import { validationHandler } from '../../../middleware/validation-handler.js';
-// BE-029 — Create Order Validation
+import {
+  rejectUnknownBodyFields,
+  rejectUnknownQueryFields,
+  requireAtLeastOneBodyField,
+  rejectRequestBody,
+  positiveIdParam,
+  paginationQueryFields,
+  searchQueryField,
+  queryBooleanField,
+} from '../../../middleware/validators.js';
+
+const MAX_NOTE_LENGTH = 2000;
+const MONEY_PATTERN = /^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/;
+const HAS_TIMEZONE = /(Z|[+-]\d{2}:\d{2})$/i;
+
+const serviceIdField = (fieldName) =>
+  body(fieldName)
+    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
+    .withMessage('Service ID must be a positive integer')
+    .bail()
+    .toInt();
+
+const noteField = (fieldName, label, { allowNull = false } = {}) =>
+  body(fieldName)
+    .optional({ values: allowNull ? 'null' : 'undefined' })
+    .isString()
+    .withMessage(`${label} must be a string`)
+    .bail()
+    .trim()
+    .isLength({ max: MAX_NOTE_LENGTH })
+    .withMessage(`${label} must be at most ${MAX_NOTE_LENGTH} characters`);
+
 export const createOrderValidation = [
-  body().custom((value) => {
-    const allowedFields = [
-      'customer_id',
-      'vehicle_id',
-      'lines',
-      'estimated_ready_date',
-      'notes_for_customer',
-      'internal_notes',
-    ];
-
-    const unknownFields = Object.keys(value ?? {}).filter(
-      (field) => !allowedFields.includes(field),
-    );
-
-    if (unknownFields.length > 0) {
-      throw new Error(`Unknown fields: ${unknownFields.join(', ')}`);
-    }
-
-    return true;
-  }),
+  rejectUnknownBodyFields([
+    'customer_id',
+    'vehicle_id',
+    'lines',
+    'estimated_ready_date',
+    'notes_for_customer',
+    'internal_notes',
+  ]),
 
   body('customer_id')
     .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
@@ -78,56 +97,24 @@ export const createOrderValidation = [
       return true;
     }),
 
-  body('notes_for_customer')
-    .optional()
-    .isString()
-    .withMessage('Notes for customer must be a string')
-    .bail()
-    .trim(),
-
-  body('internal_notes')
-    .optional()
-    .isString()
-    .withMessage('Internal notes must be a string')
-    .bail()
-    .trim(),
+  noteField('notes_for_customer', 'Notes for customer'),
+  noteField('internal_notes', 'Internal notes'),
   validationHandler,
 ];
 
-// BE-030 — List and filter orders
 export const listOrdersValidation = [
-  // Reject query parameters not documented by BE-030.
-  query().custom((value) => {
-    const allowedFields = [
-      'search',
-      'status',
-      'paid',
-      'customer_id',
-      'vehicle_id',
-      'unpaid_only',
-      'page',
-      'limit',
-    ];
-
-    const unknownFields = Object.keys(value ?? {}).filter(
-      (field) => !allowedFields.includes(field),
-    );
-
-    if (unknownFields.length > 0) {
-      throw new Error(`Unknown query parameters: ${unknownFields.join(', ')}`);
-    }
-
-    return true;
-  }),
-
-  query('search')
-    .optional()
-    .isString()
-    .withMessage('Search must be a string')
-    .bail()
-    .trim()
-    .notEmpty()
-    .withMessage('Search cannot be empty'),
+  rejectRequestBody,
+  rejectUnknownQueryFields([
+    'search',
+    'status',
+    'paid',
+    'customer_id',
+    'vehicle_id',
+    'unpaid_only',
+    'page',
+    'limit',
+  ]),
+  searchQueryField(),
 
   query('status')
     .optional()
@@ -136,12 +123,8 @@ export const listOrdersValidation = [
     .bail()
     .toInt(),
 
-  query('paid')
-    .optional()
-    .isIn(['true', 'false'])
-    .withMessage('Paid must be true or false')
-    .bail()
-    .toBoolean(),
+  queryBooleanField('paid'),
+  queryBooleanField('unpaid_only'),
 
   query('customer_id')
     .optional()
@@ -157,21 +140,8 @@ export const listOrdersValidation = [
     .bail()
     .toInt(),
 
-  query('page')
-    .optional()
-    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
-    .withMessage('Page must be a positive integer')
-    .bail()
-    .toInt(),
+  ...paginationQueryFields(),
 
-  query('limit')
-    .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100')
-    .bail()
-    .toInt(),
-
-  // Business rule: unpaid_only=true requires status 4 and paid=false if those filters are supplied.
   query().custom((_value, { req }) => {
     const unpaidOnly = req.query.unpaid_only === true || req.query.unpaid_only === 'true';
 
@@ -190,42 +160,21 @@ export const listOrdersValidation = [
   validationHandler,
 ];
 
-// BE-031 — Get Order by ID Validation
 export const getOrderParamsValidation = [
-  param('order_id')
-    .isInt({ min: 1, max: Number.MAX_SAFE_INTEGER })
-    .withMessage('Order ID must be a positive safe integer')
-    .toInt(),
+  rejectRequestBody,
+  positiveIdParam('order_id'),
   validationHandler,
 ];
 
-// BE-032 — Update order
-//It does not accept customer_id, vehicle_id, paid, status, vat_rate, or calculated totals because BE-032 explicitly prohibits modifying those fields.
 export const updateOrderValidation = [
-  param('order_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Order ID must be a positive integer')
-    .bail()
-    .toInt(),
-
-  // Reject unknown fields.
-  body().custom((value) => {
-    const allowed = ['lines', 'estimated_ready_date', 'notes_for_customer', 'internal_notes'];
-
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      throw new Error('Request body must be an object');
-    }
-
-    if (Object.keys(value).length === 0) {
-      throw new Error('Provide at least one field to update');
-    }
-
-    if (Object.keys(value).some((key) => !allowed.includes(key))) {
-      throw new Error('Unknown fields are not allowed');
-    }
-
-    return true;
-  }),
+  positiveIdParam('order_id'),
+  rejectUnknownBodyFields([
+    'lines',
+    'estimated_ready_date',
+    'notes_for_customer',
+    'internal_notes',
+  ]),
+  requireAtLeastOneBodyField,
 
   body('lines')
     .optional()
@@ -256,11 +205,7 @@ export const updateOrderValidation = [
       return true;
     }),
 
-  body('lines.*.service_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Invalid service ID')
-    .bail()
-    .toInt(),
+  serviceIdField('lines.*.service_id'),
 
   body('lines.*.line_price')
     .optional()
@@ -273,50 +218,20 @@ export const updateOrderValidation = [
     .withMessage('Invalid estimated ready date')
     .bail()
     .custom((value) => {
-      if (!/(Z|[+-]\d{2}:\d{2})$/i.test(value) || !Number.isFinite(Date.parse(value))) {
+      if (!HAS_TIMEZONE.test(value) || !Number.isFinite(Date.parse(value))) {
         throw new Error('Date must include a valid timezone');
       }
       return true;
     }),
 
-  body('notes_for_customer')
-    .optional({ values: 'null' })
-    .isString()
-    .withMessage('Customer notes must be a string')
-    .bail()
-    .trim(),
-
-  body('internal_notes')
-    .optional({ values: 'null' })
-    .isString()
-    .withMessage('Internal notes must be a string')
-    .bail()
-    .trim(),
+  noteField('notes_for_customer', 'Customer notes', { allowNull: true }),
+  noteField('internal_notes', 'Internal notes', { allowNull: true }),
   validationHandler,
 ];
 
-// BE-033 — Approve or decline an order
-//rejects unknown fields, including client-supplied approved_by, approved_at, and status. Those values must come from the authenticated employee and server-side logic.
 export const recordApprovalValidation = [
-  param('order_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Order ID must be a positive integer')
-    .bail()
-    .toInt(),
-
-  body().custom((value) => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      throw new Error('Request body must be an object');
-    }
-
-    const allowed = ['decision', 'approval_method'];
-
-    if (Object.keys(value).some((key) => !allowed.includes(key))) {
-      throw new Error('Unknown fields are not allowed');
-    }
-
-    return true;
-  }),
+  positiveIdParam('order_id'),
+  rejectUnknownBodyFields(['decision', 'approval_method']),
 
   body('decision')
     .isIn(['approved', 'declined'])
@@ -328,50 +243,24 @@ export const recordApprovalValidation = [
   validationHandler,
 ];
 
-// BE-034 — Add extra work and request reapproval
 export const addExtraJobValidation = [
-  param('order_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Order ID must be a positive integer')
-    .bail()
-    .toInt(),
+  positiveIdParam('order_id'),
+  rejectUnknownBodyFields(['service_id', 'line_price']),
 
-  body().custom((value) => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      throw new Error('Request body must be an object');
-    }
-
-    const allowedFields = ['service_id', 'line_price'];
-
-    if (Object.keys(value).some((key) => !allowedFields.includes(key))) {
-      throw new Error('Unknown fields are not allowed');
-    }
-
-    return true;
-  }),
-
-  body('service_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Service ID must be a positive integer')
-    .bail()
-    .toInt(),
+  serviceIdField('service_id'),
 
   body('line_price')
     .optional()
     .isString()
     .withMessage('Line price must be a string')
     .bail()
-    .matches(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/)
+    .matches(MONEY_PATTERN)
     .withMessage('Price must be nonnegative with up to 2 decimal places'),
   validationHandler,
 ];
 
-// BE-039 — Validate printable estimate order ID
 export const getEstimateValidation = [
-  param('order_id')
-    .isInt({ min: 1, max: 4294967295 })
-    .withMessage('Order ID must be a positive integer')
-    .bail()
-    .toInt(),
+  rejectRequestBody,
+  positiveIdParam('order_id'),
   validationHandler,
 ];

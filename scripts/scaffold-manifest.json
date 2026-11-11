@@ -241,7 +241,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-030",
@@ -250,7 +250,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-031",
@@ -259,7 +259,7 @@
       "local_path": "/:order_id",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-032",
@@ -268,7 +268,7 @@
       "local_path": "/:order_id",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-033",
@@ -277,7 +277,7 @@
       "local_path": "/:order_id/approval",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-034",
@@ -286,7 +286,7 @@
       "local_path": "/:order_id/lines",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-035",
@@ -331,7 +331,7 @@
       "local_path": "/:order_id/estimate",
       "route_file": "backend/src/api/orders/routes/order.route.js",
       "mount_prefix": "/orders",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-040",
