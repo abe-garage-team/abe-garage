@@ -1,12 +1,14 @@
 import { Router } from 'express';
+import { ROLES } from '../../../constants/roles.js';
+import { authenticate } from '../../../middleware/authentication.js';
+import { hasRole } from '../../../middleware/authorization.js';
+import { rejectRequestBody } from '../../../middleware/validators.js';
+import { listRolesController } from '../controller/settings.controller.js';
 
 const router = Router();
 
-// Mounted at /api/roles.
-// Planned endpoints (add handlers when implementing each task):
-// BE-013  GET   /
+router.use(authenticate);
 
-// Import your controllers and validation here when the feature is ready.
-// Write local paths only; do not repeat /api or the resource prefix.
+router.get('/', hasRole(ROLES.ADMIN), rejectRequestBody, listRolesController);
 
 export default router;

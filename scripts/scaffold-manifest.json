@@ -70,7 +70,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/employees/routes/employee.route.js",
       "mount_prefix": "/employees",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-011",
@@ -79,7 +79,7 @@
       "local_path": "/:employee_id",
       "route_file": "backend/src/api/employees/routes/employee.route.js",
       "mount_prefix": "/employees",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-012",
@@ -88,7 +88,7 @@
       "local_path": "/:employee_id",
       "route_file": "backend/src/api/employees/routes/employee.route.js",
       "mount_prefix": "/employees",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-013",
@@ -97,7 +97,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/settings/routes/roles.route.js",
       "mount_prefix": "/roles",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-014",
@@ -106,7 +106,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/settings/routes/settings.route.js",
       "mount_prefix": "/settings",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-015",
@@ -115,7 +115,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/settings/routes/settings.route.js",
       "mount_prefix": "/settings",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-016",
@@ -394,7 +394,7 @@
       "local_path": "/install",
       "route_file": "backend/src/api/setup/routes/setup.route.js",
       "mount_prefix": "/",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-048",
