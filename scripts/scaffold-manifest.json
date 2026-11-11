@@ -394,7 +394,7 @@
       "local_path": "/install",
       "route_file": "backend/src/api/setup/routes/setup.route.js",
       "mount_prefix": "/",
-      "implemented": false
+      "implemented": true
     },
     {
       "task_id": "BE-048",
