@@ -8,161 +8,96 @@ import {
   getEstimateService,
 } from '../service/order.service.js';
 import { matchedData } from 'express-validator';
+import { asyncHandler } from '../../../utils/async-handler.js';
+import { respond } from '../../../utils/respond.js';
 
 // BE-029 — Create Order Controller
-export const createOrderController = async (req, res, next) => {
-  try {
-    const result = await createOrderService(req.body, req.user.employee_id);
+export const createOrderController = asyncHandler(async (req, res) => {
+  const result = await createOrderService(req.body, req.user.employee_id);
 
-    return res.status(201).json({
-      status: 'success',
-      message: 'Create repair order and estimate successful',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, result, 'Create repair order and estimate successful', 201);
+});
 
-// BE-030 — List orders controller
-export const listOrdersController = async (req, res, next) => {
-  try {
-    // Collect only fields validated from query parameters.
-    const filters = matchedData(req, {
-      locations: ['query'],
-      onlyValidData: true,
-    });
+// BE-030 — List and filter orders
+export const listOrdersController = asyncHandler(async (req, res) => {
+  const filters = matchedData(req, {
+    locations: ['query'],
+    onlyValidData: true,
+  });
 
-    const result = await listOrdersService(filters);
+  const result = await listOrdersService(filters);
 
-    return res.status(200).json({
-      status: 'success',
-      message: 'List and filter orders successful',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, result, 'List and filter orders successful');
+});
 
-// BE-031 — Get single repair order
+// BE-031 — view repair order detail
+export const getOrderByIdController = asyncHandler(async (req, res) => {
+  const { order_id } = matchedData(req, {
+    locations: ['params'],
+    onlyValidData: true,
+  });
 
-export const getOrderByIdController = async (req, res, next) => {
-  try {
-    // Extract validated URL parameters
-    const { order_id } = matchedData(req, {
-      locations: ['params'],
-      onlyValidData: true,
-    });
+  const order = await getOrderByIdService(order_id);
 
-    const order = await getOrderByIdService(order_id);
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Get order details successful',
-      data: order,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, order, 'View repair order detail successful');
+});
 
 // BE-032 — Edit estimate or order notes
-export const updateOrderController = async (req, res, next) => {
-  try {
-    const { order_id } = matchedData(req, {
-      locations: ['params'],
-    });
+export const updateOrderController = asyncHandler(async (req, res) => {
+  const { order_id } = matchedData(req, {
+    locations: ['params'],
+  });
 
-    const input = matchedData(req, {
-      locations: ['body'],
-    });
+  const input = matchedData(req, {
+    locations: ['body'],
+  });
 
-    // Use your team's verified authentication context.
-    const actorId = req.user.employee_id;
+  const result = await updateOrderService(order_id, input, req.user.employee_id);
 
-    const result = await updateOrderService(order_id, input, actorId);
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Edit estimate or order notes successful',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, result, 'Edit estimate or order notes successful');
+});
 
 // BE-033 — Record estimate approval or decline
-export const recordApprovalController = async (req, res, next) => {
-  try {
-    const { order_id } = matchedData(req, {
-      locations: ['params'],
-      onlyValidData: true,
-    });
+export const recordApprovalController = asyncHandler(async (req, res) => {
+  const { order_id } = matchedData(req, {
+    locations: ['params'],
+    onlyValidData: true,
+  });
+  const input = matchedData(req, {
+    locations: ['body'],
+    onlyValidData: true,
+  });
 
-    const input = matchedData(req, {
-      locations: ['body'],
-      onlyValidData: true,
-    });
+  const result = await recordApprovalService(order_id, input, req.user.employee_id);
 
-    const actorId = req.user.employee_id;
-
-    const result = await recordApprovalService(order_id, input, actorId);
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Record estimate approval or decline successful',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, result, 'Record estimate approval or decline successful');
+});
 
 // BE-034 — Add extra work and request reapproval
-export const addExtraJobController = async (req, res, next) => {
-  try {
-    const { order_id } = matchedData(req, {
-      locations: ['params'],
-      onlyValidData: true,
-    });
+export const addExtraJobController = asyncHandler(async (req, res) => {
+  const { order_id } = matchedData(req, {
+    locations: ['params'],
+    onlyValidData: true,
+  });
 
-    const input = matchedData(req, {
-      locations: ['body'],
-      onlyValidData: true,
-    });
+  const input = matchedData(req, {
+    locations: ['body'],
+    onlyValidData: true,
+  });
 
-    const actorId = req.user.employee_id;
+  const result = await addExtraJobService(order_id, input, req.user.employee_id);
 
-    const result = await addExtraJobService(order_id, input, actorId);
+  return respond(res, result, 'Add extra work and request reapproval successful', 201);
+});
 
-    return res.status(201).json({
-      status: 'success',
-      message: 'Add extra work and request reapproval successful',
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+// BE-039 — Read printable estimate data
+export const getEstimateController = asyncHandler(async (req, res) => {
+  const { order_id } = matchedData(req, {
+    locations: ['params'],
+    onlyValidData: true,
+  });
 
-// BE-039 — Read printable estimate
-export const getEstimateController = async (req, res, next) => {
-  try {
-    const { order_id } = matchedData(req, {
-      locations: ['params'],
-      onlyValidData: true,
-    });
+  const estimate = await getEstimateService(order_id);
 
-    const estimate = await getEstimateService(order_id);
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Read printable estimate data successful',
-      data: estimate,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return respond(res, estimate, 'Read printable estimate data successful');
+});
