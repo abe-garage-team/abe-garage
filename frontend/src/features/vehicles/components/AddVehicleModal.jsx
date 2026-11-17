@@ -88,19 +88,14 @@ export default function AddVehicleModal({ show, onClose, customerId, onSuccess }
         if (onClose) onClose();
       }, 800);
     } catch (err) {
-      setErrorMessage(
-        err.message || 'Failed to add vehicle. Please check the plate and details.',
-      );
+      setErrorMessage(err.message || 'Failed to add vehicle. Please check the plate and details.');
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div
-      className="card shadow border-0 mt-3 mb-4 position-relative"
-      style={{ maxWidth: '650px' }}
-    >
+    <div className="card shadow border-0 mt-3 mb-4 position-relative" style={{ maxWidth: '650px' }}>
       {/* Red 'X' close button in the top right corner matching mockup */}
       <button
         type="button"

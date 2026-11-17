@@ -1,3 +1,4 @@
+/* global URLSearchParams */
 import { apiRequest } from './core/api-client.js';
 
 // Fetch staff services catalog with optional search, active status filter, and pagination

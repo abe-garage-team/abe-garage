@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  createService,
-  fetchServices,
-  updateService,
-} from '../../../services/catalog.service.js';
+import { createService, fetchServices, updateService } from '../../../services/catalog.service.js';
 
 export default function ServiceManagement() {
   const [services, setServices] = useState([]);

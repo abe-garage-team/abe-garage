@@ -132,9 +132,7 @@ export default function VehicleDetails() {
             <div className="col-12 col-md-3">
               <span className="text-muted d-block small">Odometer Mileage</span>
               <strong className="fs-6 text-dark mt-1 d-block">
-                {vehicle?.mileage != null
-                  ? `${Number(vehicle.mileage).toLocaleString()} mi`
-                  : '—'}
+                {vehicle?.mileage != null ? `${Number(vehicle.mileage).toLocaleString()} mi` : '—'}
               </strong>
             </div>
             <div className="col-12 col-md-3">

@@ -1,3 +1,4 @@
+/* global URLSearchParams */
 import { apiRequest } from './core/api-client.js';
 
 // Create a new vehicle registration attached to a customer
@@ -25,10 +26,7 @@ export async function updateVehicle(vehicleId, data) {
 }
 
 // Fetch repair orders and service history for a specific vehicle with optional pagination
-export async function fetchVehicleServiceHistory(
-  vehicleId,
-  { page = 1, limit = 10 } = {}
-) {
+export async function fetchVehicleServiceHistory(vehicleId, { page = 1, limit = 10 } = {}) {
   const params = new URLSearchParams();
   if (page) {
     params.set('page', String(page));

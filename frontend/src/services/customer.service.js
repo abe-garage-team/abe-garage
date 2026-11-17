@@ -1,3 +1,4 @@
+/* global URLSearchParams */
 import { apiRequest } from './core/api-client.js';
 
 // Fetch paginated customers with optional debounced search term
