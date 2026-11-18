@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { ROLES, ROLE_NAMES } from '../../constants/roles.js';
-import Icon from '../common/Icon.jsx';
+import { Menu } from 'lucide-react';
 
 const { TECHNICIAN: T, MANAGER: M, ADMIN: A } = ROLES;
 
@@ -38,7 +38,7 @@ export default function AdminMenu() {
           aria-controls="admin-links"
         >
           {title}
-          <Icon name="menu" size={20} />
+          <Menu size={20} aria-hidden="true" />
         </button>
         <span>{title}</span>
       </h2>

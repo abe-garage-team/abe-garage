@@ -246,32 +246,12 @@ h4 {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  text-decoration: none;
   flex: none;
 }
-.brand .swoosh {
-  width: 88px;
-  height: 40px;
-}
-.brand .word {
-  display: flex;
-  flex-direction: column;
-  line-height: 0.92;
-  font-style: italic;
-  font-weight: 900;
-  margin-left: -12px;
-}
-.brand .word b {
-  color: var(--ag-red);
-  font-size: 23px;
-}
-.brand .word span {
-  color: var(--ag-navy);
-  font-size: 27px;
-}
-.brand.light .word span {
-  color: #fff;
+.brand img {
+  display: block;
+  height: 50px;
+  width: auto;
 }
 .site-links {
   display: flex;
@@ -710,6 +690,9 @@ h4 {
   }
   .site-header nav {
     min-height: 76px;
+  }
+  .brand img {
+    height: 42px;
   }
   .staff-layout {
     grid-template-columns: minmax(0, 1fr);
