@@ -1,4 +1,4 @@
-import Icon from './Icon.jsx';
+import { Search } from 'lucide-react';
 
 // A search input with the magnifier icon. Debounce the value in the page (useDebouncedValue).
 export default function SearchBox({ value, onChange, label = 'Search', placeholder = 'Search…' }) {
@@ -15,7 +15,7 @@ export default function SearchBox({ value, onChange, label = 'Search', placehold
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
       />
-      <Icon name="search" size={18} />
+      <Search size={18} aria-hidden="true" />
     </div>
   );
 }

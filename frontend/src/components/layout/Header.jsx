@@ -2,7 +2,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { GARAGE, telHref } from '../../constants/garage.js';
 import Brand from './Brand.jsx';
-import Icon from '../common/Icon.jsx';
+import { Menu } from 'lucide-react';
 
 const PAGES = [
   ['/', 'Home'],
@@ -69,7 +69,7 @@ export default function Header() {
             {/* The key closes the menu after each page change. */}
             <details className="site-menu" key={pathname}>
               <summary aria-label="Open menu">
-                <Icon name="menu" size={22} />
+                <Menu size={22} aria-hidden="true" />
               </summary>
               <div className="panel">
                 {pages.map(([to, label]) => (

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { GARAGE, telHref } from '../../constants/garage.js';
 import Brand from './Brand.jsx';
-import Icon from '../common/Icon.jsx';
+import { Mail, MapPin, Phone } from 'lucide-react';
 
 // Navy footer: the address, email and phone strip, then four columns, then the copyright bar.
 export default function Footer() {
@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="foot-strip">
         <div className="wrap strip-grid">
           <div>
-            <Icon name="pin" size={30} stroke={1.5} />
+            <MapPin size={30} strokeWidth={1.5} aria-hidden="true" />
             <span>
               {GARAGE.address || 'Visit the garage'}
               <br />
@@ -20,7 +20,7 @@ export default function Footer() {
             </span>
           </div>
           <div>
-            <Icon name="mail" size={30} stroke={1.5} />
+            <Mail size={30} strokeWidth={1.5} aria-hidden="true" />
             <span>
               Email us
               <br />
@@ -32,7 +32,7 @@ export default function Footer() {
             </span>
           </div>
           <div>
-            <Icon name="phone" size={30} stroke={1.5} />
+            <Phone size={30} strokeWidth={1.5} aria-hidden="true" />
             <span>
               Call us
               <br />
