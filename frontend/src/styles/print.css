@@ -3,6 +3,7 @@
   margin: 12mm;
 }
 @media print {
+  .top-bar,
   .site-header,
   .site-footer,
   .admin-menu,

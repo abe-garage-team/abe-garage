@@ -232,7 +232,7 @@
       "local_path": "/",
       "route_file": "backend/src/api/services/routes/public-service.route.js",
       "mount_prefix": "/public/services",
-      "implemented": true 
+      "implemented": true
     },
     {
       "task_id": "BE-029",
