@@ -1,60 +1,71 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { getEmployee, getToken, saveSession, clearSession } from '../services/core/session.js';
-import { apiRequest } from '../services/core/api-client.js';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { cacheEmployee, getCachedEmployee } from '../services/core/session.js';
+import * as authService from '../services/auth.service.js';
+
 const AuthContext = createContext(null);
+
+// Holds "who is logged in" for the whole app.
+// The session itself is a cookie the browser sends on every request; the server decides.
+// On load we ask GET /profile once: 200 means logged in, 401 means not.
 export function AuthProvider({ children }) {
-  const [employee, setEmployee] = useState(getEmployee);
-  const [checking, setChecking] = useState(Boolean(getToken()));
-  const logout = () => {
-    clearSession();
+  const [employee, setEmployee] = useState(getCachedEmployee);
+  const [checking, setChecking] = useState(true);
+
+  const setSession = useCallback((profile) => {
+    cacheEmployee(profile);
+    setEmployee(profile);
+  }, []);
+
+  // Called after logout, after a password change, or when the server answers 401.
+  const clearSession = useCallback(() => {
+    cacheEmployee(null);
     setEmployee(null);
-  };
-  useEffect(() => {
-    const expire = () => {
-      setEmployee(null);
-      setChecking(false);
-    };
-    window.addEventListener('abe-garage:session-expired', expire);
-    const abort = new AbortController();
-    const restoringToken = getToken();
-    if (restoringToken) {
-      apiRequest('/profile', { signal: abort.signal })
-        .then((result) => {
-          if (!abort.signal.aborted && getToken() === restoringToken) {
-            saveSession(restoringToken, result.data);
-            setEmployee(result.data);
-          }
-        })
-        .catch((error) => {
-          if (!abort.signal.aborted && [401, 403].includes(error.status)) logout();
-        })
-        .finally(() => {
-          if (!abort.signal.aborted) setChecking(false);
-        });
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // The cookie may already be gone; the local state is cleared either way.
     }
+    clearSession();
+  }, [clearSession]);
+
+  useEffect(() => {
+    window.addEventListener('abe-garage:session-expired', clearSession);
+    const abort = new AbortController();
+    authService
+      .getProfile(abort.signal)
+      .then((profile) => {
+        if (!abort.signal.aborted) setSession(profile);
+      })
+      .catch(() => {
+        if (!abort.signal.aborted) clearSession();
+      })
+      .finally(() => {
+        if (!abort.signal.aborted) setChecking(false);
+      });
     return () => {
       abort.abort();
-      window.removeEventListener('abe-garage:session-expired', expire);
+      window.removeEventListener('abe-garage:session-expired', clearSession);
     };
-  }, []);
-  const setSession = (token, profile) => {
-    saveSession(token, profile);
-    setEmployee(profile);
-  };
-  return (
-    <AuthContext.Provider
-      value={{
-        employee,
-        checking,
-        isAuthenticated: Boolean(employee && getToken()),
-        setSession,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  }, [setSession, clearSession]);
+
+  const value = useMemo(
+    () => ({
+      employee,
+      checking,
+      isAuthenticated: Boolean(employee),
+      setSession,
+      clearSession,
+      logout,
+    }),
+    [employee, checking, setSession, clearSession, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth requires AuthProvider');

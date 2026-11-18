@@ -1,0 +1,52 @@
+/* Abe Garage design tokens: red and navy. Every colour, font and size the app uses
+   is named here once; global.css and the pages only use these names. */
+:root {
+  /* Brand */
+  --ag-red: #e51919;
+  --ag-red-hover: #c41212;
+  --ag-red-tint: #fde8e7;
+  --ag-navy: #081028;
+  --ag-navy-hover: #142152;
+  --ag-navy-soft: #1b2444;
+
+  /* Admin sidebar */
+  --ag-menu: #1e2640;
+  --ag-menu-head: #171d33;
+  --ag-menu-line: #303a5a;
+
+  /* Text and surfaces */
+  --ag-ink: #1f2430;
+  --ag-muted: #5f6577;
+  --ag-on-dark: #d4d8e4;
+  --ag-line: #e1e3ea;
+  --ag-line-strong: #c9cdd8;
+  --ag-bg: #f4f5f8;
+  --ag-surface: #ffffff;
+  --ag-error: #a3180f;
+  --ag-focus: #b9c6ea;
+
+  /* Order statuses (1 awaiting approval … 5 declined) and the active flag */
+  --ag-s1-bg: #fff1d6;
+  --ag-s1-fg: #7a4d00;
+  --ag-s2-bg: #e3ecff;
+  --ag-s2-fg: #1d44b8;
+  --ag-s3-bg: #ffe9a8;
+  --ag-s3-fg: #6b4a00;
+  --ag-s4-bg: #dcf2e8;
+  --ag-s4-fg: #0b6446;
+  --ag-s5-bg: #eceef2;
+  --ag-s5-fg: #4a5466;
+
+  /* Type and shape */
+  --ag-font: Roboto, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ag-font-mono: ui-monospace, Menlo, Consolas, monospace;
+  --ag-text: 15px;
+  --ag-text-sm: 14px;
+  --ag-text-xs: 12.5px;
+  --ag-control-h: 46px;
+  --ag-sidebar-w: 280px;
+  --ag-container: 1180px;
+  --ag-shadow-card: 0 4px 20px rgba(8, 16, 40, 0.06);
+  --ag-shadow-pop: 0 20px 50px rgba(8, 16, 40, 0.14);
+  --ag-hatch: repeating-linear-gradient(135deg, rgba(8, 16, 40, 0.022) 0 2px, transparent 2px 9px);
+}
