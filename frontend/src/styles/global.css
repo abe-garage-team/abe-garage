@@ -562,7 +562,7 @@ h4 {
 }
 .kv {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
   margin: 0;
 }
@@ -575,6 +575,7 @@ h4 {
 .kv dd {
   margin: 2px 0 0;
   color: var(--ag-muted);
+  overflow-wrap: anywhere;
 }
 
 /* ---------- Shared components ---------- */
