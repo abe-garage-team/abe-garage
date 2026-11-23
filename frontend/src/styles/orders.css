@@ -1,0 +1,498 @@
+
+.ord-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.ord-badges {
+  display: flex;
+  gap: 8px;
+  margin: -8px 0 16px;
+}
+.ord-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.ord-actions .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ord-heading > .ord-actions {
+  margin-top: 0;
+}
+.ord-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 190px 190px;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ---------- Tables ---------- */
+.ord-table-wrap {
+  background: var(--ag-surface);
+  box-shadow: var(--ag-shadow-card);
+}
+
+.ord-table > :not(caption) > * > * {
+  padding: 12px 10px;
+}
+.ord-table th {
+  white-space: nowrap;
+}
+.ord-table .mono,
+.ord-table .ord-date {
+  white-space: nowrap;
+}
+.ord-num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ord-sub {
+  display: block;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-xs);
+}
+.ord-table .ord-paid {
+  display: block;
+  width: fit-content;
+  margin: 4px 0 0 auto;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+.ord-link {
+  font-weight: 500;
+  text-decoration: none;
+}
+.ord-link:hover {
+  text-decoration: underline;
+}
+.ord-row-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+.ord-row-actions .btn {
+  width: 36px;
+  padding: 0;
+}
+.ord-empty {
+  padding: 28px 12px;
+  text-align: center;
+  color: var(--ag-muted);
+}
+.ord-list-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.ord-list-footer .btn-group {
+  margin: 0;
+}
+.ord-results {
+  margin-top: 20px;
+}
+
+/* ---------- New order wizard ---------- */
+.ord-stepper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.ord-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+}
+.ord-step-number {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  background: var(--ag-line);
+  color: var(--ag-navy);
+  font-weight: 700;
+}
+.ord-step.current {
+  border-color: var(--ag-navy);
+  color: var(--ag-navy);
+}
+.ord-step.current .ord-step-number {
+  background: var(--ag-red);
+  color: #fff;
+}
+.ord-step.done .ord-step-number {
+  background: var(--ag-navy);
+  color: #fff;
+}
+.ord-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.ord-selected h2 {
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+}
+.ord-remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: var(--ag-red);
+  border: 0;
+  color: #fff;
+}
+.ord-remove:hover {
+  background: var(--ag-red-hover);
+}
+.ord-edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--ag-navy);
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+}
+.ord-card-title {
+  margin-bottom: 14px;
+  font-size: 1.25rem;
+}
+.ord-help {
+  margin: -6px 0 16px;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+
+/* Service choices: whole row is clickable */
+.ord-service-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ord-service {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding: 14px 16px;
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.ord-service:hover {
+  border-color: var(--ag-line-strong);
+  background: var(--ag-bg);
+}
+.ord-service.checked {
+  border-color: var(--ag-navy);
+  background: #eef1fa;
+}
+.ord-service:focus-within {
+  outline: 3px solid var(--ag-focus);
+}
+.ord-service-text {
+  flex: 1;
+  min-width: 0;
+}
+.ord-service-name {
+  display: block;
+  color: var(--ag-navy);
+  font-weight: 700;
+}
+.ord-service-desc {
+  display: block;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+.ord-service-price {
+  color: var(--ag-navy);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ord-service .form-check-input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+.ord-submit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0 12px;
+}
+.ord-subtotal {
+  margin: 0;
+}
+.ord-confirm-list {
+  margin: 0 0 12px;
+}
+.ord-confirm-list div {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+}
+.ord-confirm-list dt {
+  flex: none;
+  width: 80px;
+  color: var(--ag-muted);
+  font-weight: 500;
+}
+.ord-confirm-list dd {
+  margin: 0;
+}
+
+/* ---------- Order details ---------- */
+.ord-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.ord-grid > .ag-card + .ag-card {
+  margin-top: 0;
+}
+.ord-name {
+  margin-bottom: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.ord-facts {
+  margin: 0;
+}
+.ord-facts > div {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+  flex-wrap: wrap;
+}
+.ord-facts dt {
+  flex: none;
+  min-width: 110px;
+  font-weight: 500;
+  color: var(--ag-navy);
+}
+.ord-facts dd {
+  margin: 0;
+  color: var(--ag-muted);
+  overflow-wrap: anywhere;
+}
+.ord-note {
+  white-space: pre-wrap;
+}
+/* In the three narrow summary cards the label sits above its value, so every row lines up. */
+.ord-grid .ord-facts > div {
+  display: block;
+  padding: 5px 0;
+}
+.ord-grid .ord-facts dt {
+  min-width: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ord-tracking {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ag-line);
+}
+.ord-label {
+  margin-bottom: 6px;
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+  color: var(--ag-navy);
+}
+.ord-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.ord-copy input {
+  width: 100%;
+  min-width: 0;
+  font-size: var(--ag-text-xs);
+}
+.ord-line-name {
+  display: block;
+  font-weight: 500;
+}
+.ord-line-desc {
+  display: block;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+.ord-totals {
+  width: min(320px, 100%);
+  margin: 20px 0 0 auto;
+}
+.ord-totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+.ord-totals dt,
+.ord-totals dd {
+  margin: 0;
+  font-weight: 400;
+}
+.ord-totals dd {
+  font-variant-numeric: tabular-nums;
+}
+.ord-totals .grand {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 2px solid var(--ag-navy);
+  font-size: 1.15rem;
+}
+.ord-totals .grand dt,
+.ord-totals .grand dd {
+  font-weight: 700;
+  color: var(--ag-navy);
+}
+
+/* Panels that act on the order */
+.ord-approval,
+.ord-grid + .ag-card,
+.ag-card + .ag-card,
+.ord-subform {
+  margin-top: 24px;
+}
+.ord-subform {
+  padding: 24px;
+  background: var(--ag-surface);
+  border-left: 3px solid var(--ag-navy);
+  box-shadow: var(--ag-shadow-card);
+}
+.ord-subform h3 {
+  margin-bottom: 14px;
+  font-size: 1.15rem;
+}
+.ord-methods {
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+}
+.ord-methods legend {
+  margin-bottom: 8px;
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+  color: var(--ag-navy);
+}
+.ord-method {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 24px;
+  cursor: pointer;
+}
+.ord-method .form-check-input {
+  margin: 0;
+  border-radius: 50%;
+}
+.ord-edit-lines {
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+.ord-edit-lines legend {
+  margin-bottom: 8px;
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+  color: var(--ag-navy);
+}
+.ord-edit-lines ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ord-edit-lines li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ag-line);
+}
+.ord-edit-lines li.removed .ord-edit-name {
+  text-decoration: line-through;
+  color: var(--ag-muted);
+}
+.ord-edit-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+.ord-edit-name small {
+  color: var(--ag-muted);
+  font-weight: 400;
+}
+.ord-price-input {
+  width: 130px;
+  text-align: right;
+}
+.ord-timeline {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: none;
+  border-left: 2px solid var(--ag-line);
+}
+.ord-timeline li {
+  position: relative;
+  padding: 0 0 16px 14px;
+}
+.ord-timeline li::before {
+  content: '';
+  position: absolute;
+  left: -25px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  background: var(--ag-red);
+  border-radius: 50%;
+}
+.ord-timeline-action {
+  display: block;
+  font-weight: 500;
+}
+.ord-timeline-meta {
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+
+@media (max-width: 767.98px) {
+  .ord-filters {
+    grid-template-columns: 1fr;
+  }
+  .ord-service {
+    flex-wrap: wrap;
+  }
+  .ord-edit-lines li {
+    flex-wrap: wrap;
+  }
+}
