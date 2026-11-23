@@ -6,7 +6,6 @@ export const ORDER_STATUS = Object.freeze({
   DECLINED: 5,
 });
 
-
 export const ORDER_STATUS_OPTIONS = [
   { value: 1, label: 'Awaiting approval' },
   { value: 2, label: 'Approved' },
@@ -22,7 +21,6 @@ export const APPROVAL_METHODS = [
   { value: 'in_person', label: 'In person' },
 ];
 
-
 export const HISTORY_LABELS = Object.freeze({
   order_created: 'Order created',
   order_updated: 'Order updated',
@@ -33,7 +31,6 @@ export const HISTORY_LABELS = Object.freeze({
   email_sent: 'Customer email sent',
   email_failed: 'Customer email failed',
 });
-
 
 export const NOTE_MAX_LENGTH = 2000;
 export const MONEY_PATTERN = /^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/;

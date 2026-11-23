@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchServices } from '../services/catalog.service.js';
 
-
 const PAGE_SIZE = 100;
-const MAX_PAGES = 20; 
-
+const MAX_PAGES = 20;
 
 export function useActiveServices() {
   const [services, setServices] = useState([]);

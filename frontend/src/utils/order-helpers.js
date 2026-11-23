@@ -3,22 +3,17 @@ import { HISTORY_LABELS, MONEY_PATTERN, ORDER_STATUS } from '../constants/orders
 
 const two = (n) => String(n).padStart(2, '0');
 
-
 export function isAbortError(error) {
   return error?.name === 'AbortError';
 }
-
 
 export function fieldErrors(error) {
   return error?.data?.errors ?? {};
 }
 
-
-
 export function fullName(person) {
   return [person?.first_name, person?.last_name].filter(Boolean).join(' ');
 }
-
 
 export function formatShortDate(iso) {
   if (!iso) return '—';
@@ -26,7 +21,6 @@ export function formatShortDate(iso) {
   if (Number.isNaN(date.getTime())) return '—';
   return `${two(date.getDate())}/${two(date.getMonth() + 1)}/${date.getFullYear()}`;
 }
-
 
 export function formatAmount(value, currency) {
   if (value === null || value === undefined || value === '' || Number.isNaN(Number(value))) {
@@ -42,8 +36,6 @@ export function humanizeAction(action) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-
-
 export function toLocalInputValue(input) {
   if (input === null || input === undefined || input === '') return '';
   const date = input instanceof Date ? input : new Date(input);
@@ -57,7 +49,6 @@ export function toApiDateTime(localValue) {
   return date.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-
 export function defaultReadyDate(now = new Date()) {
   const date = new Date(now);
   date.setDate(date.getDate() + 1);
@@ -70,17 +61,14 @@ export function isFutureLocal(localValue, now = new Date()) {
   return Number.isFinite(time) && time > now.getTime();
 }
 
-
 export function isValidMoney(value) {
   return MONEY_PATTERN.test(String(value).trim());
 }
-
 
 export function sumPrices(prices) {
   const cents = prices.reduce((sum, price) => sum + Math.round(Number(price) * 100), 0);
   return (cents / 100).toFixed(2);
 }
-
 
 export function parsePage(value) {
   const page = Number.parseInt(value, 10);
@@ -96,16 +84,13 @@ export function parsePaid(value) {
   return value === 'true' || value === 'false' ? value : '';
 }
 
-
 export function canEditOrder(order) {
   return order.status !== ORDER_STATUS.DECLINED;
 }
 
-
 export function canEditLines(order) {
   return order.status === ORDER_STATUS.AWAITING_APPROVAL;
 }
-
 
 export function canAddExtraWork(order) {
   return (
@@ -115,11 +100,9 @@ export function canAddExtraWork(order) {
   );
 }
 
-
 export function hasStartedWork(order) {
   return (order.lines ?? []).some((line) => Number(line.line_status) > 0);
 }
-
 
 export function findApprover(order) {
   const entries = (order.history ?? []).filter((entry) => entry.action === 'estimate_approved');
