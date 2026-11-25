@@ -9,7 +9,6 @@ import { formatDateTime } from '../../../utils/format-date.js';
 import { formatAmount, fullName, isAbortError } from '../../../utils/order-helpers.js';
 import '../../../styles/estimate.css';
 
-
 export default function Estimate() {
   const { order_id: orderId } = useParams();
   const [estimate, setEstimate] = useState(null);
@@ -116,7 +115,9 @@ export default function Estimate() {
         <thead>
           <tr>
             <th scope="col">Service</th>
-            <th scope="col" className="num">Price</th>
+            <th scope="col" className="num">
+              Price
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -153,4 +154,3 @@ export default function Estimate() {
     </article>
   );
 }
-
