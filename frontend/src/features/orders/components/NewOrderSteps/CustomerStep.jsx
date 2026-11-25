@@ -9,8 +9,6 @@ import { ActiveBadge } from '../../../../components/common/StatusBadge.jsx';
 
 const PAGE_SIZE = 10;
 
-// Step 1: find the customer. Nothing is listed until something is typed; the list is
-// searched on the server (BE-017) by first name, last name, email or phone.
 export default function CustomerStep({ onSelect }) {
   const [term, setTerm] = useState('');
   const [page, setPage] = useState(1);
@@ -29,7 +27,6 @@ export default function CustomerStep({ onSelect }) {
       return undefined;
     }
 
-    // `cancelled` stops an old, slower answer from overwriting a newer one.
     let cancelled = false;
     setLoading(true);
     setError('');
@@ -92,7 +89,9 @@ export default function CustomerStep({ onSelect }) {
                     <th scope="col">Last name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Phone</th>
-                    <th scope="col" className="text-end">Choose</th>
+                    <th scope="col" className="text-end">
+                      Choose
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

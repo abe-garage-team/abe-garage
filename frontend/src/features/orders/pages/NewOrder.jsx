@@ -8,7 +8,6 @@ import ServiceStep from '../components/NewOrderSteps/ServiceStep.jsx';
 import VehicleStep from '../components/NewOrderSteps/VehicleStep.jsx';
 import '../../../styles/orders.css';
 
-
 export default function NewOrder() {
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
@@ -53,4 +52,3 @@ export default function NewOrder() {
     </div>
   );
 }
-

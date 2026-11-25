@@ -4,8 +4,6 @@ import { fetchVehiclesByCustomerId } from '../../../../services/vehicle.service.
 import AddVehicleModal from '../../../vehicles/components/AddVehicleModal.jsx';
 import ErrorMessage from '../../../../components/common/ErrorMessage.jsx';
 
-// Step 2: choose one of the customer's vehicles (BE-021), or register a new one on the spot
-// with the same form the Customer profile uses (BE-020).
 export default function VehicleStep({ customer, onSelect }) {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,8 +72,12 @@ export default function VehicleStep({ customer, onSelect }) {
                 <th scope="col">Tag</th>
                 <th scope="col">Serial</th>
                 <th scope="col">Color</th>
-                <th scope="col" className="text-end">Mileage</th>
-                <th scope="col" className="text-end">Choose</th>
+                <th scope="col" className="text-end">
+                  Mileage
+                </th>
+                <th scope="col" className="text-end">
+                  Choose
+                </th>
               </tr>
             </thead>
             <tbody>

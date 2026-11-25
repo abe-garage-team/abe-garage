@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import { Pencil, X } from 'lucide-react';
 import { fullName } from '../../../../utils/order-helpers.js';
 
-// The customer chosen in step 1. The red X goes back to the search.
-// "Edit" opens in a new tab so the half-filled order is not lost.
 export default function SelectedCustomer({ customer, onClear }) {
   const name = fullName(customer);
   return (

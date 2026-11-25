@@ -17,7 +17,6 @@ import {
   toLocalInputValue,
 } from '../../../../utils/order-helpers.js';
 
-
 const FORM_FIELDS = ['lines', 'estimated_ready_date', 'notes_for_customer', 'internal_notes'];
 function toFormErrors(serverErrors) {
   const mapped = {};
@@ -27,7 +26,6 @@ function toFormErrors(serverErrors) {
   });
   return mapped;
 }
-
 
 export default function ServiceStep({ customer, vehicle, onCreated }) {
   const { services, loading, error: loadError, reload } = useActiveServices();
@@ -48,7 +46,6 @@ export default function ServiceStep({ customer, vehicle, onCreated }) {
   );
   const subtotal = sumPrices(chosen.map((service) => service.price));
 
-
   function clearError(field) {
     setErrors((previous) => (previous[field] ? { ...previous, [field]: undefined } : previous));
   }
@@ -62,7 +59,6 @@ export default function ServiceStep({ customer, vehicle, onCreated }) {
       return next;
     });
   }
-
 
   function validate() {
     const found = {};
@@ -108,7 +104,7 @@ export default function ServiceStep({ customer, vehicle, onCreated }) {
       setSubmitting(false);
       const mapped = toFormErrors(fieldErrors(err));
       setErrors(mapped);
-      
+
       if (Object.keys(mapped).length === 0) {
         setFormError(err.message || 'Could not create the order.');
       }

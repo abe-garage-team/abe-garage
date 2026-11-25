@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Pencil, X } from 'lucide-react';
 
-// The vehicle chosen in step 2. The red X goes back to the vehicle list.
 export default function SelectedVehicle({ vehicle, onClear }) {
   return (
     <section className="ag-card ord-selected" aria-label="Chosen vehicle">

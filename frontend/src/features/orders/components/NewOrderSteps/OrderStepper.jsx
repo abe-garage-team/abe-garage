@@ -1,6 +1,5 @@
 const STEPS = ['Customer', 'Vehicle', 'Services'];
 
-// A small "where am I" indicator above the wizard. `current` is 1, 2 or 3.
 export default function OrderStepper({ current }) {
   return (
     <ol className="ord-stepper" aria-label="New order progress">
