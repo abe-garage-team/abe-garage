@@ -5,15 +5,13 @@ import { recordApproval } from '../../../services/order.service.js';
 import { APPROVAL_METHODS } from '../../../constants/orders.js';
 import { hasStartedWork } from '../../../utils/order-helpers.js';
 
-
 export default function ApprovalPanel({ order, onRecorded }) {
   const [method, setMethod] = useState('');
- 
+
   const [decision, setDecision] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
- 
   const started = hasStartedWork(order);
   const methodLabel = APPROVAL_METHODS.find((item) => item.value === method)?.label.toLowerCase();
 

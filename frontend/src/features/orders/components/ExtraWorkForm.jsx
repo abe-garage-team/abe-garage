@@ -6,7 +6,6 @@ import { addExtraJob } from '../../../services/order.service.js';
 import { useActiveServices } from '../../../hooks/useActiveServices.js';
 import { fieldErrors, formatAmount, isValidMoney } from '../../../utils/order-helpers.js';
 
-
 export default function ExtraWorkForm({ order, onAdded, onCancel }) {
   const { services, loading, error: loadError, reload } = useActiveServices();
   const [serviceId, setServiceId] = useState('');
@@ -20,7 +19,6 @@ export default function ExtraWorkForm({ order, onAdded, onCancel }) {
   const available = services.filter((service) => !onOrder.has(service.service_id));
   const selected = available.find((service) => String(service.service_id) === serviceId);
 
- 
   function clearError(field) {
     setErrors((previous) => (previous[field] ? { ...previous, [field]: undefined } : previous));
   }

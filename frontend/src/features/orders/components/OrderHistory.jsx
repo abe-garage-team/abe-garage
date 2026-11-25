@@ -1,7 +1,6 @@
 import { formatDateTime } from '../../../utils/format-date.js';
 import { humanizeAction } from '../../../utils/order-helpers.js';
 
-
 export default function OrderHistory({ history }) {
   const entries = [...(history ?? [])].reverse();
   return (

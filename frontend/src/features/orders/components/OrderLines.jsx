@@ -20,8 +20,12 @@ export default function OrderLines({ order, children }) {
               <th scope="col">Service</th>
               <th scope="col">Technician</th>
               <th scope="col">Progress</th>
-              <th scope="col" className="text-end">Hours</th>
-              <th scope="col" className="text-end">Price</th>
+              <th scope="col" className="text-end">
+                Hours
+              </th>
+              <th scope="col" className="text-end">
+                Price
+              </th>
             </tr>
           </thead>
           <tbody>

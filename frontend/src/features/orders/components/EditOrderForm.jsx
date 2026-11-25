@@ -15,7 +15,6 @@ import {
 
 const toCents = (value) => Math.round(Number(value) * 100);
 
-
 export default function EditOrderForm({ order, onSaved, onCancel }) {
   const editLines = canEditLines(order);
   const initialReady = toLocalInputValue(order.estimated_ready_date);
@@ -37,7 +36,6 @@ export default function EditOrderForm({ order, onSaved, onCancel }) {
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
-
 
   function clearError(field) {
     setErrors((previous) => (previous[field] ? { ...previous, [field]: undefined } : previous));

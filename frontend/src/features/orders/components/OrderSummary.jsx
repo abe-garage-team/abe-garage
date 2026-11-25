@@ -5,9 +5,6 @@ import { APPROVAL_METHODS } from '../../../constants/orders.js';
 import { findApprover, fullName } from '../../../utils/order-helpers.js';
 import TrackingLink from './TrackingLink.jsx';
 
-// Three cards: who, what car, and the order itself.
-// A Technician receives a trimmed order (no contact details, no tracking link, no internal
-// notes), so every optional field is checked before it is shown.
 export default function OrderSummary({ order, canManage }) {
   const { customer, vehicle } = order;
   const approver = findApprover(order);

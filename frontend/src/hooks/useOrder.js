@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchOrder } from '../services/order.service.js';
 import { isAbortError } from '../utils/order-helpers.js';
 
-
 export function useOrder(orderId) {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +27,7 @@ export function useOrder(orderId) {
     load(controller.signal).finally(() => {
       if (!controller.signal.aborted) setLoading(false);
     });
-    
+
     return () => controller.abort();
   }, [load]);
 

@@ -21,7 +21,6 @@ const APPROVAL_MESSAGES = {
   declined: 'Estimate declined. This order is now read-only.',
 };
 
-
 export default function OrderDetails() {
   const { order_id: orderId } = useParams();
   const { employee } = useAuth();
@@ -32,16 +31,13 @@ export default function OrderDetails() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 
-  
   const [flash, setFlash] = useState(location.state?.flash ?? '');
   const [showExtraWork, setShowExtraWork] = useState(false);
 
-  
   useEffect(() => {
     if (location.state?.flash) {
       navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
     }
-    
   }, []);
 
   const editing =
@@ -53,7 +49,7 @@ export default function OrderDetails() {
   }
 
   async function handleDecision(decision) {
-    await reload(); 
+    await reload();
     showMessage(APPROVAL_MESSAGES[decision]);
   }
 
@@ -64,7 +60,7 @@ export default function OrderDetails() {
   }
 
   function handleSaved(updated) {
-    setOrder(updated); 
+    setOrder(updated);
     setParams({});
     showMessage('Order updated.');
   }

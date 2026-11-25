@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 
-
 export default function TrackingLink({ url }) {
   const [copied, setCopied] = useState(false);
 
@@ -10,9 +9,7 @@ export default function TrackingLink({ url }) {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-     
-    }
+    } catch {}
   }
 
   return (
