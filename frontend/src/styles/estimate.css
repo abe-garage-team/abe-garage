@@ -1,0 +1,111 @@
+/* Printable estimate (BE-039). A4 sheet; colours come from tokens.css. */
+.estimate-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.estimate-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid var(--ag-red);
+}
+.estimate-head h1 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+}
+.estimate-head p {
+  margin: 0;
+  color: var(--ag-muted);
+}
+.estimate-meta {
+  text-align: right;
+}
+.estimate-meta .estimate-kind {
+  color: var(--ag-red);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.estimate-meta .estimate-number {
+  margin-bottom: 4px;
+  color: var(--ag-navy);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.estimate-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+.estimate-parties h2 {
+  margin-bottom: 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ag-muted);
+}
+.estimate-parties p {
+  margin: 0;
+}
+.estimate-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.estimate-table th,
+.estimate-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--ag-line);
+  vertical-align: top;
+}
+.estimate-table th {
+  border-bottom: 2px solid var(--ag-navy);
+  font-size: var(--ag-text-sm);
+}
+.estimate-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+.estimate-desc {
+  display: block;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+.estimate-totals {
+  width: min(320px, 100%);
+  margin: 20px 0 0 auto;
+}
+.estimate-totals div {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+}
+.estimate-totals dt,
+.estimate-totals dd {
+  margin: 0;
+  font-weight: 400;
+}
+.estimate-totals .grand {
+  margin-top: 6px;
+  border-top: 2px solid var(--ag-navy);
+  font-size: 1.15rem;
+}
+.estimate-totals .grand dt,
+.estimate-totals .grand dd {
+  font-weight: 700;
+  color: var(--ag-navy);
+}
+.estimate-foot {
+  margin: 32px 0 0;
+  color: var(--ag-muted);
+  font-size: var(--ag-text-sm);
+}
+@media print {
+  .estimate-table tr {
+    break-inside: avoid;
+  }
+}
