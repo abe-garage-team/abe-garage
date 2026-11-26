@@ -27,7 +27,7 @@ test('rejects frontend URLs containing credentials', () => {
 });
 
 test('rejects missing or blank order hashes', () => {
-  for (const orderHash of [undefined, null, '', '   ']) {
+  for (const orderHash of [undefined, null, '', '   ', '.', '..']) {
     assert.throws(() =>
       buildTrackingUrl({
         frontendUrl: 'https://garage.example.com',

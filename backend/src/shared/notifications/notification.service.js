@@ -19,8 +19,18 @@ function getTransport() {
 }
 
 export async function sendPasswordResetEmail({ to, firstName, resetUrl, expiresInMinutes }) {
-  const email = buildPasswordResetEmail({ firstName, resetUrl, expiresInMinutes });
   try {
+    const url = new URL(resetUrl);
+    const frontend = new URL(env.frontendUrl);
+    if (
+      url.protocol !== 'https:' ||
+      url.origin !== frontend.origin ||
+      url.username ||
+      url.password
+    ) {
+      throw new Error('Password reset links require the configured HTTPS frontend origin');
+    }
+    const email = buildPasswordResetEmail({ firstName, resetUrl, expiresInMinutes });
     await getTransport().sendMail({
       from: process.env.MAIL_FROM || 'no-reply@abegarage.local',
       to,

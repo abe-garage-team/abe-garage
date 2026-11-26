@@ -9,7 +9,12 @@ export function buildTrackingUrl({ frontendUrl, orderHash }) {
     throw new Error('Frontend URL must not contain credentials');
   }
 
-  if (typeof orderHash !== 'string' || orderHash.trim() === '') {
+  if (
+    typeof orderHash !== 'string' ||
+    orderHash.trim() === '' ||
+    orderHash === '.' ||
+    orderHash === '..'
+  ) {
     throw new Error('Order hash is required');
   }
 
