@@ -385,6 +385,236 @@
           }
         }
       ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "List services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/services?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["services"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services",
+              "host": ["{{base_url}}"],
+              "path": ["services"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Oil change\",\n  \"description\": \"Replace engine oil and filter\",\n  \"price\": \"50.00\",\n  \"labor_hours\": \"0.50\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Update service",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/services/1",
+              "host": ["{{base_url}}"],
+              "path": ["services", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": \"55.00\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Public services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/public/services?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["public", "services"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Technician Jobs",
+      "item": [
+        {
+          "name": "Assign technician",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order-lines/1/technician",
+              "host": ["{{base_url}}"],
+              "path": ["order-lines", "1", "technician"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technician_id\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "My jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/my-jobs?line_status=0&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["my-jobs"],
+              "query": [
+                {
+                  "key": "line_status",
+                  "value": "0"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update line status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order-lines/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["order-lines", "1", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"line_status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Update line note",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{frontend_origin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order-lines/1/note",
+              "host": ["{{base_url}}"],
+              "path": ["order-lines", "1", "note"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technician_note\": \"Inspected pads; replaced worn components.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }

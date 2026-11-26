@@ -33,3 +33,8 @@ Thumbs.db
 # Scripts & temporary utilities
 setup-trello*.js
 backend/tmp/
+.postman/
+.postman/
+postman/collections/
+postman/environments/
+postman/globals/

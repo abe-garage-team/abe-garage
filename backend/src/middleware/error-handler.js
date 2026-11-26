@@ -39,6 +39,8 @@ export function errorHandler(error, req, res, next) {
       status_code: statusCode,
       error_name: error.name,
       code: error.code,
+      error: error.message,
+      stack: error.stack,
     });
   }
 

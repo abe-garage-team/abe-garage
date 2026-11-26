@@ -18,7 +18,7 @@ test('every feature router is mounted below /api at its documented prefix', asyn
   const base = await listen(t);
   for (const mount of manifest.routing.mounts) {
     const { default: router } = await import(new URL('../src/api/' + mount.file, import.meta.url));
-    const probe = '/__routing-test-' + mount.name;
+    const probe = '/__routing-test-' + mount.name + '/probe';
     router.get(probe, (req, res) => res.json({ feature: mount.name }));
     const probeLayer = router.stack.pop();
     router.stack.unshift(probeLayer);
