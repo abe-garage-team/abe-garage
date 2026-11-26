@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { pool, withTransaction } from '../../../config/db.js';
 import { AppError } from '../../../utils/errors/AppError.js';
+import { sendOrderCreatedEmail } from '../../../shared/notifications/notification.service.js';
 
 //Helper functions
 function fail(statusCode, message) {
@@ -333,8 +334,14 @@ export async function createOrderService(input, actorId) {
     return details;
   });
 
-  // Notification happens only after successful commit.
-  // wait until BE-043 integration.
+  // withTransaction has committed successfully before email delivery begins.
+  await sendOrderCreatedEmail({
+    to: data.customer.email,
+    customerName: data.customer_name,
+    orderHash: data.order_hash,
+    orderId: data.order_id,
+    employeeId: actorId,
+  });
 
   return data;
 }
