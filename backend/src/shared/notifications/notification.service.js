@@ -1,3 +1,4 @@
+import { AppError } from '../../utils/errors/AppError.js';
 import { env } from '../../config/env.js';
 import { createMailTransport } from './transport.js';
 import { createFakeMailTransport } from './fake-transport.js';
@@ -58,6 +59,7 @@ export function createOrderNotificationService({ getTransport, db, frontendUrl, 
       });
 
       sent = Array.isArray(result.accepted) && result.accepted.length > 0;
+      if (!sent) warn({ event: 'order_email_delivery_failed', order_id: orderId });
     } catch {
       warn({ event: 'order_email_delivery_failed', order_id: orderId });
     }
@@ -91,11 +93,23 @@ export function createOrderNotificationService({ getTransport, db, frontendUrl, 
       });
     },
 
-    resendOrderEmail({ status, ...input }) {
-      return sendOrderEmail({
+    async resendOrderEmail({ status, ...input }) {
+      const sent = await sendOrderEmail({
         ...input,
-        buildEmail: status === 4 ? buildCarReadyEmail : buildOrderCreatedEmail,
+        buildEmail: Number(status) === 4 ? buildCarReadyEmail : buildOrderCreatedEmail,
       });
+      if (!sent) {
+        throw new AppError(
+          'Email could not be sent',
+          503,
+          {
+            order_id: input.orderId,
+            email_status: 'failed',
+          },
+          'EMAIL_DELIVERY_FAILED',
+        );
+      }
+      return true;
     },
   };
 }

@@ -128,22 +128,6 @@ test('combined mail and history failures return false without throwing', async (
   );
 });
 
-test('combined mail and history failures return false without throwing', async () => {
-  const { service, messages, warnings } = setup({
-    failMail: true,
-    failHistory: true,
-  });
-
-  const sent = await service.sendOrderCreatedEmail(input);
-
-  assert.equal(sent, false);
-  assert.equal(messages.length, 1);
-  assert.deepEqual(
-    warnings.map((entry) => entry.event),
-    ['order_email_delivery_failed', 'order_email_history_failed'],
-  );
-});
-
 test('resends the car-ready email for a completed order', async () => {
   const { service, messages, history } = setup();
 
@@ -175,11 +159,44 @@ test('resends the tracking email for an incomplete order', async () => {
 test('failed resend returns false and records failure', async () => {
   const { service, history } = setup({ failMail: true });
 
-  const sent = await service.resendOrderEmail({
-    ...input,
-    status: 4,
-  });
-
-  assert.equal(sent, false);
+  await assert.rejects(
+    service.resendOrderEmail({ ...input, status: 4 }),
+    (error) =>
+      error.statusCode === 503 &&
+      error.message === 'Email could not be sent' &&
+      error.data.order_id === 24 &&
+      error.data.email_status === 'failed',
+  );
   assert.deepEqual(history, [[24, 7, 'email_failed']]);
+});
+
+test('HTTP frontend configuration records failure without requesting transport', async () => {
+  const history = [];
+  let requested = false;
+  const service = createOrderNotificationService({
+    getTransport: () => {
+      requested = true;
+      throw new Error('Unexpected send');
+    },
+    db: {
+      async execute(_sql, values) {
+        history.push(values);
+      },
+    },
+    frontendUrl: 'http://localhost:5173',
+    from: 'garage@example.com',
+    warn: () => {},
+  });
+  assert.equal(await service.sendOrderCreatedEmail(input), false);
+  assert.equal(requested, false);
+  assert.deepEqual(history, [[24, 7, 'email_failed']]);
+});
+
+test('delivery history and warning metadata do not include private links or email bodies', async () => {
+  const { service, history, warnings } = setup({ failMail: true });
+  await service.sendCarReadyEmail(input);
+  const metadata = JSON.stringify({ history, warnings });
+  for (const secret of [input.orderHash, input.to, input.customerName]) {
+    assert.equal(metadata.includes(secret), false);
+  }
 });
