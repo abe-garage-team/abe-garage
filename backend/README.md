@@ -39,3 +39,8 @@ npm test                    unit + routing tests; integration tests run when MyS
 Set `DATABASE_INTEGRATION=true` to make the integration tests fail instead of skip when MySQL is unavailable. The integration tests expect the seeded Admin from `INITIAL_ADMIN_EMAIL` / `INITIAL_ADMIN_PASSWORD` and `MAIL_ADAPTER=fake`.
 
 Read ../docs/TEAM-GUIDE.md, ../docs/ROUTING.md and ../docs/database/README.md. The baseline schema is `db/schema.sql`; later changes are numbered files in `db/migrations`.
+
+## Order notifications (BE-043)
+
+See [notification integration and configuration](src/shared/notifications/README.md).
+Order creation and approval completion send after commit. Technician job completion is pending BE-037.
