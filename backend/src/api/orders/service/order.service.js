@@ -1,7 +1,13 @@
 import { randomBytes } from 'node:crypto';
 import { pool, withTransaction } from '../../../config/db.js';
 import { AppError } from '../../../utils/errors/AppError.js';
-import { sendOrderCreatedEmail } from '../../../shared/notifications/notification.service.js';
+import {
+  sendOrderCreatedEmail,
+  sendCarReadyEmail,
+} from '../../../shared/notifications/notification.service.js';
+import { buildTrackingUrl } from '../../../shared/notifications/tracking-url.js';
+import { env } from '../../../config/env.js';
+import { logWarning } from '../../../utils/log.js';
 
 //Helper functions
 function fail(statusCode, message) {
@@ -116,11 +122,14 @@ export async function getOrderDetails(db, orderId) {
   const subtotal = cents(order.subtotal);
   const rate = order.vat_rate;
   const vat = vatCents(subtotal, rate);
-  const baseUrl = process.env.PUBLIC_FRONTEND_URL;
-  const trackingUrl =
-    baseUrl && order.order_hash
-      ? `${baseUrl.replace(/\/$/, '')}/order-status/${order.order_hash}`
-      : null;
+  let trackingUrl = null;
+  if (order.order_hash) {
+    try {
+      trackingUrl = buildTrackingUrl({ frontendUrl: env.frontendUrl, orderHash: order.order_hash });
+    } catch {
+      // Invalid email-link configuration must not prevent reading a saved order.
+    }
+  }
 
   return {
     order_id: order.order_id,
@@ -335,13 +344,17 @@ export async function createOrderService(input, actorId) {
   });
 
   // withTransaction has committed successfully before email delivery begins.
-  await sendOrderCreatedEmail({
-    to: data.customer.email,
-    customerName: data.customer_name,
-    orderHash: data.order_hash,
-    orderId: data.order_id,
-    employeeId: actorId,
-  });
+  try {
+    await sendOrderCreatedEmail({
+      to: data.customer.email,
+      customerName: data.customer_name,
+      orderHash: data.order_hash,
+      orderId: data.order_id,
+      employeeId: actorId,
+    });
+  } catch {
+    logWarning({ event: 'order_created_notification_failed', order_id: data.order_id });
+  }
 
   return data;
 }
@@ -869,6 +882,27 @@ export async function recordApprovalService(orderId, input, actorId) {
       ],
     );
 
+    // Capture delivery inputs in the transaction; send only after it commits.
+    let completionEmail = null;
+    if (nextStatus === 4) {
+      const [[recipient]] = await connection.execute(
+        `SELECT o.order_hash, c.email, c.first_name, c.last_name
+         FROM orders o
+         JOIN vehicles v ON v.vehicle_id = o.vehicle_id
+         JOIN customers c ON c.customer_id = v.customer_id
+         WHERE o.order_id = ?`,
+        [orderId],
+      );
+      if (!recipient) fail(500, 'Order customer could not be loaded');
+      completionEmail = {
+        orderId: Number(orderId),
+        employeeId: actorId,
+        to: recipient.email,
+        customerName: [recipient.first_name, recipient.last_name].filter(Boolean).join(' '),
+        orderHash: recipient.order_hash,
+      };
+    }
+
     const statusNames = {
       2: 'Approved',
       3: 'In progress',
@@ -885,12 +919,18 @@ export async function recordApprovalService(orderId, input, actorId) {
       approval_method: input.approval_method,
       // Internal flag, not part of API response
       newlyCompleted: nextStatus === 4,
+      completionEmail,
     };
   });
 
-  // 8. Optional BE-043 notification after commit.
-
-  const { newlyCompleted, ...response } = result;
+  const { newlyCompleted, completionEmail, ...response } = result;
+  if (newlyCompleted) {
+    try {
+      await sendCarReadyEmail(completionEmail);
+    } catch {
+      logWarning({ event: 'car_ready_notification_failed', order_id: Number(orderId) });
+    }
+  }
   return response;
 }
 
