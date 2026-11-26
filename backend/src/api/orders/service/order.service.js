@@ -1,3 +1,8 @@
+import {
+  moneyToMinor as cents,
+  formatMinor as money,
+  calculateVat as vatCents,
+} from '../../../shared/order-domain/money.js';
 import { randomBytes } from 'node:crypto';
 import { pool, withTransaction } from '../../../config/db.js';
 import { AppError } from '../../../utils/errors/AppError.js';
@@ -12,32 +17,6 @@ import { logWarning } from '../../../utils/log.js';
 //Helper functions
 function fail(statusCode, message) {
   throw new AppError(message, statusCode);
-}
-
-function cents(value) {
-  // to examine the monetary value
-  const text = String(value);
-  // to validate the format of the monetary value
-  // checks if the input contains valid non-negative monetary number with up to two decimal places.
-  if (!/^\d+(?:\.\d{1,2})?$/.test(text)) {
-    fail(500, 'Invalid monetary value in database');
-  }
-
-  const [whole, fraction = ''] = text.split('.');
-
-  //Convert the whole amount into cents
-  //Convert the decimal portion into two digits
-  //padEnd() adds characters to the end of a string until it reaches the specified length.
-  /*This ensures that values like "5" become "5.00" and "5.5" become "5.50" before conversion. // * Because one decimal digit represents ten cents, not one cent.*/
-  return BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0'));
-}
-
-function money(value) {
-  return `${value / 100n}.${String(value % 100n).padStart(2, '0')}`;
-}
-
-function vatCents(subtotal, rate) {
-  return (subtotal * cents(rate) + 5000n) / 10000n;
 }
 
 function mysqlUtc(value) {

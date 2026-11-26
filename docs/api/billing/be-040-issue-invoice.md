@@ -125,8 +125,8 @@ Non-validation errors use `data: null`, except explicitly documented safe metada
 
 1. Lock order and verify status4 and every line done. Declined/unfinished orders return409. Invoice creation is a write operation, so use POST, not GET.
 2. If already issued return existing invoice with200, without new number or new snapshot. First issue returns201. Deterministic unique invoice_number=INV- plus zero-padded order_id avoids a shared number counter.
-3. Persist invoice_number,invoice_issued_at,invoice_snapshot together. Snapshot includes garage details,customer/vehicle fields,line descriptions/prices,currency,vat_rate and totals, all from stored order values.
-4. After issuance, prevent line/price/financial identity edits. Payment status is live metadata outside immutable invoice_snapshot. Browser renders JSON into A4/PDF; no PDF generation endpoint required.
+3. Use the authoritative normalized schema: persist invoice_number,issued_at and historical garage/customer/vehicle facts in invoices. Immutable service_versions and protected order_lines retain line descriptions/prices; orders retains agreed vat_rate/currency. Derive exact totals from these facts. Do not add a JSON invoice_snapshot or legacy invoice fields to orders.
+4. After issuance, prevent line/price/financial identity edits. Payment status is live metadata from cash_payments outside immutable document facts. Browser renders JSON into A4/PDF; no PDF generation endpoint required.
 5. Use source row locks or a consistent transaction read when capturing snapshot. Invoice issuance must not change order status or mark it paid.
 
 ### Git workflow
